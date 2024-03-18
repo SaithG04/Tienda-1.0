@@ -2,7 +2,7 @@ package Capa_de_logica_de_negocio;
 
 import Capa_de_acceso_a_datos.Modelo_de_datos.cAdministradorProductos;
 import Capa_de_acceso_a_datos.Modelo_de_datos.cAdministradorTransaccion;
-import Capa_de_presentacion.frmAdministradorProductos;
+import com.quiroga.tienda.presentation_layer.frmAdministradorProductos;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;

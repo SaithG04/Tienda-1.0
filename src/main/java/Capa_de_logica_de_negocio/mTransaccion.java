@@ -1,7 +1,7 @@
 package Capa_de_logica_de_negocio;
 
 import Capa_de_acceso_a_datos.Modelo_de_datos.cAdministradorTransaccion;
-import Capa_de_presentacion.frmTransacciones;
+import com.quiroga.tienda.presentation_layer.frmTransacciones;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;

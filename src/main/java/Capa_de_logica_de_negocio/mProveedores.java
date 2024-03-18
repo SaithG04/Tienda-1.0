@@ -1,6 +1,6 @@
 package Capa_de_logica_de_negocio;
 
-import Capa_de_presentacion.frmAdministradorProveedores;
+import com.quiroga.tienda.presentation_layer.frmAdministradorProveedores;
 import Capa_de_acceso_a_datos.Modelo_de_datos.cAdministradorProveedores;
 import java.awt.Color;
 import java.awt.event.*;

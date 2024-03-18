@@ -44,7 +44,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     public Usuario ObtenerPorUsername(String username) throws SQLException {
 
         // Prepare SQL statement to select user by username
-        PS = CON.prepareStatement("SELECT username, hashed_password, salt FROM usuarios WHERE username COLLATE utf8_bin = ?");
+        PS = CON.prepareStatement("SELECT username, hashed_password, salt FROM users WHERE username COLLATE utf8_bin = ?");
         PS.setString(1, username);
 
         // Execute the query

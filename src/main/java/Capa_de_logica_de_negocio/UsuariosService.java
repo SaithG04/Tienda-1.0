@@ -2,7 +2,7 @@ package Capa_de_logica_de_negocio;
 
 import Capa_de_acceso_a_datos.DAOImplements.UsuarioDAOImpl;
 import Capa_de_acceso_a_datos.Modelo_de_datos.Usuario;
-import Capa_de_presentacion.FrmUsuarios;
+import com.quiroga.tienda.presentation_layer.FrmUsuarios;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.SecureRandom;

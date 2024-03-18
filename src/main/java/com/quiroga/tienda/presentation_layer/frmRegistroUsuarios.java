@@ -1,4 +1,4 @@
-package Capa_de_presentacion;
+package com.quiroga.tienda.presentation_layer;
 
 import Capa_de_logica_de_negocio.CommonUtilities;
 import java.awt.*;

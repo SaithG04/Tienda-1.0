@@ -1,4 +1,4 @@
-package Capa_de_presentacion;
+package com.quiroga.tienda.presentation_layer;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -32,7 +32,6 @@ public class FrmUsuarios extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(850, 550));
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 204, 153));

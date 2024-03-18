@@ -11,8 +11,9 @@ import java.sql.*;
 public class Conexion {
 
     private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String HOST = "jdbc:mysql://localhost/";
-    private final String BD = "bd_algarrobo";
+    private final String HOST = "sql10.freesqldatabase.com";
+    private final String PORT = "3306";
+    private final String BD = "sql10692438";
     public Connection conex;
     protected final Alerts oA = new Alerts();
 
@@ -42,7 +43,14 @@ public class Conexion {
     public Connection Conectar() throws ClassNotFoundException, SQLException {
         // Connection used only for user lookup.
         Class.forName(DRIVER); // Load the database driver.
-        conex = DriverManager.getConnection(HOST + BD, "owner", ""); // Establish the connection.
+        conex = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + BD, "sql10692438", "rKmVRFuRS4"); // Establish the connection.
+        System.out.println(toString());
         return conex;
     }
+
+    @Override
+    public String toString() {
+        return "Conexion{" + "DRIVER=" + DRIVER + ", HOST=" + HOST + ", PORT=" + PORT + ", BD=" + BD + '}';
+    }
+    
 }

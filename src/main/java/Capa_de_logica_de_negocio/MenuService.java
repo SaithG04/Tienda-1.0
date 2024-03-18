@@ -1,6 +1,6 @@
 package Capa_de_logica_de_negocio;
 
-import Capa_de_presentacion.FrmMenuPrincipal;
+import com.quiroga.tienda.presentation_layer.FrmMenuPrincipal;
 import java.awt.event.*;
 import javax.swing.JButton;
 import javax.swing.JLabel;
