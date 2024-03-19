@@ -3,13 +3,14 @@ package com.tienda.data_access_layer.DAOimplements;
 import com.tienda.data_access_layer.*;
 import com.tienda.data_transfer_layer.UserDTO;
 import com.tienda.entity.User;
+import java.io.Serializable;
 
 import java.sql.*;
 
 /**
  * Implementación del DAO de usuario para acceder a la base de datos.
  */
-public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO {
+public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Serializable {
 
     private final UserDTO dto;
 

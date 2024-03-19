@@ -20,9 +20,8 @@ import javax.swing.JPasswordField;
 public class UserServiceImpl extends CommonUtilities implements ActionListener, UserService {
 
     private final UsersFrame usersFrame;
-    private int attempts = 0;
 
-    private final JButton btnRegistrar;
+    private final JButton btnRegistrar, btnRegresar;
     private final JTextField txtUsuario;
     private final JPasswordField txtPassword;
 
@@ -35,6 +34,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         btnRegistrar = usersFrame.getBtnRegistrar();
         txtPassword = usersFrame.getTxtPassword();
         txtUsuario = usersFrame.getTxtUser();
+        btnRegresar = usersFrame.getBtnRegresar();
     }
 
     /**
@@ -58,9 +58,8 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
             User newUser = new User(0, dto.getUser(), hashedPassword, salt);
             dao.saveUser(newUser);
 
-            // Mostrar un mensaje de éxito y cerrar la aplicación
+            // Mostrar un mensaje de éxito
             alerta.aviso("Registro exitoso.");
-            System.exit(0);
         } catch (ClassNotFoundException | SQLException e) {
             // Manejar errores de conexión a la base de datos
             alerta.manejarErrorConexion(UserServiceImpl.class, e);
@@ -74,6 +73,9 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
             RegistrarUsuario();
+        }else if(e.getSource() == btnRegresar){
+            usersFrame.dispose();
+            new MenuServiceImpl().loadFrame();
         }
     }
 
@@ -103,5 +105,6 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
      */
     public void ActionListeners() {
         btnRegistrar.addActionListener(this);
+        btnRegresar.addActionListener(this);
     }
 }

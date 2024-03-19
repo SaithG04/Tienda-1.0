@@ -41,6 +41,7 @@ public class UsersFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtbUsuarios = new javax.swing.JTable();
         txtPassword = new javax.swing.JPasswordField();
+        btnRegresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -53,7 +54,7 @@ public class UsersFrame extends javax.swing.JFrame {
 
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.setPreferredSize(new java.awt.Dimension(850, 550));
-        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 80, 220, 50));
+        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 40, 220, 50));
 
         jtbUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -70,6 +71,9 @@ public class UsersFrame extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 201, 800, 340));
         jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 120, 280, 60));
+
+        btnRegresar.setText("REGRESAR");
+        jPanel1.add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 120, 220, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -97,9 +101,14 @@ public class UsersFrame extends javax.swing.JFrame {
         return txtUser;
     }
 
+    public JButton getBtnRegresar() {
+        return btnRegresar;
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRegistrar;
+    private javax.swing.JButton btnRegresar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jtbUsuarios;

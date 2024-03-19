@@ -16,7 +16,6 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
     private final MenuPrincipalFrame mpFrame;
     private final JLabel lblTitle;
     private final JButton btnCerrarSesion, btnUsuarios;
-    boolean value = false;
 
     /**
      * Constructor para inicializar el servicio de menú.
@@ -38,10 +37,8 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
         mpFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
-                if (!value) {
-                    if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
-                        System.exit(0);
-                    }
+                if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
+                    System.exit(0);
                 }
             }
         });
@@ -55,11 +52,10 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
         btnCerrarSesion.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
+                System.out.println("caca");
                 if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
-                    value = true;
                     mpFrame.dispose();
                     new LoginServiceImpl().loadFrame();
-                    value = false;
                 }
             }
         });
