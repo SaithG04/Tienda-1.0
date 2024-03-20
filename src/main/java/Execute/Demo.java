@@ -6,7 +6,7 @@ import Capa_de_logica_de_negocio.LoginService;
 
 /**
  *
- * @author isai_
+ * @author isai_, Villa2908
  */
 public class Demo {
 
@@ -15,7 +15,6 @@ public class Demo {
      */
     public static void main(String[] args) {
         new LoginService().loadFrame();
-        //chau
     }
     
 }
