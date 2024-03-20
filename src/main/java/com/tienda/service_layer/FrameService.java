@@ -4,7 +4,7 @@ package com.tienda.service_layer;
  * La interfaz FrameService proporciona métodos para cerrar y cargar un marco
  * (frame).
  */
-public interface FrameService {
+public interface FrameService<T> {
 
     /**
      * Método para cerrar el marco.
@@ -14,5 +14,6 @@ public interface FrameService {
     /**
      * Método para cargar el marco.
      */
-    void loadFrame();
+
+    T reloadFrame();
 }

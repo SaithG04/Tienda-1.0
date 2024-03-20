@@ -18,6 +18,8 @@ import com.tienda.service_layer.LoginService;
  */
 public class LoginServiceImpl extends CommonUtilities implements ActionListener, LoginService {
 
+    private static volatile LoginServiceImpl instance;
+
     // Atributo estático para almacenar el usuario que ha iniciado sesión
     public static User userLogued;
 
@@ -36,7 +38,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
     /**
      * Constructor para inicializar el servicio de inicio de sesión.
      */
-    public LoginServiceImpl() {
+    private LoginServiceImpl() {
         // Crear una instancia del formulario de inicio de sesión (LoginFrame)
         loginFrame = LoginFrame.getInstance();
         container = loginFrame.getContainer();
@@ -44,6 +46,21 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
         btnSalir = loginFrame.getBtnSalir();
         txtPassword = loginFrame.getTxtContraseña();
         txtUsuario = loginFrame.getTxtUsuario();
+    }
+
+    public static LoginServiceImpl getInstance() {
+        if (instance == null) {
+            synchronized (LoginServiceImpl.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new LoginServiceImpl();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public LoginFrame getLoginFrame() {
+        return loginFrame;
     }
 
     /**
@@ -61,42 +78,40 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
                 txtUsuario.requestFocus();
                 txtPassword.setText(null);
                 alerta.faltanDatos();
-                return; // Salir del método si faltan datos
-            }
-
-            // Incrementar el contador de intentos de inicio de sesión
-            intentos++;
-
-            // Crear un DTO con los datos del usuario
-            UserDTO dto = new UserDTO(usuario, contraseña);
-
-            // Obtener el DAO de usuario e intentar buscar el usuario en la base de datos
-            UserDAO dao = new UserDAOImpl(dto);
-            User usuarioBd = dao.getUserByUsername();
-
-            // Validar si el usuario existe en la base de datos
-            if (usuarioBd == null) {
-                txtUsuario.requestFocus();
-                txtPassword.setText(null);
-                alerta.mostrarError(LoginServiceImpl.class, "El usuario no existe.", null);
-                return; // Salir del método si el usuario no existe
-            }
-
-            // Validar si la contraseña es correcta
-            byte[] inputHashedPassword = hashPassword(dto.getPassword(), usuarioBd.getSalt());
-            if (MessageDigest.isEqual(usuarioBd.getHashed_password(), inputHashedPassword)) {
-                // Cerrar la ventana de inicio de sesión y cargar el menú principal
-                txtUsuario.setText("");
-                txtPassword.setText("");
-                loginFrame.dispose();
-                intentos = 0;
-                userLogued = usuarioBd;
-                new MenuServiceImpl().loadFrame();
             } else {
-                // Mostrar un error si la contraseña es incorrecta
-                txtPassword.requestFocus();
-                txtPassword.setText(null);
-                alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
+                // Incrementar el contador de intentos de inicio de sesión
+                intentos++;
+
+                // Crear un DTO con los datos del usuario
+                UserDTO dto = new UserDTO(usuario, contraseña);
+
+                // Obtener el DAO de usuario e intentar buscar el usuario en la base de datos
+                UserDAO dao = new UserDAOImpl(dto);
+                User usuarioBd = dao.getUserByUsername();
+
+                // Validar si el usuario existe en la base de datos
+                if (usuarioBd == null) {
+                    txtUsuario.requestFocus();
+                    txtPassword.setText(null);
+                    alerta.mostrarError(LoginServiceImpl.class, "El usuario no existe.", null);
+                } else {
+                    // Validar si la contraseña es correcta
+                    byte[] inputHashedPassword = hashPassword(dto.getPassword(), usuarioBd.getSalt());
+                    if (MessageDigest.isEqual(usuarioBd.getHashed_password(), inputHashedPassword)) {
+                        // Cerrar la ventana de inicio de sesión y cargar el menú principal
+                        txtUsuario.setText("");
+                        txtPassword.setText("");                      
+                        intentos = 0;
+                        userLogued = usuarioBd;
+                        loginFrame.setVisible(false);
+                        MenuServiceImpl.getInstance().reloadFrame().setVisible(true);
+                    } else {
+                        // Mostrar un error si la contraseña es incorrecta
+                        txtPassword.requestFocus();
+                        txtPassword.setText(null);
+                        alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
+                    }
+                }
             }
 
             // Validar si se han superado los intentos máximos de inicio de sesión

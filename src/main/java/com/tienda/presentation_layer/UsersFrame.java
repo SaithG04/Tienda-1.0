@@ -10,7 +10,7 @@ import javax.swing.JTextField;
  */
 public class UsersFrame extends javax.swing.JFrame {
 
-    private static UsersFrame instance;
+    private static volatile UsersFrame instance;
 
     /**
      * Creates new form crearContra
@@ -21,7 +21,11 @@ public class UsersFrame extends javax.swing.JFrame {
 
     public static UsersFrame getInstance() {
         if (instance == null) {
-            instance = new UsersFrame();
+            synchronized (UsersFrame.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new UsersFrame();
+                }
+            }
         }
         return instance;
     }

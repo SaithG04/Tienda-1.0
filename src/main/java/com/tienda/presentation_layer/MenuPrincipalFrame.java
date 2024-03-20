@@ -10,7 +10,7 @@ import javax.swing.*;
  */
 public class MenuPrincipalFrame extends javax.swing.JFrame {
 
-    private static MenuPrincipalFrame instance;
+    private static volatile MenuPrincipalFrame instance;
 
     private MenuPrincipalFrame() {
         initComponents();
@@ -18,7 +18,11 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
 
     public static MenuPrincipalFrame getInstance() {
         if (instance == null) {
-            instance = new MenuPrincipalFrame();
+            synchronized (MenuPrincipalFrame.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new MenuPrincipalFrame();
+                }
+            }
         }
         return instance;
     }
@@ -43,7 +47,6 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(" Administrador");
         setIconImage(getIconImage());
-        setUndecorated(true);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 

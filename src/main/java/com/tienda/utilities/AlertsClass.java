@@ -14,7 +14,7 @@ public class AlertsClass {
     // Botones comunes para los diálogos
     private final String botones[] = {"Aceptar"};
     private final String botones2[] = {"Aceptar", "Cancelar"};
-    private static AlertsClass alert;
+    private static AlertsClass instance;
 
     // Constructor privado para el patrón Singleton
     private AlertsClass() {
@@ -26,10 +26,14 @@ public class AlertsClass {
      * @return Instancia única de AlertsClass.
      */
     public static AlertsClass getAlert() {
-        if (alert == null) {
-            alert = new AlertsClass();
+        if (instance == null) {
+            synchronized (AlertsClass.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new AlertsClass();
+                }
+            }
         }
-        return alert;
+        return instance;
     }
 
     /**
@@ -98,6 +102,7 @@ public class AlertsClass {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, "Complete todos los campos.", "Advertencia", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
+//        System.out.println("");
     }
 
     /**
@@ -108,9 +113,12 @@ public class AlertsClass {
      * JOptionPane.CANCEL_OPTION).
      */
     public int confirmacion(String txt) {
+
         Toolkit.getDefaultToolkit().beep();
-        return JOptionPane.showOptionDialog(null, txt, "Confirmar", JOptionPane.DEFAULT_OPTION,
+        int value = JOptionPane.showOptionDialog(null, txt, "Confirmar", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/question.png", 30, 30), botones2, botones2[1]);
+
+        return value;
     }
 
     /**

@@ -13,6 +13,8 @@ import javax.swing.JLabel;
  */
 public class MenuServiceImpl extends CommonUtilities implements MenuService {
 
+    private static volatile MenuServiceImpl instance;
+
     private final MenuPrincipalFrame mpFrame;
     private final JLabel lblTitle;
     private final JButton btnCerrarSesion, btnUsuarios;
@@ -20,12 +22,33 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
     /**
      * Constructor para inicializar el servicio de menú.
      */
-    public MenuServiceImpl() {
+    private MenuServiceImpl() {
         // Crear una instancia del formulario de menú principal (MenuPrincipalFrame)
         mpFrame = MenuPrincipalFrame.getInstance();
         lblTitle = mpFrame.getLblTitle();
         btnCerrarSesion = mpFrame.getBtnCerrarSesion();
         btnUsuarios = mpFrame.getBtnUsuarios();
+        loadFrame();
+    }
+
+    public static MenuServiceImpl getInstance() {
+        if (instance == null) {
+            synchronized (MenuServiceImpl.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new MenuServiceImpl();
+                }
+            }
+        }
+        return instance;
+    }
+
+    @Override
+    public MenuPrincipalFrame reloadFrame() {
+        mpFrame.setLocationRelativeTo(null);
+        MouseListeners(); // Agregar MouseListeners a los botones
+        close(); // Cerrar la aplicación si se intenta cerrar el formulario
+        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUsername().toUpperCase()); // Mostrar el nombre de usuario en el título del formulario
+        return mpFrame;
     }
 
     /**
@@ -37,6 +60,7 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
         mpFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
+
                 if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
                     System.exit(0);
                 }
@@ -52,10 +76,11 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
         btnCerrarSesion.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
-                System.out.println("caca");
+
                 if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
-                    mpFrame.dispose();
-                    new LoginServiceImpl().loadFrame();
+                    mpFrame.setVisible(false);
+                    LoginServiceImpl.getInstance().getLoginFrame().setVisible(true);
+                    LoginServiceImpl.getInstance().getLoginFrame().requestFocus();
                 }
             }
         });
@@ -64,22 +89,10 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService {
         btnUsuarios.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
-                mpFrame.dispose();
-                new UserServiceImpl().loadFrame();
+                mpFrame.setVisible(false);
+                UserServiceImpl.getInstance().getUsersFrame().setVisible(true);
             }
         });
     }
 
-    /**
-     * Cargar el formulario del menú principal.
-     */
-    @Override
-    public void loadFrame() {
-        // Configurar la ubicación y visibilidad del formulario de menú principal
-        mpFrame.setVisible(true);
-        mpFrame.setLocationRelativeTo(null);
-        MouseListeners(); // Agregar MouseListeners a los botones
-        close(); // Cerrar la aplicación si se intenta cerrar el formulario
-        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUsername().toUpperCase()); // Mostrar el nombre de usuario en el título del formulario
-    }
 }

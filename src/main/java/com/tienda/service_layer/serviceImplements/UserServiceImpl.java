@@ -3,10 +3,8 @@ package com.tienda.service_layer.serviceImplements;
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
 import com.tienda.utilities.CommonUtilities;
 import com.tienda.presentation_layer.UsersFrame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JTextField;
+import java.awt.event.*;
+import javax.swing.*;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.data_transfer_layer.UserDTO;
 import com.tienda.entity.User;
@@ -19,8 +17,9 @@ import javax.swing.JPasswordField;
  */
 public class UserServiceImpl extends CommonUtilities implements ActionListener, UserService {
 
-    private final UsersFrame usersFrame;
+    private static volatile UserServiceImpl instance;
 
+    private final UsersFrame usersFrame;
     private final JButton btnRegistrar, btnRegresar;
     private final JTextField txtUsuario;
     private final JPasswordField txtPassword;
@@ -28,13 +27,29 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     /**
      * Constructor para inicializar el servicio de usuario.
      */
-    public UserServiceImpl() {
+    private UserServiceImpl() {
         // Crear una instancia del formulario de usuario (UsersFrame)
         usersFrame = UsersFrame.getInstance();
         btnRegistrar = usersFrame.getBtnRegistrar();
         txtPassword = usersFrame.getTxtPassword();
         txtUsuario = usersFrame.getTxtUser();
         btnRegresar = usersFrame.getBtnRegresar();
+        loadFrame();
+    }
+
+    public static UserServiceImpl getInstance() {
+        if (instance == null) {
+            synchronized (UserServiceImpl.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new UserServiceImpl();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public UsersFrame getUsersFrame() {
+        return usersFrame;
     }
 
     /**
@@ -73,9 +88,9 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
             RegistrarUsuario();
-        }else if(e.getSource() == btnRegresar){
+        } else if (e.getSource() == btnRegresar) {
             usersFrame.dispose();
-            new MenuServiceImpl().loadFrame();
+            MenuServiceImpl.getInstance().reloadFrame().setVisible(true);
         }
     }
 
@@ -94,7 +109,6 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public void loadFrame() {
         // Configurar la ubicación y visibilidad del formulario de usuario
         usersFrame.setLocationRelativeTo(null);
-        usersFrame.setVisible(true);
         txtUsuario.requestFocus();
         ActionListeners();
         close();

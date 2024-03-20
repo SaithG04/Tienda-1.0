@@ -12,7 +12,7 @@ import javax.swing.*;
  */
 public class LoginFrame extends javax.swing.JFrame {
 
-    public static LoginFrame instance;
+    public static volatile LoginFrame instance;
 
     /**
      * Constructor privado para evitar la instanciación directa de la clase.
@@ -29,7 +29,11 @@ public class LoginFrame extends javax.swing.JFrame {
      */
     public static LoginFrame getInstance() {
         if (instance == null) {
-            instance = new LoginFrame();
+            synchronized (LoginFrame.class) { // Sincronización para hilos
+                if (instance == null) {
+                    instance = new LoginFrame();
+                }
+            }
         }
         return instance;
     }

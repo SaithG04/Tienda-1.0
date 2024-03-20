@@ -15,7 +15,7 @@ public class Main {
      */
     public static void main(String[] args) {
         // Crear una instancia de LoginServiceImpl y cargar el formulario de inicio de sesión
-        new LoginServiceImpl().loadFrame();
+        LoginServiceImpl.getInstance().loadFrame();
     }
 
 }
