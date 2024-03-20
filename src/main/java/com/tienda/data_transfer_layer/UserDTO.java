@@ -8,6 +8,7 @@ public class UserDTO {
 
     private String user; // Nombre de usuario
     private String password; // Contraseña del usuario
+    private String nombreCompleto;
 
     /**
      * Constructor para inicializar un objeto UserDTO con el nombre de usuario y
@@ -20,6 +21,13 @@ public class UserDTO {
         this.user = user;
         this.password = password;
     }
+
+    public UserDTO(String user, String password, String nombreCompleto) {
+        this.user = user;
+        this.password = password;
+        this.nombreCompleto = nombreCompleto;
+    }
+
 
     public UserDTO() {
     }
@@ -59,4 +67,13 @@ public class UserDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
+    }
+
 }

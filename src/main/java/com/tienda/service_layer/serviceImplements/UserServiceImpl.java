@@ -24,7 +24,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
 
     private final UsersFrame instanceOfUsersFrame;
     private final JButton btnRegistrar, btnRegresar;
-    private final JTextField txtUsuario;
+    private final JTextField txtUsuario, txtNombreCompleto;
     private final JPasswordField txtPassword;
     private final JTable jtbUsuarios;
 
@@ -34,6 +34,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         btnRegistrar = instanceOfUsersFrame.getBtnRegistrar();
         txtPassword = instanceOfUsersFrame.getTxtPassword();
         txtUsuario = instanceOfUsersFrame.getTxtUser();
+        txtNombreCompleto = instanceOfUsersFrame.getTxtNombreCompleto();
         btnRegresar = instanceOfUsersFrame.getBtnRegresar();
         jtbUsuarios = instanceOfUsersFrame.getJtbUsuarios();
     }
@@ -68,23 +69,25 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
      */
     @Override
     public void RegistrarUsuario() {
+        String nombreCompleto = txtNombreCompleto.getText();
         String user = txtUsuario.getText().trim();
         String password = String.valueOf(txtPassword.getPassword()).trim();
 
-        if (user.isEmpty() || password.isEmpty()) {
+        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
             alerta.advertencia("Por favor, complete todos los campos.");
             return;
         }
 
         try {
 
-            UserDTO dto = new UserDTO(user, password);
+            UserDTO dto = new UserDTO(user, password, nombreCompleto);
 
             byte[] salt = generateSalt();
             byte[] hashedPassword = hashPassword(password, salt);
             UserDAO dao = new UserDAOImpl(dto);
 
-            dao.saveUser(new User(0, dto.getUser(), hashedPassword, salt));
+            dao.saveUser(new User(0, dto.getNombreCompleto(), dto.getUser(), hashedPassword, salt));
+            txtNombreCompleto.setText("");
             txtUsuario.setText("");
             txtPassword.setText("");
             jtbUsuarios.setModel(CargarUsuarios());
@@ -98,16 +101,15 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public DefaultTableModel CargarUsuarios() {
         DefaultTableModel model = null;
         try {
-            String[] titulos = {"id", "Usuario", "Password", "Salt"};
+            String[] titulos = {"Id", "Nombre Completo", "Usuario"};
             model = new DefaultTableModel(titulos, 0);
             UserDAO dao = new UserDAOImpl(new UserDTO());
             List<User> lista = dao.listarUsuarios();
-            Object[] row = new Object[4];
+            Object[] row = new Object[3];
             for (User usuario : lista) {
                 row[0] = usuario.getId();
-                row[1] = usuario.getUsername();
-                row[2] = usuario.getHashed_password();
-                row[3] = usuario.getSalt();
+                row[1] = usuario.getNombreCompleto();
+                row[2] = usuario.getUsername();
                 model.addRow(row);
             }
         } catch (ClassNotFoundException | SQLException e) {

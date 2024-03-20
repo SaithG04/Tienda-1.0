@@ -46,7 +46,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
                     // Si se encuentra un usuario, obtener los datos de la base de datos
                     byte[] dbHashedPassword = resultSet.getBytes("hashed_password");
                     byte[] dbSalt = resultSet.getBytes("salt");
-                    return new User(0, dto.getUser(), dbHashedPassword, dbSalt);
+                    return new User(0, dto.getNombreCompleto(),dto.getUser(), dbHashedPassword, dbSalt);
                 }
             }
         } finally {
@@ -72,12 +72,13 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
         // Obtener una conexión a la base de datos
         objConnection = connectionFactory.getConnection();
         // Consulta SQL para insertar un nuevo usuario en la base de datos
-        String query = "INSERT INTO users (username, hashed_password, salt) VALUES (?, ?, ?)";
+        String query = "INSERT INTO users (nombre_completo, username, hashed_password, salt) VALUES (?,?, ?, ?)";
         try (PreparedStatement statement = objConnection.prepareStatement(query)) {
             // Establecer los parámetros en la consulta preparada
-            statement.setString(1, user.getUsername());
-            statement.setBytes(2, user.getHashed_password());
-            statement.setBytes(3, user.getSalt());
+            statement.setString(1, user.getNombreCompleto());
+            statement.setString(2, user.getUsername());
+            statement.setBytes(3, user.getHashed_password());
+            statement.setBytes(4, user.getSalt());
             // Ejecutar la consulta de inserción
             statement.executeUpdate();
         } finally {
@@ -92,7 +93,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
         String query = "SELECT * FROM users";
         MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
         objConnection = connectionFactory.getConnection();
-        Object[] fila = new Object[4];
+        Object[] fila = new Object[5];
 
         PreparedStatement statement = objConnection.prepareStatement(query);
 
@@ -101,9 +102,10 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
         while (result.next()) {
             fila[0] = result.getInt(1);
             fila[1] = result.getString(2);
-            fila[2] = result.getBytes(3);
-            fila[3] = result.getBytes(4);
-            User usuario = new User((int) fila[0], fila[1].toString(), (byte[]) fila[2], (byte[]) fila[3]);
+            fila[2] = result.getString(3);
+            fila[3] = result.getBytes(3);
+            fila[4] = result.getBytes(3);
+            User usuario = new User((int) fila[0], fila[1].toString(), fila[2].toString(), (byte[]) fila[3], (byte[]) fila[4]);
             listaUser.add(usuario);
         }
         return listaUser;

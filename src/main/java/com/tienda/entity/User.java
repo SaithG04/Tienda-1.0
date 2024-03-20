@@ -6,6 +6,7 @@ package com.tienda.entity;
 public class User {
 
     private int id; // Identificador único del usuario
+    private String nombreCompleto;
     private String username; // Nombre de usuario
     private byte[] hashed_password; // Contraseña del usuario en formato hash
     private byte[] salt; // Valor de sal utilizado en la encriptación de la contraseña
@@ -15,12 +16,14 @@ public class User {
      * contraseña hasheada y sal.
      *
      * @param id Identificador único del usuario.
-     * @param username Nombre de usuario.
+     * @param nombreCompleto Nombre completo del usuario.
+     * @param username Username del usuario.
      * @param hashed_password Contraseña del usuario en formato hash.
-     * @param salt Valor de sal utilizado en la encriptación de la contraseña.
+     * @param salt Valor de salt utilizado en la encriptación de la contraseña.
      */
-    public User(int id, String username, byte[] hashed_password, byte[] salt) {
+    public User(int id, String nombreCompleto, String username, byte[] hashed_password, byte[] salt) {
         this.id = id;
+        this.nombreCompleto = nombreCompleto;
         this.username = username;
         this.hashed_password = hashed_password;
         this.salt = salt;
@@ -42,6 +45,14 @@ public class User {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
     /**
