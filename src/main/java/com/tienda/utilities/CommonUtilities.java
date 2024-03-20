@@ -3,6 +3,9 @@ package com.tienda.utilities;
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.security.*;
 import javax.swing.*;
 
@@ -25,7 +28,7 @@ public class CommonUtilities extends MySqlConnectionFactory {
     }
 
     // Objeto para mostrar alertas
-    public final AlertsClass alerta = AlertsClass.getAlert();
+    public static final AlertsClass alerta = AlertsClass.getAlert();
 
     /**
      * Método para obtener un icono de un archivo de imagen.
@@ -166,6 +169,25 @@ public class CommonUtilities extends MySqlConnectionFactory {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         return salt;
+    }
+
+    public void Close(JFrame t) {
+
+        // Eliminar cualquier WindowListener existente
+        for (WindowListener wl : t.getWindowListeners()) {
+            t.removeWindowListener(wl);
+        }
+
+        // Agregar un nuevo WindowListener para confirmar la salida de la aplicación
+        t.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
+                    System.exit(0);
+                }
+            }
+        });
+
     }
 
 }

@@ -21,6 +21,9 @@ public class UserDTO {
         this.password = password;
     }
 
+    public UserDTO() {
+    }
+
     /**
      * Obtiene el nombre de usuario.
      *

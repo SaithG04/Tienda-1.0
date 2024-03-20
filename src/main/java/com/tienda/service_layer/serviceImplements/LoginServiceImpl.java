@@ -14,60 +14,88 @@ import com.tienda.entity.User;
 import com.tienda.service_layer.LoginService;
 
 /**
- * Clase para manejar el inicio de sesión de usuario.
+ * La clase LoginServiceImpl implementa la interfaz LoginService y maneja el
+ * inicio de sesión de usuario.
  */
 public class LoginServiceImpl extends CommonUtilities implements ActionListener, LoginService {
 
-    private static volatile LoginServiceImpl instance;
+    // Declaración de variables de instancia
+    /**
+     * Instancia única de la clase LoginServiceImpl
+     */
+    private static volatile LoginServiceImpl instanceOfLoginServiceImpl;
 
-    // Atributo estático para almacenar el usuario que ha iniciado sesión
+    /**
+     * Usuario que ha iniciado sesión
+     */
     public static User userLogued;
 
-    // Instancia del formulario de inicio de sesión
-    private final LoginFrame loginFrame;
+    /**
+     * Instancia del formulario de inicio de sesión
+     */
+    private final LoginFrame instanceOfLoginFrame;
 
-    // Contador de intentos de inicio de sesión
-    private int intentos = 0;
-
-    // Componentes de la interfaz de usuario
+    /**
+     * Componentes del formulario de inicio de sesión
+     */
     private final JButton btnAceptar, btnSalir;
     private final JPasswordField txtPassword;
     private final JTextField txtUsuario;
-    private final JPanel container;
 
     /**
-     * Constructor para inicializar el servicio de inicio de sesión.
+     * Contador de intentos de inicio de sesión
+     */
+    private int intentos = 0;
+
+    /**
+     * Constructor privado para garantizar la implementación del patrón
+     * Singleton.
      */
     private LoginServiceImpl() {
-        // Crear una instancia del formulario de inicio de sesión (LoginFrame)
-        loginFrame = LoginFrame.getInstance();
-        container = loginFrame.getContainer();
-        btnAceptar = loginFrame.getBtnAceptar();
-        btnSalir = loginFrame.getBtnSalir();
-        txtPassword = loginFrame.getTxtContraseña();
-        txtUsuario = loginFrame.getTxtUsuario();
+        // Obtención de la instancia del formulario de inicio de sesión (LoginFrame)
+        instanceOfLoginFrame = LoginFrame.getInstance();
+        // Obtención de los componentes del formulario
+        btnAceptar = instanceOfLoginFrame.getBtnAceptar();
+        btnSalir = instanceOfLoginFrame.getBtnSalir();
+        txtPassword = instanceOfLoginFrame.getTxtContraseña();
+        txtUsuario = instanceOfLoginFrame.getTxtUsuario();
     }
 
+    /**
+     * Método estático para obtener la instancia única de LoginServiceImpl.
+     *
+     * @return Instancia única de LoginServiceImpl.
+     */
     public static LoginServiceImpl getInstance() {
-        if (instance == null) {
+        if (instanceOfLoginServiceImpl == null) {
             synchronized (LoginServiceImpl.class) { // Sincronización para hilos
-                if (instance == null) {
-                    instance = new LoginServiceImpl();
+                if (instanceOfLoginServiceImpl == null) {
+                    instanceOfLoginServiceImpl = new LoginServiceImpl();
                 }
             }
         }
-        return instance;
+        return instanceOfLoginServiceImpl;
     }
 
-    public LoginFrame getLoginFrame() {
-        return loginFrame;
+    /**
+     * Método para obtener la instancia del formulario de inicio de sesión.
+     *
+     * @return Instancia del formulario de inicio de sesión.
+     */
+    @Override
+    public LoginFrame GetInstanceOfFrame() {
+        instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
+        txtUsuario.requestFocus(); // Foco en el campo de usuario
+        CargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
+        CargarActionListeners(); // Cargar los ActionListeners para los botones
+        return instanceOfLoginFrame;
     }
 
     /**
      * Método para iniciar sesión.
      */
     @Override
-    public void iniciarSesion() {
+    public void IniciarSesion() {
         try {
             // Obtener el usuario y la contraseña ingresados
             String usuario = txtUsuario.getText();
@@ -100,11 +128,11 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
                     if (MessageDigest.isEqual(usuarioBd.getHashed_password(), inputHashedPassword)) {
                         // Cerrar la ventana de inicio de sesión y cargar el menú principal
                         txtUsuario.setText("");
-                        txtPassword.setText("");                      
+                        txtPassword.setText("");
                         intentos = 0;
                         userLogued = usuarioBd;
-                        loginFrame.setVisible(false);
-                        MenuServiceImpl.getInstance().reloadFrame().setVisible(true);
+                        instanceOfLoginFrame.dispose();
+                        MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
                     } else {
                         // Mostrar un error si la contraseña es incorrecta
                         txtPassword.requestFocus();
@@ -129,63 +157,92 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
     }
 
     /**
-     * Método para cerrar la ventana de inicio de sesión.
-     *
+     * Método para cargar los ActionListeners de los botones.
      */
     @Override
-    public final void close() {
-        // Cerrar la aplicación
-        System.exit(0);
+    public void CargarActionListeners() {
+        QuitActionListeners(); // Eliminar los ActionListeners anteriores
+        btnAceptar.addActionListener(this); // Agregar ActionListener para el botón de aceptar
+        btnSalir.addActionListener(this); // Agregar ActionListener para el botón de salir
     }
 
     /**
-     * Cargar el formulario de inicio de sesión.
+     * Método para cargar los KeyListeners de los campos de texto.
      */
     @Override
-    public void loadFrame() {
-        // Configurar la ubicación y visibilidad del formulario de inicio de sesión
-        loginFrame.setLocationRelativeTo(null);
-        loginFrame.setLayout(new BorderLayout());
-        loginFrame.add(container);
-        loginFrame.setVisible(true);
-        txtUsuario.requestFocus();
-        KeyListeners();
-        ActionListeners();
-//        close();
-    }
-
-    /**
-     * Manejar eventos de los botones.
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnAceptar) {
-            iniciarSesion();
-        } else if (e.getSource() == btnSalir) {
-            close();
-        }
-    }
-
-    /**
-     * Agregar un KeyListener al campo de contraseña para detectar la tecla
-     * "Enter" presionada.
-     */
-    private void KeyListeners() {
+    public void CargarKeyListeners() {
+        QuitKeyListener(txtPassword); // Eliminar los KeyListeners anteriores del campo de contraseña
+        QuitKeyListener(txtUsuario); // Eliminar los KeyListeners anteriores del campo de usuario
+        // Agregar KeyListeners para los campos de texto
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    iniciarSesion();
+                    IniciarSesion(); // Iniciar sesión al presionar la tecla Enter en el campo de contraseña
+                }
+            }
+        });
+        txtUsuario.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    IniciarSesion(); // Iniciar sesión al presionar la tecla Enter en el campo de usuario
                 }
             }
         });
     }
 
     /**
-     * Agregar ActionListeners a los botones.
+     * Método para cargar los MouseListeners.
      */
-    private void ActionListeners() {
-        btnAceptar.addActionListener(this);
-        btnSalir.addActionListener(this);
+    @Override
+    public void CargarMouseListeners() {
+        // No tiene MouseListeners
+    }
+
+    /**
+     * Método para eliminar los ActionListeners de los botones.
+     */
+    @Override
+    public void QuitActionListeners() {
+        btnAceptar.removeActionListener(this); // Eliminar ActionListener del botón de aceptar
+        btnSalir.removeActionListener(this); // Eliminar ActionListener del botón de salir
+    }
+
+    /**
+     * Método para eliminar los KeyListeners de un componente.
+     *
+     * @param componente El componente del cual se eliminarán los KeyListeners.
+     */
+    @Override
+    public void QuitKeyListener(Component componente) {
+        for (KeyListener ml : componente.getKeyListeners()) {
+            componente.removeKeyListener(ml); // Eliminar los MouseListeners del componente
+        }
+    }
+
+    /**
+     * Método para eliminar los MouseListeners de un componente.
+     *
+     * @param componente El componente del cual se eliminarán los
+     * MouseListeners.
+     */
+    @Override
+    public void QuitMouseListener(Component componente) {
+        // No tiene MouseListeners
+    }
+
+    /**
+     * Método para manejar los eventos de los botones.
+     *
+     * @param evt El evento que ha ocurrido.
+     */
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        if (evt.getSource() == btnAceptar) {
+            IniciarSesion(); // Iniciar sesión si se presiona el botón de aceptar
+        } else if (evt.getSource() == btnSalir) {
+            System.exit(0);
+        }
     }
 }

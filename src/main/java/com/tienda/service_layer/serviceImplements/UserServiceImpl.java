@@ -9,116 +9,163 @@ import com.tienda.data_access_layer.UserDAO;
 import com.tienda.data_transfer_layer.UserDTO;
 import com.tienda.entity.User;
 import com.tienda.service_layer.UserService;
+import java.awt.Component;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.JPasswordField;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * La clase UserServiceImpl se encarga de gestionar la creación de usuarios.
  */
 public class UserServiceImpl extends CommonUtilities implements ActionListener, UserService {
 
-    private static volatile UserServiceImpl instance;
+    private static volatile UserServiceImpl instanceOfUserServiceImpl;
 
-    private final UsersFrame usersFrame;
+    private final UsersFrame instanceOfUsersFrame;
     private final JButton btnRegistrar, btnRegresar;
     private final JTextField txtUsuario;
     private final JPasswordField txtPassword;
+    private final JTable jtbUsuarios;
 
-    /**
-     * Constructor para inicializar el servicio de usuario.
-     */
     private UserServiceImpl() {
         // Crear una instancia del formulario de usuario (UsersFrame)
-        usersFrame = UsersFrame.getInstance();
-        btnRegistrar = usersFrame.getBtnRegistrar();
-        txtPassword = usersFrame.getTxtPassword();
-        txtUsuario = usersFrame.getTxtUser();
-        btnRegresar = usersFrame.getBtnRegresar();
-        loadFrame();
+        instanceOfUsersFrame = UsersFrame.getInstance();
+        btnRegistrar = instanceOfUsersFrame.getBtnRegistrar();
+        txtPassword = instanceOfUsersFrame.getTxtPassword();
+        txtUsuario = instanceOfUsersFrame.getTxtUser();
+        btnRegresar = instanceOfUsersFrame.getBtnRegresar();
+        jtbUsuarios = instanceOfUsersFrame.getJtbUsuarios();
     }
 
     public static UserServiceImpl getInstance() {
-        if (instance == null) {
+        if (instanceOfUserServiceImpl == null) {
             synchronized (UserServiceImpl.class) { // Sincronización para hilos
-                if (instance == null) {
-                    instance = new UserServiceImpl();
+                if (instanceOfUserServiceImpl == null) {
+                    instanceOfUserServiceImpl = new UserServiceImpl();
                 }
             }
         }
-        return instance;
+        return instanceOfUserServiceImpl;
     }
 
-    public UsersFrame getUsersFrame() {
-        return usersFrame;
+    @Override
+    public UsersFrame GetInstanceOfFrame() {
+        instanceOfUsersFrame.setLocationRelativeTo(null);
+        Close(instanceOfUsersFrame);
+        txtUsuario.requestFocus();
+        CargarActionListeners();
+        // Cargar los usuarios en un hilo separado
+        new Thread(() -> {
+            DefaultTableModel model = CargarUsuarios();
+            jtbUsuarios.setModel(model);
+        }).start();
+        return instanceOfUsersFrame;
     }
 
     /**
      * Método para registrar un nuevo usuario.
      */
-    private void RegistrarUsuario() {
-        try {
-            // Obtener el nombre de usuario y contraseña ingresados
-            String user = txtUsuario.getText();
-            String password = String.valueOf(txtPassword.getPassword());
+    @Override
+    public void RegistrarUsuario() {
+        String user = txtUsuario.getText().trim();
+        String password = String.valueOf(txtPassword.getPassword()).trim();
 
-            // Crear un DTO con los datos del usuario
+        if (user.isEmpty() || password.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return;
+        }
+
+        try {
+
             UserDTO dto = new UserDTO(user, password);
 
-            // Generar una sal y una contraseña hash
             byte[] salt = generateSalt();
-            byte[] hashedPassword = hashPassword(dto.getPassword(), salt);
-
-            // Guardar el usuario en la base de datos
+            byte[] hashedPassword = hashPassword(password, salt);
             UserDAO dao = new UserDAOImpl(dto);
-            User newUser = new User(0, dto.getUser(), hashedPassword, salt);
-            dao.saveUser(newUser);
 
-            // Mostrar un mensaje de éxito
+            dao.saveUser(new User(0, dto.getUser(), hashedPassword, salt));
+            txtUsuario.setText("");
+            txtPassword.setText("");
+            jtbUsuarios.setModel(CargarUsuarios());
             alerta.aviso("Registro exitoso.");
-        } catch (ClassNotFoundException | SQLException e) {
-            // Manejar errores de conexión a la base de datos
+        } catch (SQLException | ClassNotFoundException e) {
             alerta.manejarErrorConexion(UserServiceImpl.class, e);
         }
     }
 
+    @Override
+    public DefaultTableModel CargarUsuarios() {
+        DefaultTableModel model = null;
+        try {
+            String[] titulos = {"id", "Usuario", "Password", "Salt"};
+            model = new DefaultTableModel(titulos, 0);
+            UserDAO dao = new UserDAOImpl(new UserDTO());
+            List<User> lista = dao.listarUsuarios();
+            Object[] row = new Object[4];
+            for (User usuario : lista) {
+                row[0] = usuario.getId();
+                row[1] = usuario.getUsername();
+                row[2] = usuario.getHashed_password();
+                row[3] = usuario.getSalt();
+                model.addRow(row);
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            alerta.manejarErrorConexion(UserServiceImpl.class, e);
+        }
+        return model;
+    }
+
     /**
-     * Manejar eventos de los botones.
+     * Agregar AddActionListeners a los botones.
      */
+    @Override
+    public void CargarActionListeners() {
+        QuitActionListeners();
+        btnRegistrar.addActionListener(this);
+        btnRegresar.addActionListener(this);
+    }
+
+    @Override
+    public void CargarKeyListeners() {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+
+    }
+
+    @Override
+    public void CargarMouseListeners() {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+
+    }
+
+    @Override
+    public void QuitActionListeners() {
+        btnRegistrar.removeActionListener(this);
+        btnRegresar.removeActionListener(this);
+    }
+
+    @Override
+    public void QuitKeyListener(Component componente) {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+
+    }
+
+    @Override
+    public void QuitMouseListener(Component componente) {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnRegistrar) {
             RegistrarUsuario();
         } else if (e.getSource() == btnRegresar) {
-            usersFrame.dispose();
-            MenuServiceImpl.getInstance().reloadFrame().setVisible(true);
+            txtUsuario.setText("");
+            txtPassword.setText("");
+            instanceOfUsersFrame.dispose();
+            MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
         }
     }
 
-    /**
-     * Cerrar la ventana de usuario.
-     */
-    @Override
-    public final void close() {
-        // Método no implementado ya que no se requiere cerrar la ventana en este contexto
-    }
-
-    /**
-     * Cargar el formulario de usuario.
-     */
-    @Override
-    public void loadFrame() {
-        // Configurar la ubicación y visibilidad del formulario de usuario
-        usersFrame.setLocationRelativeTo(null);
-        txtUsuario.requestFocus();
-        ActionListeners();
-        close();
-    }
-
-    /**
-     * Agregar ActionListeners a los botones.
-     */
-    public void ActionListeners() {
-        btnRegistrar.addActionListener(this);
-        btnRegresar.addActionListener(this);
-    }
 }

@@ -2,6 +2,7 @@ package com.tienda.data_access_layer;
 
 import com.tienda.entity.User;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * La interfaz UserDAO proporciona métodos para acceder y manipular datos de
@@ -29,4 +30,5 @@ public interface UserDAO {
      */
     void saveUser(User user) throws SQLException, ClassNotFoundException;
 
+    List<User> listarUsuarios() throws ClassNotFoundException, SQLException;
 }

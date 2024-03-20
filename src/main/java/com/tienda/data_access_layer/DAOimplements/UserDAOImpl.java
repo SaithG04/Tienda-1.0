@@ -6,6 +6,8 @@ import com.tienda.entity.User;
 import java.io.Serializable;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementación del DAO de usuario para acceder a la base de datos.
@@ -82,5 +84,28 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
             // Cerrar la conexión después de utilizarla
             connectionFactory.closeConnection();
         }
+    }
+    
+    @Override
+    public List<User> listarUsuarios() throws ClassNotFoundException, SQLException {
+        List<User> listaUser = new ArrayList<>();
+        String query = "SELECT * FROM users";
+        MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
+        objConnection = connectionFactory.getConnection();
+        Object[] fila = new Object[4];
+
+        PreparedStatement statement = objConnection.prepareStatement(query);
+
+        ResultSet result = statement.executeQuery(query);
+
+        while (result.next()) {
+            fila[0] = result.getInt(1);
+            fila[1] = result.getString(2);
+            fila[2] = result.getBytes(3);
+            fila[3] = result.getBytes(4);
+            User usuario = new User((int) fila[0], fila[1].toString(), (byte[]) fila[2], (byte[]) fila[3]);
+            listaUser.add(usuario);
+        }
+        return listaUser;
     }
 }

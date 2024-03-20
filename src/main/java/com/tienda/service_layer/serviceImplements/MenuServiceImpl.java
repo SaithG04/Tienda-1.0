@@ -3,96 +3,163 @@ package com.tienda.service_layer.serviceImplements;
 import com.tienda.utilities.CommonUtilities;
 import com.tienda.presentation_layer.MenuPrincipalFrame;
 import com.tienda.service_layer.MenuService;
+import java.awt.Component;
 import java.awt.event.*;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
 /**
- * La clase MenuServiceImpl se encarga de gestionar el menú principal de la
- * aplicación.
+ * La clase MenuServiceImpl implementa la interfaz MenuService y gestiona las
+ * operaciones del menú principal.
  */
-public class MenuServiceImpl extends CommonUtilities implements MenuService {
+public class MenuServiceImpl extends CommonUtilities implements MenuService, ActionListener {
 
-    private static volatile MenuServiceImpl instance;
+    private static volatile MenuServiceImpl instanceOfMenuServiceImpl;
 
-    private final MenuPrincipalFrame mpFrame;
+    // Instancia del formulario del menú principal
+    private final MenuPrincipalFrame instanceOfMenuPrincipalFrame;
+
+    // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
     private final JButton btnCerrarSesion, btnUsuarios;
 
     /**
-     * Constructor para inicializar el servicio de menú.
+     * Constructor privado para el patrón Singleton.
      */
     private MenuServiceImpl() {
-        // Crear una instancia del formulario de menú principal (MenuPrincipalFrame)
-        mpFrame = MenuPrincipalFrame.getInstance();
-        lblTitle = mpFrame.getLblTitle();
-        btnCerrarSesion = mpFrame.getBtnCerrarSesion();
-        btnUsuarios = mpFrame.getBtnUsuarios();
-        loadFrame();
+        // Obtener la instancia del formulario del menú principal
+        instanceOfMenuPrincipalFrame = MenuPrincipalFrame.getInstance();
+
+        // Obtener los componentes del formulario
+        lblTitle = instanceOfMenuPrincipalFrame.getLblTitle();
+        btnCerrarSesion = instanceOfMenuPrincipalFrame.getBtnCerrarSesion();
+        btnUsuarios = instanceOfMenuPrincipalFrame.getBtnUsuarios();
     }
 
+    /**
+     * Método estático para obtener la instancia única de MenuServiceImpl.
+     *
+     * @return Instancia única de MenuServiceImpl.
+     */
     public static MenuServiceImpl getInstance() {
-        if (instance == null) {
-            synchronized (MenuServiceImpl.class) { // Sincronización para hilos
-                if (instance == null) {
-                    instance = new MenuServiceImpl();
+        if (instanceOfMenuServiceImpl == null) {
+            synchronized (MenuServiceImpl.class) {
+                if (instanceOfMenuServiceImpl == null) {
+                    instanceOfMenuServiceImpl = new MenuServiceImpl();
                 }
             }
         }
-        return instance;
-    }
-
-    @Override
-    public MenuPrincipalFrame reloadFrame() {
-        mpFrame.setLocationRelativeTo(null);
-        MouseListeners(); // Agregar MouseListeners a los botones
-        close(); // Cerrar la aplicación si se intenta cerrar el formulario
-        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUsername().toUpperCase()); // Mostrar el nombre de usuario en el título del formulario
-        return mpFrame;
+        return instanceOfMenuServiceImpl;
     }
 
     /**
-     * Método para cerrar la aplicación.
+     * Retorna una instancia del formulario del menú principal.
+     *
+     * @return Instancia del formulario del menú principal.
      */
     @Override
-    public final void close() {
-        // Agregar un WindowListener para confirmar la salida de la aplicación
-        mpFrame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent evt) {
+    public MenuPrincipalFrame GetInstanceOfFrame() {
+        // Ubicar el formulario en el centro de la pantalla
+        instanceOfMenuPrincipalFrame.setLocationRelativeTo(null);
 
-                if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
-                    System.exit(0);
-                }
-            }
-        });
+        // Cargar los ActionListeners para los botones
+        CargarActionListeners();
+
+        // Método para cerrar el formulario del menú principal
+        Close(instanceOfMenuPrincipalFrame);
+
+        // Actualizar el título del formulario con el nombre de usuario
+        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUsername().toUpperCase());
+
+        return instanceOfMenuPrincipalFrame;
     }
 
     /**
-     * Manejar eventos del mouse en los botones.
+     * Carga los ActionListeners para los botones del menú principal.
      */
-    public final void MouseListeners() {
-        // Agregar MouseListeners al botón de cerrar sesión
-        btnCerrarSesion.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
+    @Override
+    public void CargarActionListeners() {
+        // Eliminar los ActionListeners existentes para evitar duplicados
+        QuitActionListeners();
 
-                if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
-                    mpFrame.setVisible(false);
-                    LoginServiceImpl.getInstance().getLoginFrame().setVisible(true);
-                    LoginServiceImpl.getInstance().getLoginFrame().requestFocus();
-                }
-            }
-        });
-
-        // Agregar MouseListeners al botón de usuarios
-        btnUsuarios.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                mpFrame.setVisible(false);
-                UserServiceImpl.getInstance().getUsersFrame().setVisible(true);
-            }
-        });
+        // Agregar ActionListeners para los botones
+        btnCerrarSesion.addActionListener(this);
+        btnUsuarios.addActionListener(this);
     }
 
+    /**
+     * Carga los KeyListeners para los botones del menú principal.
+     */
+    @Override
+    public void CargarKeyListeners() {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+    }
+
+    /**
+     * Carga los Mouseisteners para los botones del menú principal.
+     */
+    @Override
+    public void CargarMouseListeners() {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+    }
+
+    /**
+     * Elimina los ActionListeners de los botones del menú principal.
+     */
+    @Override
+    public void QuitActionListeners() {
+        // Eliminar los ActionListeners de los botones
+        btnCerrarSesion.removeActionListener(this);
+        btnUsuarios.removeActionListener(this);
+    }
+
+    /**
+     * Elimina los KeyListeners de los componentes del menú principal.
+     *
+     * @param componente
+     */
+    @Override
+    public void QuitKeyListener(Component componente) {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar KeyListeners en este contexto
+    }
+
+    /**
+     * Elimina los MouseListeners de los componentes del menú principal.
+     *
+     * @param componente
+     */
+    @Override
+    public void QuitMouseListener(Component componente) {
+        // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
+    }
+
+    /**
+     * Implementación de actionPerformed para gestionar los eventos de los
+     * botones.
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Verificar si el evento proviene del botón "Cerrar Sesión"
+        if (e.getSource() == btnCerrarSesion) {
+            // Mostrar una confirmación antes de cerrar la sesión
+            if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
+                // Ocultar el formulario del menú principal
+                instanceOfMenuPrincipalFrame.dispose();
+
+                // Mostrar el formulario de inicio de sesión
+                LoginServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+
+                // Colocar el foco en el formulario de inicio de sesión
+                LoginServiceImpl.getInstance().GetInstanceOfFrame().requestFocus();
+                LoginServiceImpl.getInstance().GetInstanceOfFrame().getTxtUsuario().requestFocus();
+            }
+        } // Verificar si el evento proviene del botón "Usuarios"
+        else if (e.getSource() == btnUsuarios) {
+            // Ocultar el formulario del menú principal
+            instanceOfMenuPrincipalFrame.dispose();
+
+            // Mostrar el formulario de gestión de usuarios
+            UserServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+        }
+    }
 }

@@ -73,7 +73,7 @@ public class AlertsClass {
      */
     public void aviso(String mensaje) {
         JOptionPane.showOptionDialog(null, mensaje, "Aviso", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/correcto.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/correcto.jpg", 30, 30), botones, botones[0]);
     }
 
     /**

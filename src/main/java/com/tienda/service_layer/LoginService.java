@@ -6,12 +6,11 @@ import com.tienda.presentation_layer.LoginFrame;
  * La interfaz LoginService extiende FrameService y proporciona un método para
  * iniciar sesión.
  */
-public interface LoginService extends FrameService<LoginFrame> {
+public interface LoginService extends FrameService<LoginFrame>{
 
     /**
      * Método para iniciar sesión.
      */
-    void iniciarSesion();
+    void IniciarSesion();
 
-    void loadFrame();
 }

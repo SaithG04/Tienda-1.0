@@ -2,6 +2,7 @@ package com.tienda.presentation_layer;
 
 import com.tienda.utilities.CommonUtilities;
 import java.awt.Image;
+import java.awt.event.*;
 import javax.swing.*;
 
 /**

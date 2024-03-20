@@ -1,5 +1,7 @@
 package com.tienda.service_layer;
 
+import java.awt.Component;
+
 /**
  * La interfaz FrameService proporciona métodos para cerrar y cargar un marco
  * (frame).
@@ -7,13 +9,20 @@ package com.tienda.service_layer;
 public interface FrameService<T> {
 
     /**
-     * Método para cerrar el marco.
-     */
-    void close();
-
-    /**
      * Método para cargar el marco.
      */
+    T GetInstanceOfFrame();
+    
+    void CargarActionListeners();
 
-    T reloadFrame();
+    void CargarKeyListeners();
+
+    void CargarMouseListeners();
+
+    void QuitActionListeners();
+
+    void QuitKeyListener(Component componente);
+
+    void QuitMouseListener(Component componente);
+
 }
