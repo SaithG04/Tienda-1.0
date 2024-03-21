@@ -15,6 +15,7 @@ import java.util.List;
 public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Serializable {
 
     private final UserDTO dto;
+    private ConnectionFactory connectionFactory;
 
     /**
      * Constructor que inicializa el DAO con un DTO de usuario.
@@ -37,7 +38,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     @Override
     public UserDTO GetById(int id) throws SQLException, ClassNotFoundException {
         String query = "SELECT * FROM users WHERE id = ?";
-        MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
+        connectionFactory = new MySqlConnectionFactory();
         objConnection = connectionFactory.getConnection();
         try (PreparedStatement statement = objConnection.prepareStatement(query)) {
             statement.setInt(1, id);
@@ -65,7 +66,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     @Override
     public UserDTO getUserByUsername() throws SQLException, ClassNotFoundException {
         String query = "SELECT * FROM users WHERE username COLLATE utf8_bin = ?";
-        MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
+        connectionFactory = new MySqlConnectionFactory();
         objConnection = connectionFactory.getConnection();
         try (PreparedStatement statement = objConnection.prepareStatement(query)) {
             statement.setString(1, dto.getUser());
@@ -92,18 +93,19 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
      */
     @Override
     public void Registrar(UserDTO userDTO) throws SQLException, ClassNotFoundException {
-        User user = new User(userDTO);
-        MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
-        objConnection = connectionFactory.getConnection();
-        String query = "INSERT INTO users (nombre_completo, username, hashed_password, salt) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-            // Establecer los parámetros en la consulta preparada
-            statement.setString(1, user.getNombreCompleto());
-            statement.setString(2, user.getUsername());
-            statement.setBytes(3, user.getHashed_password());
-            statement.setBytes(4, user.getSalt());
-            // Ejecutar la consulta de inserción
-            statement.executeUpdate();
+        connectionFactory = new MySqlConnectionFactory();
+        try {
+            objConnection = connectionFactory.getConnection();
+            String query = "INSERT INTO users (nombre_completo, username, hashed_password, salt) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
+                // Establecer los parámetros en la consulta preparada
+                statement.setString(1, userDTO.getNombreCompleto());
+                statement.setString(2, userDTO.getUser());
+                statement.setBytes(3, userDTO.getUsuario().getHashed_password());
+                statement.setBytes(4, userDTO.getUsuario().getSalt());
+                // Ejecutar la consulta de inserción
+                statement.executeUpdate();
+            }
         } finally {
             connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
         }
@@ -120,11 +122,11 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     @Override
     public List<UserDTO> Listar() throws ClassNotFoundException, SQLException {
         List<UserDTO> listaUser = new ArrayList<>();
-        String query = "SELECT * FROM users";
-        MySqlConnectionFactory connectionFactory = new MySqlConnectionFactory();
-        objConnection = connectionFactory.getConnection();
-        try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-            try (ResultSet result = statement.executeQuery()) {
+        connectionFactory = new MySqlConnectionFactory();
+        try {
+            objConnection = connectionFactory.getConnection();
+            String query = "SELECT * FROM users";
+            try (PreparedStatement statement = objConnection.prepareStatement(query); ResultSet result = statement.executeQuery()) {
                 while (result.next()) {
                     // Obtener los datos del usuario desde el ResultSet
                     User usuarioBD = extractUserFromResultSet(result);
@@ -135,6 +137,43 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
             connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
         }
         return listaUser;
+    }
+
+    @Override
+    public void Actualizar(UserDTO userDTO) throws ClassNotFoundException, SQLException {
+        connectionFactory = new MySqlConnectionFactory();
+        try {
+            objConnection = connectionFactory.getConnection();
+            String query = "UPDATE users SET nombre_completo = ?, hashed_password = ?, salt = ? WHERE id = ?";
+            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
+                // Establecer los parámetros en la consulta preparada
+                statement.setString(1, userDTO.getNombreCompleto());
+                statement.setBytes(2, userDTO.getUsuario().getHashed_password());
+                statement.setBytes(3, userDTO.getUsuario().getSalt());
+                statement.setInt(4, userDTO.getUsuario().getId());
+                // Ejecutar la consulta de actualización
+                statement.executeUpdate();
+            }
+        } finally {
+            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
+        }
+    }
+
+    @Override
+    public void Eliminar(int id) throws ClassNotFoundException, SQLException {
+        connectionFactory = new MySqlConnectionFactory();
+        try {
+            objConnection = connectionFactory.getConnection();
+            String query = "DELETE FROM users WHERE id = ?";
+            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
+                // Establecer el parámetro en la consulta preparada
+                statement.setInt(1, id);
+                // Ejecutar la consulta de eliminación
+                statement.executeUpdate();
+            }
+        } finally {
+            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
+        }
     }
 
     /**
@@ -154,4 +193,5 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
         byte[] dbSalt = resultSet.getBytes("salt");
         return new User(id, nombreCompleto, username, dbHashedPassword, dbSalt);
     }
+
 }

@@ -40,4 +40,8 @@ public interface CRUD<T> {
      * @throws SQLException Si ocurre un error al acceder a la base de datos.
      */
     List<T> Listar() throws ClassNotFoundException, SQLException;
+
+    void Actualizar(T t) throws ClassNotFoundException, SQLException;
+
+    void Eliminar(int id) throws ClassNotFoundException, SQLException;
 }
