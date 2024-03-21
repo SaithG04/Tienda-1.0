@@ -1,5 +1,8 @@
 package com.tienda.entity;
 
+import com.tienda.data_transfer_layer.UserDTO;
+import com.tienda.utilities.CommonUtilities;
+
 /**
  * La clase User representa a un usuario en el sistema.
  */
@@ -30,19 +33,24 @@ public class User {
     }
 
     /**
-     * Obtiene el ID del usuario.
+     * Constructor para inicializar un objeto User a partir de un objeto
+     * UserDTO.
      *
-     * @return ID del usuario.
+     * @param userDTO Objeto UserDTO que contiene los datos del usuario.
      */
+    public User(UserDTO userDTO) {
+        this.nombreCompleto = userDTO.getNombreCompleto();
+        this.username = userDTO.getUser();
+        CommonUtilities utilities = new CommonUtilities();
+        this.salt = utilities.generateSalt();
+        this.hashed_password = utilities.hashPassword(userDTO.getPassword(), this.salt);
+    }
+
+    // Getters y setters para los campos de la clase
     public int getId() {
         return id;
     }
 
-    /**
-     * Establece el ID del usuario.
-     *
-     * @param id ID del usuario a establecer.
-     */
     public void setId(int id) {
         this.id = id;
     }
@@ -55,57 +63,26 @@ public class User {
         this.nombreCompleto = nombreCompleto;
     }
 
-    /**
-     * Obtiene el nombre de usuario.
-     *
-     * @return Nombre de usuario.
-     */
     public String getUsername() {
         return username;
     }
 
-    /**
-     * Establece el nombre de usuario.
-     *
-     * @param username Nombre de usuario a establecer.
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * Obtiene la contraseña del usuario en formato hash.
-     *
-     * @return Contraseña del usuario en formato hash.
-     */
     public byte[] getHashed_password() {
         return hashed_password;
     }
 
-    /**
-     * Establece la contraseña del usuario en formato hash.
-     *
-     * @param hashed_password Contraseña del usuario en formato hash a
-     * establecer.
-     */
     public void setHashed_password(byte[] hashed_password) {
         this.hashed_password = hashed_password;
     }
 
-    /**
-     * Obtiene el valor de sal utilizado en la encriptación de la contraseña.
-     *
-     * @return Valor de sal utilizado en la encriptación de la contraseña.
-     */
     public byte[] getSalt() {
         return salt;
     }
 
-    /**
-     * Establece el valor de sal utilizado en la encriptación de la contraseña.
-     *
-     * @param salt Valor de sal a establecer.
-     */
     public void setSalt(byte[] salt) {
         this.salt = salt;
     }

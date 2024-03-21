@@ -1,34 +1,32 @@
 package com.tienda.data_access_layer;
 
+import com.tienda.data_transfer_layer.UserDTO;
 import com.tienda.entity.User;
-import java.sql.SQLException;
-import java.util.List;
+import java.sql.*;
 
 /**
- * La interfaz UserDAO proporciona métodos para acceder y manipular datos de
- * usuario en la base de datos.
+ * Interfaz para el acceso a datos de los usuarios.
  */
-public interface UserDAO {
+public interface UserDAO extends CRUD<UserDTO> {
 
     /**
-     * Obtiene un usuario por nombre de usuario.
+     * Obtiene un objeto UserDTO basado en el nombre de usuario.
      *
-     * @return El usuario encontrado.
+     * @return El UserDTO encontrado, o null si no se encuentra.
      * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     * @throws ClassNotFoundException Si no se encuentra la clase de la base de
-     * datos.
+     * @throws ClassNotFoundException Si no se encuentra la clase del
+     * controlador de la base de datos.
      */
-    User getUserByUsername() throws SQLException, ClassNotFoundException;
+    UserDTO getUserByUsername() throws SQLException, ClassNotFoundException;
 
     /**
-     * Guarda un nuevo usuario en la base de datos.
-     *
-     * @param user El usuario a guardar.
-     * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     * @throws ClassNotFoundException Si no se encuentra la clase de la base de
+     * Extrae un objeto User a partir de un conjunto de resultados de la base de
      * datos.
+     *
+     * @param resultSet Conjunto de resultados de la consulta SQL.
+     * @return El objeto User extraído de los resultados.
+     * @throws SQLException Si ocurre un error al acceder a los datos en el
+     * conjunto de resultados.
      */
-    void saveUser(User user) throws SQLException, ClassNotFoundException;
-
-    List<User> listarUsuarios() throws ClassNotFoundException, SQLException;
+    User extractUserFromResultSet(ResultSet resultSet) throws SQLException;
 }
