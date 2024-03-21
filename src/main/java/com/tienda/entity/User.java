@@ -46,6 +46,10 @@ public class User {
         this.hashed_password = utilities.hashPassword(userDTO.getPassword(), this.salt);
     }
 
+    public User() {
+        
+    }
+
     // Getters y setters para los campos de la clase
     public int getId() {
         return id;
@@ -86,4 +90,10 @@ public class User {
     public void setSalt(byte[] salt) {
         this.salt = salt;
     }
+
+    @Override
+    public String toString() {
+        return "User{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", username=" + username + ", hashed_password=" + hashed_password + ", salt=" + salt + '}';
+    }
+    
 }

@@ -111,7 +111,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
             UserDTO dtoSent = new UserDTO(usuario, contraseña);
 
             // Obtener información del usuario desde la base de datos utilizando el DTO
-            UserDTO dtoReceived = new UserDAOImpl(dtoSent).getUserByUsername();
+            UserDTO dtoReceived = new UserDAOImpl().getUserByUsername(dtoSent);
 
             // Verificar si se encontró el usuario en la base de datos
             if (dtoReceived == null) {

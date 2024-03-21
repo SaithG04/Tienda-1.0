@@ -56,6 +56,8 @@ public class UserDTO{
      * Constructor por defecto.
      */
     public UserDTO() {
+        System.out.println("no es nulo");
+        usuario = new User();
     }
 
     /**

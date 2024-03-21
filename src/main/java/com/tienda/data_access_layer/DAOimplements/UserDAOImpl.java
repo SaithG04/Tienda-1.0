@@ -6,65 +6,24 @@ import com.tienda.entity.User;
 import java.io.Serializable;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Function;
 
 /**
  * Implementación del DAO de usuario para acceder a la base de datos.
  */
-public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Serializable {
+public class UserDAOImpl extends CRUD<UserDTO, User> implements Serializable {
 
-    private final UserDTO dto;
-    private ConnectionFactory connectionFactory;
-
-    /**
-     * Constructor que inicializa el DAO con un DTO de usuario.
-     *
-     * @param dto El DTO de usuario utilizado para la comunicación con el DAO.
-     */
-    public UserDAOImpl(UserDTO dto) {
-        this.dto = dto;
+    @Override
+    public User extractFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        String nombreCompleto = resultSet.getString("nombre_completo");
+        String username = resultSet.getString("username");
+        byte[] dbHashedPassword = resultSet.getBytes("hashed_password");
+        byte[] dbSalt = resultSet.getBytes("salt");
+        return new User(id, nombreCompleto, username, dbHashedPassword, dbSalt);
     }
 
-    /**
-     * Obtiene un usuario de la base de datos por su ID.
-     *
-     * @param id El ID del usuario a buscar.
-     * @return El usuario encontrado, o null si no se encuentra.
-     * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     * @throws ClassNotFoundException Si no se encuentra la clase del
-     * controlador de la base de datos.
-     */
-    @Override
-    public UserDTO GetById(int id) throws SQLException, ClassNotFoundException {
-        String query = "SELECT * FROM users WHERE id = ?";
-        connectionFactory = new MySqlConnectionFactory();
-        objConnection = connectionFactory.getConnection();
-        try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-            statement.setInt(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    // Obtener los datos del usuario desde la base de datos
-                    User usuarioBD = extractUserFromResultSet(resultSet);
-                    return new UserDTO(usuarioBD);
-                }
-            }
-        } finally {
-            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
-        }
-        return null; // Devolver nulo si no se encuentra el usuario
-    }
-
-    /**
-     * Obtiene un usuario de la base de datos por su nombre de usuario.
-     *
-     * @return El usuario encontrado, o null si no se encuentra.
-     * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     * @throws ClassNotFoundException Si no se encuentra la clase del
-     * controlador de la base de datos.
-     */
-    @Override
-    public UserDTO getUserByUsername() throws SQLException, ClassNotFoundException {
+    public UserDTO getUserByUsername(UserDTO dto) throws SQLException, ClassNotFoundException {
         String query = "SELECT * FROM users WHERE username COLLATE utf8_bin = ?";
         connectionFactory = new MySqlConnectionFactory();
         objConnection = connectionFactory.getConnection();
@@ -73,7 +32,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     // Obtener los datos del usuario desde el ResultSet
-                    User usuarioBD = extractUserFromResultSet(resultSet);
+                    User usuarioBD = extractFromResultSet(resultSet);
                     return new UserDTO(usuarioBD);
                 }
             }
@@ -83,115 +42,24 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
         return null; // Devolver nulo si no se encuentra el usuario
     }
 
-    /**
-     * Guarda un usuario en la base de datos.
-     *
-     * @param userDTO El usuario a guardar.
-     * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     * @throws ClassNotFoundException Si no se encuentra la clase del
-     * controlador de la base de datos.
-     */
-    @Override
-    public void Registrar(UserDTO userDTO) throws SQLException, ClassNotFoundException {
-        connectionFactory = new MySqlConnectionFactory();
-        try {
-            objConnection = connectionFactory.getConnection();
-            String query = "INSERT INTO users (nombre_completo, username, hashed_password, salt) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-                // Establecer los parámetros en la consulta preparada
-                statement.setString(1, userDTO.getNombreCompleto());
-                statement.setString(2, userDTO.getUser());
-                statement.setBytes(3, userDTO.getUsuario().getHashed_password());
-                statement.setBytes(4, userDTO.getUsuario().getSalt());
-                // Ejecutar la consulta de inserción
-                statement.executeUpdate();
-            }
-        } finally {
-            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
-        }
-    }
+//    public Function<ResultSet, User> getExtractFunctionRow() throws SQLException, ClassNotFoundException {
+//        String[] tableColumns = getTableColumns("users");
+//        return (ResultSet resultSet) -> {
+//            try {
+//                Object[] row = new Object[tableColumns.length];
+//                for (int i = 0; i < tableColumns.length; i++) {
+//                    row[i] = resultSet.getObject(i + 1);
+//                }
+//                return new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4]);
+//            } catch (SQLException e) {
+//                alerta.manejarErrorConexion(UserDAOImpl.this.getClass(), e);
+//                return null;
+//            }
+//        };
+//    }
 
-    /**
-     * Lista todos los usuarios de la base de datos.
-     *
-     * @return La lista de usuarios.
-     * @throws ClassNotFoundException Si no se encuentra la clase del
-     * controlador de la base de datos.
-     * @throws SQLException Si ocurre un error al acceder a la base de datos.
-     */
-    @Override
-    public List<UserDTO> Listar() throws ClassNotFoundException, SQLException {
-        List<UserDTO> listaUser = new ArrayList<>();
-        connectionFactory = new MySqlConnectionFactory();
-        try {
-            objConnection = connectionFactory.getConnection();
-            String query = "SELECT * FROM users";
-            try (PreparedStatement statement = objConnection.prepareStatement(query); ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    // Obtener los datos del usuario desde el ResultSet
-                    User usuarioBD = extractUserFromResultSet(result);
-                    listaUser.add(new UserDTO(usuarioBD));
-                }
-            }
-        } finally {
-            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
-        }
-        return listaUser;
-    }
-
-    @Override
-    public void Actualizar(UserDTO userDTO) throws ClassNotFoundException, SQLException {
-        connectionFactory = new MySqlConnectionFactory();
-        try {
-            objConnection = connectionFactory.getConnection();
-            String query = "UPDATE users SET nombre_completo = ?, hashed_password = ?, salt = ? WHERE id = ?";
-            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-                // Establecer los parámetros en la consulta preparada
-                statement.setString(1, userDTO.getNombreCompleto());
-                statement.setBytes(2, userDTO.getUsuario().getHashed_password());
-                statement.setBytes(3, userDTO.getUsuario().getSalt());
-                statement.setInt(4, userDTO.getUsuario().getId());
-                // Ejecutar la consulta de actualización
-                statement.executeUpdate();
-            }
-        } finally {
-            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
-        }
-    }
-
-    @Override
-    public void Eliminar(int id) throws ClassNotFoundException, SQLException {
-        connectionFactory = new MySqlConnectionFactory();
-        try {
-            objConnection = connectionFactory.getConnection();
-            String query = "DELETE FROM users WHERE id = ?";
-            try (PreparedStatement statement = objConnection.prepareStatement(query)) {
-                // Establecer el parámetro en la consulta preparada
-                statement.setInt(1, id);
-                // Ejecutar la consulta de eliminación
-                statement.executeUpdate();
-            }
-        } finally {
-            connectionFactory.closeConnection(); // Cerrar la conexión después de utilizarla
-        }
-    }
-
-    /**
-     * Extrae los datos de un usuario a partir de un ResultSet.
-     *
-     * @param resultSet El ResultSet que contiene los datos del usuario.
-     * @return El objeto User creado a partir de los datos del ResultSet.
-     * @throws SQLException Si ocurre un error al acceder a los datos del
-     * ResultSet.
-     */
-    @Override
-    public User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        String nombreCompleto = resultSet.getString("nombre_completo");
-        String username = resultSet.getString("username");
-        byte[] dbHashedPassword = resultSet.getBytes("hashed_password");
-        byte[] dbSalt = resultSet.getBytes("salt");
-        return new User(id, nombreCompleto, username, dbHashedPassword, dbSalt);
-    }
+//    public Function<User, UserDTO> getMapFunctionRow() {
+//        return user -> new UserDTO(user);
+//    }
 
 }
