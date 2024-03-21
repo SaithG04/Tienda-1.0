@@ -1,5 +1,6 @@
 package com.tienda.data_access_layer;
 
+import com.tienda.utilities.CommonUtilities;
 import java.sql.*;
 
 /**
@@ -7,7 +8,7 @@ import java.sql.*;
  * operations. It includes methods to connect to the database with and without a
  * username and password.
  */
-public class MySqlConnectionFactory implements ConnectionFactory {
+public class MySqlConnectionFactory extends CommonUtilities implements ConnectionFactory {
 
     // Variables estáticas para el usuario y variables de instancia para la contraseña y los detalles de la base de datos
     private static String userBD;
@@ -19,6 +20,7 @@ public class MySqlConnectionFactory implements ConnectionFactory {
     private final String bdName = "sql10692438"; // Nombre de la base de datos
 
     public Connection objConnection = null;
+    public ConnectionFactory connectionFactory = null;
 
     // Constructor por defecto, establece las credenciales por defecto
     public MySqlConnectionFactory() {
@@ -57,4 +59,8 @@ public class MySqlConnectionFactory implements ConnectionFactory {
         }
     }
 
+    public String getBdName() {
+        return bdName;
+    }
+    
 }

@@ -1,6 +1,5 @@
 package com.tienda.utilities;
 
-import com.tienda.data_access_layer.MySqlConnectionFactory;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -12,7 +11,7 @@ import javax.swing.*;
 /**
  * Clase base para funcionalidades generales compartidas.
  */
-public class CommonUtilities extends MySqlConnectionFactory {
+public class CommonUtilities{
 
     public static final Image IMG;
 //    public static final Color COLORERROR = new Color(255, 153, 153);
