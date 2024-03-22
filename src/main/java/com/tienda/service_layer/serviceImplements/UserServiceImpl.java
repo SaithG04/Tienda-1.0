@@ -1,6 +1,8 @@
 package com.tienda.service_layer.serviceImplements;
 
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
+import com.tienda.data_access_layer.UserDAO;
+import com.tienda.entity.User;
 import com.tienda.utilities.CommonUtilities;
 import com.tienda.presentation_layer.UsersFrame;
 import java.awt.Component;
@@ -9,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
-import com.tienda.data_transfer_layer.UserDTO;
 import com.tienda.service_layer.UserService;
 import javax.swing.table.DefaultTableModel;
 
@@ -86,19 +87,18 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         }
         
         try {
-            // Instanciar el DAO para registrar el usuario en la base de datos
-            UserDTO dtoSent = new UserDTO(user, password, nombreCompleto);
-            UserDAOImpl userDAO = new UserDAOImpl();
+            
+            User userCreated = new User();
+            userCreated.setId(0);
+            userCreated.setNombreCompleto(nombreCompleto);
+            userCreated.setUsername(user);
+            userCreated.setSalt(generateSalt());
+            userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
+            
+            UserDAO userDAO = new UserDAOImpl(userCreated);
+            userDAO.registrar(userCreated);
 
-            // Crear un arreglo de valores para la inserción
-//            Object[] values = {null, nombreCompleto, user, password, null}; // El último valor es para el salt, que se generará en la base de datos
-            // Insertar el nuevo usuario en la base de datos
-            userDAO.Registrar("users", dtoSent);
-
-//            if (success) {
-            // Limpiar los campos de texto después del registro exitoso
             limpiarCampos();
-            // Actualizar la tabla de usuarios después del registro
             jtbUsuarios.setModel(CargarUsuarios());
             // Mostrar un mensaje de registro exitoso
             alerta.aviso("Registro exitoso.");
@@ -119,15 +119,15 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public DefaultTableModel CargarUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario"}, 0);
         try {
-            // Crear una instancia del DAO apropiado para la entidad User
-            UserDAOImpl userDAO = new UserDAOImpl();
+            
+            UserDAO userDAO = new UserDAOImpl(new User());
 
             // Obtener la lista de usuarios desde la base de datos usando las funciones definidas en UserDAOImpl
-            List<UserDTO> lista = userDAO.Listar("users");
+            List<User> lista = userDAO.listar();
 
             // Iterar sobre la lista de usuarios y agregar cada uno al modelo de la tabla
-            lista.forEach(userDTO -> {
-                model.addRow(new Object[]{userDTO.getUsuario().getId(), userDTO.getNombreCompleto(), userDTO.getUser()});
+            lista.forEach(user -> {
+                model.addRow(new Object[]{user.getId(), user.getNombreCompleto(), user.getUsername()});
             });
         } catch (ClassNotFoundException | SQLException e) {
             // Manejar cualquier excepción que pueda ocurrir durante la carga de usuarios
@@ -157,12 +157,10 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     
     @Override
     public void CargarKeyListeners() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     @Override
     public void CargarMouseListeners() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
@@ -176,12 +174,10 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     
     @Override
     public void QuitKeyListener(Component componente) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     @Override
     public void QuitMouseListener(Component componente) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

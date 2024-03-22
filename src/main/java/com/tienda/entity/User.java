@@ -1,8 +1,5 @@
 package com.tienda.entity;
 
-import com.tienda.data_transfer_layer.UserDTO;
-import com.tienda.utilities.CommonUtilities;
-
 /**
  * La clase User representa a un usuario en el sistema.
  */
@@ -32,22 +29,15 @@ public class User {
         this.salt = salt;
     }
 
-    /**
-     * Constructor para inicializar un objeto User a partir de un objeto
-     * UserDTO.
-     *
-     * @param userDTO Objeto UserDTO que contiene los datos del usuario.
-     */
-    public User(UserDTO userDTO) {
-        this.nombreCompleto = userDTO.getNombreCompleto();
-        this.username = userDTO.getUser();
-        CommonUtilities utilities = new CommonUtilities();
-        this.salt = utilities.generateSalt();
-        this.hashed_password = utilities.hashPassword(userDTO.getPassword(), this.salt);
+    public User(Object[] row) {
+        id = (int) row[0];
+        nombreCompleto = row[1].toString();
+        username = row[2].toString();
+        hashed_password = (byte[]) row[3];
+        salt = (byte[]) row[4];
     }
 
     public User() {
-        
     }
 
     // Getters y setters para los campos de la clase
@@ -95,5 +85,5 @@ public class User {
     public String toString() {
         return "User{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", username=" + username + ", hashed_password=" + hashed_password + ", salt=" + salt + '}';
     }
-    
+
 }

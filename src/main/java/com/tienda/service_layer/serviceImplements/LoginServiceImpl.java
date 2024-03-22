@@ -1,7 +1,8 @@
 package com.tienda.service_layer.serviceImplements;
 
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
-import com.tienda.data_transfer_layer.UserDTO;
+import com.tienda.data_access_layer.UserDAO;
+import com.tienda.entity.User;
 import com.tienda.presentation_layer.LoginFrame;
 import com.tienda.service_layer.LoginService;
 import com.tienda.utilities.CommonUtilities;
@@ -27,7 +28,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
     /**
      * Usuario que ha iniciado sesión.
      */
-    public static UserDTO userLogued;
+    public static User userLogued;
 
     /**
      * Instancia del formulario de inicio de sesión.
@@ -98,35 +99,35 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
         try {
             // Obtener usuario y contraseña del formulario de inicio de sesión
             String usuario = txtUsuario.getText();
-            String contraseña = String.valueOf(txtPassword.getPassword());
+            String password = String.valueOf(txtPassword.getPassword());
 
             // Verificar si los campos están vacíos
-            if (usuario.isEmpty() || contraseña.isEmpty()) {
+            if (usuario.isEmpty() || password.isEmpty()) {
                 // Mostrar mensaje de alerta si hay campos vacíos
                 alerta.faltanDatos();
                 return; // Finalizar el método si hay campos vacíos
             }
 
             // Crear un DTO con el usuario y contraseña proporcionados
-            UserDTO dtoSent = new UserDTO(usuario, contraseña);
-
-            // Obtener información del usuario desde la base de datos utilizando el DTO
-            UserDTO dtoReceived = new UserDAOImpl().getUserByUsername(dtoSent);
-
+            User userLog = new User();
+            userLog.setUsername(usuario);
+            UserDAO userDao = new UserDAOImpl(userLog);
+            User userReceived = userDao.getUserByUsername();
+            
             // Verificar si se encontró el usuario en la base de datos
-            if (dtoReceived == null) {
+            if (userReceived == null) {
                 // Mostrar mensaje de error si el usuario no existe
-                alerta.mostrarError(LoginServiceImpl.class, "El usuario no existe.", null);
+                alerta.mostrarError(this.getClass(), "El usuario no existe.", null);
                 txtPassword.setText("");
                 txtUsuario.requestFocus();
                 return; // Finalizar el método si el usuario no existe
             }
 
             // Calcular el hash de la contraseña ingresada por el usuario
-            byte[] inputHashedPassword = hashPassword(dtoSent.getPassword(), dtoReceived.getUsuario().getSalt());
+            byte[] inputHashedPassword = hashPassword(password, userReceived.getSalt());
 
             // Verificar si la contraseña ingresada coincide con la almacenada en la base de datos
-            if (!MessageDigest.isEqual(dtoReceived.getUsuario().getHashed_password(), inputHashedPassword)) {
+            if (!MessageDigest.isEqual(userReceived.getHashed_password(), inputHashedPassword)) {
                 // Mostrar mensaje de error si la contraseña es incorrecta
                 alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
                 txtPassword.setText("");
@@ -139,7 +140,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
             txtPassword.setText("");
 
             // Almacenar información del usuario autenticado
-            userLogued = dtoSent;
+            userLogued = userLog;
 
             // Cerrar la ventana de inicio de sesión y mostrar el menú principal
             instanceOfLoginFrame.dispose();
