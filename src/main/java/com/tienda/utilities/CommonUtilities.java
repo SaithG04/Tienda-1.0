@@ -234,7 +234,7 @@ public class CommonUtilities {
             String query = generateInsertQuery(tableName, connection); // Generar la consulta de inserción
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 // Establecer los valores en la consulta preparada utilizando métodos específicos del DTO
-                setStatementValues(statement, entity);
+                setInsertStatementValues(statement, entity);
                 // Ejecutar la consulta de inserción
                 statement.executeUpdate();
             }
@@ -267,23 +267,17 @@ public class CommonUtilities {
         return lista;
     }
 
-//    public <D> boolean Actualizar(String tableName, int id, D dto, Function<D, Object[]> mapFunction) throws ClassNotFoundException, SQLException {
-//        try (Connection connection = new MySqlConnectionFactory().getConnection()) {
-//            String query = generateUpdateQuery(tableName);
-//            try (PreparedStatement statement = connection.prepareStatement(query)) {
-//                // Establecer los valores en la consulta preparada
-//                Object[] values = mapFunction.apply(dto);
-//                for (int i = 0; i < values.length; i++) {
-//                    statement.setObject(i + 1, values[i]);
-//                }
-//                statement.setInt(values.length + 1, id); // Establecer el ID en la condición WHERE
-//                // Ejecutar la consulta de actualización
-//                int rowsAffected = statement.executeUpdate();
-//                // Verificar si la actualización fue exitosa
-//                return rowsAffected > 0;
-//            }
-//        }
-//    }
+    public <T> void Actualizar(String tableName, int id, T entity) throws ClassNotFoundException, SQLException {
+        try (Connection connection = new MySqlConnectionFactory().getConnection()) {
+            String query = generateUpdateQuery(tableName, connection);
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                // Establecer los valores en la consulta preparada
+                setUpdateStatementValues(statement, entity);
+                // Ejecutar la consulta de actualización
+                statement.executeUpdate();
+            }
+        }
+    }
     /**
      * Elimina un objeto de la base de datos.
      *
@@ -359,7 +353,7 @@ public class CommonUtilities {
      * @throws SQLException Si ocurre un error al establecer los valores en la
      * consulta preparada.
      */
-    private <T> void setStatementValues(PreparedStatement statement, T entity) throws SQLException {
+    private <T> void setInsertStatementValues(PreparedStatement statement, T entity) throws SQLException {
 
         if (entity instanceof User user) {
             statement.setInt(1, 0); //Porque es autoincrementable
@@ -367,6 +361,19 @@ public class CommonUtilities {
             statement.setString(3, user.getUsername());
             statement.setBytes(4, user.getHashed_password());
             statement.setBytes(5, user.getSalt());
+        } else if (entity instanceof Productos producto) {
+
+        }
+    }
+    
+    private <T> void setUpdateStatementValues(PreparedStatement statement, T entity) throws SQLException {
+
+        if (entity instanceof User user) {
+            statement.setString(1, user.getNombreCompleto());
+            statement.setString(2, user.getUsername());
+            statement.setBytes(3, user.getHashed_password());
+            statement.setBytes(4, user.getSalt());
+            statement.setInt(5, user.getId());
         } else if (entity instanceof Productos producto) {
 
         }

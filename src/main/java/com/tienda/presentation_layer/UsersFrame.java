@@ -1,7 +1,9 @@
 package com.tienda.presentation_layer;
 
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
@@ -40,6 +42,9 @@ public class UsersFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jpmOptions = new javax.swing.JPopupMenu();
+        miModificar = new javax.swing.JMenuItem();
+        miEliminar = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         txtUser = new javax.swing.JTextField();
         btnRegistrar = new javax.swing.JButton();
@@ -51,6 +56,12 @@ public class UsersFrame extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtNombreCompleto = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+
+        miModificar.setText("jMenuItem1");
+        jpmOptions.add(miModificar);
+
+        miEliminar.setText("jMenuItem1");
+        jpmOptions.add(miEliminar);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Usuarios");
@@ -142,6 +153,18 @@ public class UsersFrame extends javax.swing.JFrame {
         return jtbUsuarios;
     }
 
+    public JMenuItem getMiEliminar() {
+        return miEliminar;
+    }
+
+    public JPopupMenu getJpmOptions() {
+        return jpmOptions;
+    }
+
+    public JMenuItem getMiModificar() {
+        return miModificar;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JButton btnRegresar;
@@ -150,7 +173,10 @@ public class UsersFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu jpmOptions;
     private javax.swing.JTable jtbUsuarios;
+    private javax.swing.JMenuItem miEliminar;
+    private javax.swing.JMenuItem miModificar;
     private javax.swing.JTextField txtNombreCompleto;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUser;

@@ -113,7 +113,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
             userLog.setUsername(usuario);
             UserDAO userDao = new UserDAOImpl(userLog);
             User userReceived = userDao.getUserByUsername();
-            
+
             // Verificar si se encontró el usuario en la base de datos
             if (userReceived == null) {
                 // Mostrar mensaje de error si el usuario no existe
@@ -122,7 +122,6 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
                 txtUsuario.requestFocus();
                 return; // Finalizar el método si el usuario no existe
             }
-
             // Calcular el hash de la contraseña ingresada por el usuario
             byte[] inputHashedPassword = hashPassword(password, userReceived.getSalt());
 
@@ -140,7 +139,7 @@ public class LoginServiceImpl extends CommonUtilities implements ActionListener,
             txtPassword.setText("");
 
             // Almacenar información del usuario autenticado
-            userLogued = userLog;
+            userLogued = userReceived;
 
             // Cerrar la ventana de inicio de sesión y mostrar el menú principal
             instanceOfLoginFrame.dispose();

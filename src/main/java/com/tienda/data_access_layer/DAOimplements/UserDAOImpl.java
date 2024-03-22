@@ -24,8 +24,8 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     }
 
     @Override
-    public void registrar(User entity) throws ClassNotFoundException, SQLException {
-        Registrar(NAMETABLE, entity);
+    public void registrar() throws ClassNotFoundException, SQLException {
+        Registrar(NAMETABLE, usuario);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     }
 
     @Override
-    public void actualizar(User entity) throws ClassNotFoundException, SQLException {
+    public void actualizar() throws ClassNotFoundException, SQLException {
 
     }
 

@@ -12,6 +12,10 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import com.tienda.service_layer.UserService;
+import java.awt.MenuItem;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,6 +32,8 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     private final JTextField txtUsuario, txtNombreCompleto;
     private final JPasswordField txtPassword;
     private final JTable jtbUsuarios;
+    private final JPopupMenu jpmOptions;
+    private final JMenuItem jmiModificar, jmiEliminar;
 
     // Constructor privado para garantizar la instancia única
     private UserServiceImpl() {
@@ -40,6 +46,10 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         txtNombreCompleto = instanceOfUsersFrame.getTxtNombreCompleto();
         btnRegresar = instanceOfUsersFrame.getBtnRegresar();
         jtbUsuarios = instanceOfUsersFrame.getJtbUsuarios();
+        jpmOptions = instanceOfUsersFrame.getJpmOptions();
+        jmiModificar = instanceOfUsersFrame.getMiModificar();
+        jmiEliminar = instanceOfUsersFrame.getMiEliminar();
+
     }
 
     // Método estático para obtener la única instancia de UserServiceImpl
@@ -53,7 +63,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         }
         return instanceOfUserServiceImpl;
     }
-    
+
     @Override
     public UsersFrame GetInstanceOfFrame() {
         // Configurar la ubicación del formulario de usuarios y cerrar la instancia anterior si existe
@@ -63,6 +73,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         txtNombreCompleto.requestFocus();
         // Agregar ActionListener a los botones y cargar los usuarios en un hilo separado
         CargarActionListeners();
+        CargarMouseListeners();
         jtbUsuarios.setModel(new DefaultTableModel(0, 0));
         new Thread(() -> {
             jtbUsuarios.setModel(CargarUsuarios());
@@ -85,28 +96,70 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
             alerta.advertencia("Por favor, complete todos los campos.");
             return;
         }
-        
+
         try {
-            
+
             User userCreated = new User();
             userCreated.setId(0);
             userCreated.setNombreCompleto(nombreCompleto);
             userCreated.setUsername(user);
             userCreated.setSalt(generateSalt());
             userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
-            
+
             UserDAO userDAO = new UserDAOImpl(userCreated);
-            userDAO.registrar(userCreated);
+            userDAO.registrar();
 
             limpiarCampos();
             jtbUsuarios.setModel(CargarUsuarios());
             // Mostrar un mensaje de registro exitoso
             alerta.aviso("Registro exitoso.");
-            
+
         } catch (SQLException | ClassNotFoundException e) {
             // Manejar cualquier error de conexión durante el registro
             alerta.manejarErrorConexion(this.getClass(), e);
         }
+    }
+
+    private void ActualizarUsuario() {
+        // Obtener los datos ingresados por el usuario
+        String nombreCompleto = txtNombreCompleto.getText().trim();
+        String user = txtUsuario.getText().trim();
+        String password = String.valueOf(txtPassword.getPassword()).trim();
+
+        // Verificar si se han completado todos los campos
+        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return;
+        }
+
+        try {
+
+            User userCreated = new User();
+            userCreated.setId(0);
+            userCreated.setNombreCompleto(nombreCompleto);
+            userCreated.setUsername(user);
+            userCreated.setSalt(generateSalt());
+            userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
+
+            UserDAO userDAO = new UserDAOImpl(userCreated);
+            userDAO.registrar();
+
+            limpiarCampos();
+            jtbUsuarios.setModel(CargarUsuarios());
+            // Mostrar un mensaje de registro exitoso
+            alerta.aviso("Registro exitoso.");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejar cualquier error de conexión durante el registro
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+        //USUARIO ACTUALIZADO
+        System.out.println("USUARIO ACTUALIZADO");
+    }
+
+    private void EliminarUsuario() {
+        //USUARIO ACTUALIZADO
+        System.out.println("USUARIO Eliminado");
     }
 
     /**
@@ -119,7 +172,7 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public DefaultTableModel CargarUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario"}, 0);
         try {
-            
+
             UserDAO userDAO = new UserDAOImpl(new User());
 
             // Obtener la lista de usuarios desde la base de datos usando las funciones definidas en UserDAOImpl
@@ -153,14 +206,31 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
         QuitActionListeners(); // Eliminar los ActionListener anteriores para evitar duplicados
         btnRegistrar.addActionListener(this);
         btnRegresar.addActionListener(this);
+        jmiModificar.addActionListener(this);
+        jmiEliminar.addActionListener(this);
     }
-    
+
     @Override
     public void CargarKeyListeners() {
     }
-    
+
     @Override
     public void CargarMouseListeners() {
+        QuitMouseListener(jpmOptions);
+        jtbUsuarios.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                if (SwingUtilities.isRightMouseButton(evt)) { // Verificar si se hizo clic con el botón derecho
+                    if (evt.getClickCount() == 1) { // Verificar que sea un único clic
+                        jmiModificar.setText("Modificar");
+                        jmiEliminar.setText("Eliminar");
+                        jpmOptions.add(jmiModificar);
+                        jpmOptions.add(jmiEliminar);
+                        jpmOptions.show(jtbUsuarios, evt.getX(), evt.getY()); // Mostrar el menú emergente en la posición del clic
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -170,14 +240,18 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
     public void QuitActionListeners() {
         btnRegistrar.removeActionListener(this);
         btnRegresar.removeActionListener(this);
+        jmiModificar.removeActionListener(this);
     }
-    
+
     @Override
     public void QuitKeyListener(Component componente) {
     }
-    
+
     @Override
     public void QuitMouseListener(Component componente) {
+        for (MouseListener ml : componente.getMouseListeners()) {
+            componente.removeMouseListener(ml); // Eliminar los MouseListeners del componente
+        }
     }
 
     /**
@@ -193,7 +267,11 @@ public class UserServiceImpl extends CommonUtilities implements ActionListener, 
             txtPassword.setText("");
             instanceOfUsersFrame.dispose(); // Cerrar el formulario de usuarios
             MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true); // Mostrar el menú principal
+        } else if (e.getSource() == jmiModificar) {
+            ActualizarUsuario();
+        } else if (e.getSource() == jmiEliminar) {
+            EliminarUsuario();
         }
     }
-    
+
 }

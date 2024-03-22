@@ -13,12 +13,12 @@ public interface CRUD<T> {
     T getById(int id) throws SQLException, ClassNotFoundException;
 
 
-    void registrar(T entity) throws ClassNotFoundException, SQLException;
+    void registrar() throws ClassNotFoundException, SQLException;
 
     List<T> listar() throws ClassNotFoundException, SQLException;
 
 
-    void actualizar(T entity) throws ClassNotFoundException, SQLException;
+    void actualizar() throws ClassNotFoundException, SQLException;
 
 
     void eliminar(int id) throws ClassNotFoundException, SQLException;
