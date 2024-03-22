@@ -69,7 +69,7 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService, Act
         Close(instanceOfMenuPrincipalFrame);
 
         // Actualizar el título del formulario con el nombre de usuario
-        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUsername().toUpperCase());
+        lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
 
         return instanceOfMenuPrincipalFrame;
     }
