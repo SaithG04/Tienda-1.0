@@ -1,11 +1,6 @@
 package com.tienda.presentation_layer;
 
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPasswordField;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  *
@@ -43,7 +38,6 @@ public class UsersFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jpmOptions = new javax.swing.JPopupMenu();
-        miModificar = new javax.swing.JMenuItem();
         miEliminar = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         txtUser = new javax.swing.JTextField();
@@ -56,9 +50,10 @@ public class UsersFrame extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtNombreCompleto = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-
-        miModificar.setText("jMenuItem1");
-        jpmOptions.add(miModificar);
+        btnLimpiar = new javax.swing.JButton();
+        btnModificar = new javax.swing.JButton();
+        lblPassword = new javax.swing.JLabel();
+        btnRevelar = new javax.swing.JToggleButton();
 
         miEliminar.setText("jMenuItem1");
         jpmOptions.add(miEliminar);
@@ -72,13 +67,19 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel1.add(txtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 100, 280, 60));
 
+        btnRegistrar.setBackground(new java.awt.Color(0, 0, 0));
+        btnRegistrar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnRegistrar.setForeground(new java.awt.Color(153, 255, 153));
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.setPreferredSize(new java.awt.Dimension(850, 550));
-        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 100, 260, 60));
-        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 280, 60));
+        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 100, 130, 60));
+        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 210, 60));
 
+        btnRegresar.setBackground(new java.awt.Color(0, 0, 0));
+        btnRegresar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnRegresar.setForeground(new java.awt.Color(153, 255, 153));
         btnRegresar.setText("REGRESAR");
-        jPanel1.add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 180, 260, 60));
+        jPanel1.add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 100, 130, 60));
 
         jtbUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -93,7 +94,7 @@ public class UsersFrame extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jtbUsuarios);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 800, 430));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 800, 420));
 
         jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
@@ -113,6 +114,24 @@ public class UsersFrame extends javax.swing.JFrame {
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("Username:");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 100, 110, 60));
+
+        btnLimpiar.setBackground(new java.awt.Color(0, 0, 0));
+        btnLimpiar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnLimpiar.setForeground(new java.awt.Color(153, 255, 153));
+        btnLimpiar.setText("LIMPIAR");
+        jPanel1.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 180, 130, 60));
+
+        btnModificar.setBackground(new java.awt.Color(0, 0, 0));
+        btnModificar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnModificar.setForeground(new java.awt.Color(153, 255, 153));
+        btnModificar.setText("MODIFICAR");
+        jPanel1.add(btnModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 180, 130, 60));
+
+        lblPassword.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(lblPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 250, 570, 20));
+
+        btnRevelar.setFont(new java.awt.Font("Swis721 Ex BT", 0, 12)); // NOI18N
+        jPanel1.add(btnRevelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 180, 60, 60));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -161,13 +180,28 @@ public class UsersFrame extends javax.swing.JFrame {
         return jpmOptions;
     }
 
-    public JMenuItem getMiModificar() {
-        return miModificar;
+    public JButton getBtnLimpiar() {
+        return btnLimpiar;
+    }
+
+    public JButton getBtnModificar() {
+        return btnModificar;
+    }
+
+    public JLabel getLblPassword() {
+        return lblPassword;
+    }
+
+    public JToggleButton getBtnRevelar() {
+        return btnRevelar;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JButton btnRegresar;
+    private javax.swing.JToggleButton btnRevelar;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -175,8 +209,8 @@ public class UsersFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu jpmOptions;
     private javax.swing.JTable jtbUsuarios;
+    private javax.swing.JLabel lblPassword;
     private javax.swing.JMenuItem miEliminar;
-    private javax.swing.JMenuItem miModificar;
     private javax.swing.JTextField txtNombreCompleto;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUser;

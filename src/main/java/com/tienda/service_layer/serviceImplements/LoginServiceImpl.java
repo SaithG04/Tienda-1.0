@@ -144,6 +144,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             // Cerrar la ventana de inicio de sesión y mostrar el menú principal
             instanceOfLoginFrame.dispose();
             MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+            intentos = 0;
 
         } catch (SQLException | ClassNotFoundException ex) {
             // Manejar excepciones de base de datos y de configuración del sistema

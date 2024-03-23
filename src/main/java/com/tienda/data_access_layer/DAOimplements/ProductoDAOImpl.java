@@ -3,13 +3,8 @@ package com.tienda.data_access_layer.DAOimplements;
 import com.tienda.data_access_layer.*;
 import com.tienda.entity.Producto;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Implementación del DAO de usuario para acceder a la base de datos.

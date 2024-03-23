@@ -83,7 +83,6 @@ public class DataAccessUtilities {
                         return new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4]);
                     case "productos":
                         return new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
-
                     default:
                         return null;
                 }
@@ -129,7 +128,6 @@ public class DataAccessUtilities {
     private <T> void setUpdateStatementValues(PreparedStatement statement, T entity) throws SQLException {
 
         if (entity instanceof User user) {
-            System.out.println(user.toString());
             statement.setString(1, user.getNombreCompleto());
             statement.setString(2, user.getUsername());
             statement.setBytes(3, user.getHashed_password());
