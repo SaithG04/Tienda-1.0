@@ -46,7 +46,7 @@ public class AlertsClass {
     public void mostrarError(Class<?> clase, String mensaje, Exception ex) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, mensaje, "Error", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);
         if (ex != null) {
             Logger.getLogger(clase.getName()).log(Level.SEVERE, null, ex);
         }
@@ -73,7 +73,7 @@ public class AlertsClass {
      */
     public void aviso(String mensaje) {
         JOptionPane.showOptionDialog(null, mensaje, "Aviso", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/correcto.jpg", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/correcto.jpg", 30, 30), botones, botones[0]);
     }
 
     /**
@@ -83,7 +83,7 @@ public class AlertsClass {
      */
     public void advertencia(String mensaje) {
         JOptionPane.showOptionDialog(null, mensaje, "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
     }
 
     /**
@@ -101,7 +101,7 @@ public class AlertsClass {
     public void faltanDatos() {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, "Complete todos los campos.", "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
 //        System.out.println("");
     }
 
@@ -116,7 +116,7 @@ public class AlertsClass {
 
         Toolkit.getDefaultToolkit().beep();
         int value = JOptionPane.showOptionDialog(null, txt, "Confirmar", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, CommonUtilities.icono("/images/question.png", 30, 30), botones2, botones2[1]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/question.png", 30, 30), botones2, botones2[1]);
 
         return value;
     }
@@ -135,7 +135,7 @@ public class AlertsClass {
         textField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent evt) {
-                CommonUtilities.validarValorDecimal(evt, textField.getText());
+                ServiceUtilities.validarValorDecimal(evt, textField.getText());
             }
         });
 

@@ -1,6 +1,6 @@
 package com.tienda.data_access_layer;
 
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.DataAccessUtilities;
 import java.sql.*;
 
 /**
@@ -8,7 +8,7 @@ import java.sql.*;
  * operations. It includes methods to connect to the database with and without a
  * username and password.
  */
-public class MySqlConnectionFactory extends CommonUtilities implements ConnectionFactory {
+public class MySqlConnectionFactory extends DataAccessUtilities implements ConnectionFactory {
 
     // Variables estáticas para el usuario y variables de instancia para la contraseña y los detalles de la base de datos
     private final String driver = "com.mysql.cj.jdbc.Driver"; // Driver JDBC para MySQL
@@ -17,19 +17,19 @@ public class MySqlConnectionFactory extends CommonUtilities implements Connectio
     private final String port = "3306"; // Dirección del puerto de la base de datos
     private final String bdName = "sql10692438"; // Nombre de la base de datos
 
-    private static String USERBD;
-    private String passwordBD;
+    private final String userBD;
+    private final String passwordBD;
     private Connection objConnection;
 
     // Constructor por defecto, establece las credenciales por defecto
     public MySqlConnectionFactory() {
-        USERBD = "sql10692438";
+        userBD = "sql10692438";
         passwordBD = "rKmVRFuRS4";
     }
 
     // Constructor que permite pasar las credenciales
     public MySqlConnectionFactory(String userBD, String passwordBD) {
-        MySqlConnectionFactory.USERBD = userBD; // Uso de la referencia de clase para la variable estática userBD
+        this.userBD = userBD; // Uso de la referencia de clase para la variable estática userBD
         this.passwordBD = passwordBD; // Establecimiento de la contraseña proporcionada
     }
 
@@ -46,7 +46,7 @@ public class MySqlConnectionFactory extends CommonUtilities implements Connectio
         // Cargar el driver de la base de datos
         Class.forName(driver);
         // Establecer la conexión utilizando los parámetros proporcionados
-        objConnection = DriverManager.getConnection(type + host + ":" + port + "/" + bdName, USERBD, passwordBD);
+        objConnection = DriverManager.getConnection(type + host + ":" + port + "/" + bdName, userBD, passwordBD);
 
         return objConnection;
     }
@@ -59,9 +59,4 @@ public class MySqlConnectionFactory extends CommonUtilities implements Connectio
             }
         }
     }
-//
-//    public String getBdName() {
-//        return bdName;
-//    }
-
 }

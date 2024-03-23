@@ -1,6 +1,6 @@
 package com.tienda.presentation_layer;
 
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.ServiceUtilities;
 import java.awt.Image;
 import java.awt.event.*;
 import javax.swing.*;
@@ -47,7 +47,7 @@ public class LoginFrame extends javax.swing.JFrame {
     @Override
     public Image getIconImage() {
         //Icono del programa
-        return CommonUtilities.IMG;
+        return ServiceUtilities.IMG;
     }
 
     /**

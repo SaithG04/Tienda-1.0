@@ -6,9 +6,6 @@ import java.io.Serializable;
 import java.sql.*;
 import java.util.List;
 
-/**
- * Implementación del DAO de usuario para acceder a la base de datos.
- */
 public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Serializable {
 
     private final User usuario;
@@ -25,22 +22,22 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
 
     @Override
     public void registrar() throws ClassNotFoundException, SQLException {
-        Registrar(NAMETABLE, usuario);
+        registrarGeneric(NAMETABLE, usuario);
     }
 
     @Override
     public List<User> listar() throws ClassNotFoundException, SQLException {
-        return Listar(NAMETABLE);
+        return listarGeneric(NAMETABLE);
     }
 
     @Override
     public void actualizar() throws ClassNotFoundException, SQLException {
-
+        actualizarGeneric(NAMETABLE, usuario.getId(), usuario);
     }
 
     @Override
     public void eliminar(int id) throws ClassNotFoundException, SQLException {
-        Eliminar(NAMETABLE, id);
+        eliminarGeneric(NAMETABLE, id);
     }
 
     @Override
@@ -50,7 +47,7 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
             pst.setString(1, usuario.getUsername());
             try (ResultSet resultSet = pst.executeQuery()) {
                 if (resultSet.next()) {
-                    return new User(extractRowFromResultSet(resultSet, NAMETABLE, con));
+                    return (User) getRowGeneric(NAMETABLE, con).apply(resultSet);
                 }
             }
         }

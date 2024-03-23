@@ -5,7 +5,7 @@ import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.presentation_layer.LoginFrame;
 import com.tienda.service_layer.LoginService;
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.ServiceUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * La clase LoginServiceImpl implementa la interfaz LoginService y maneja el
  * inicio de sesión de usuario.
  */
-public class LoginServiceImpl extends CommonUtilities implements ActionListener, LoginService {
+public class LoginServiceImpl extends ServiceUtilities implements ActionListener, LoginService {
 
     // Declaración de variables de instancia
     /**
