@@ -186,4 +186,52 @@ public class ServiceUtilities {
 
     }
 
+    public boolean contieneMayuscula(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            if (Character.isUpperCase(texto.charAt(i))) {
+                return true; // Si encuentra al menos una mayúscula, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ninguna mayúscula, retorna falso
+    }
+
+    public boolean contieneNumero(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            if (Character.isDigit(texto.charAt(i))) {
+                return true; // Si encuentra al menos un número, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ningún número, retorna falso
+    }
+
+    public boolean contieneSigno(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            char c = texto.charAt(i);
+            if (!Character.isLetterOrDigit(c) && !Character.isWhitespace(c)) {
+                return true; // Si encuentra al menos un signo, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ningún signo, retorna falso
+    }
+
+    public boolean contieneEspacioBlanco(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            if (Character.isWhitespace(texto.charAt(i))) {
+                return true; // Si encuentra al menos un espacio en blanco, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ningún espacio en blanco, retorna falso
+    }
+
+    public boolean contieneCaracteresNoPermitidos(String texto) {
+        String caracteresNoPermitidos = "!@#$%^&*()+=-[]{},<>?/\\|";
+        for (int i = 0; i < texto.length(); i++) {
+            char c = texto.charAt(i);
+            if (caracteresNoPermitidos.indexOf(c) != -1) {
+                return true; // Si encuentra al menos un carácter no permitido, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ningún carácter no permitido, retorna falso
+    }
+
 }

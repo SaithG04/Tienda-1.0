@@ -21,5 +21,5 @@ public interface CRUD<T> {
     void actualizar() throws ClassNotFoundException, SQLException;
 
 
-    void eliminar(int id) throws ClassNotFoundException, SQLException;
+    void eliminar() throws ClassNotFoundException, SQLException;
 }
