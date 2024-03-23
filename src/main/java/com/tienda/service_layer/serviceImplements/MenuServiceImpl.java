@@ -21,7 +21,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
     // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
-    private final JButton btnCerrarSesion, btnUsuarios;
+    private final JButton btnCerrarSesion, btnUsuarios, btnProductos;
 
     /**
      * Constructor privado para el patrón Singleton.
@@ -34,6 +34,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         lblTitle = instanceOfMenuPrincipalFrame.getLblTitle();
         btnCerrarSesion = instanceOfMenuPrincipalFrame.getBtnCerrarSesion();
         btnUsuarios = instanceOfMenuPrincipalFrame.getBtnUsuarios();
+        btnProductos = instanceOfMenuPrincipalFrame.getBtnProductos();
     }
 
     /**
@@ -85,6 +86,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         // Agregar ActionListeners para los botones
         btnCerrarSesion.addActionListener(this);
         btnUsuarios.addActionListener(this);
+        btnProductos.addActionListener(this);
     }
 
     /**
@@ -111,6 +113,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         // Eliminar los ActionListeners de los botones
         btnCerrarSesion.removeActionListener(this);
         btnUsuarios.removeActionListener(this);
+        btnProductos.removeActionListener(this);
     }
 
     /**
@@ -160,6 +163,12 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
             // Mostrar el formulario de gestión de usuarios
             UserServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+        }else if (e.getSource() == btnProductos) {
+            // Ocultar el formulario del menú principal
+            instanceOfMenuPrincipalFrame.dispose();
+
+            // Mostrar el formulario de gestión de usuarios
+            ProductoServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
         }
     }
 }

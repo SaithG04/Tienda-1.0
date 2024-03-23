@@ -41,6 +41,8 @@ public class ProductosFrame extends javax.swing.JFrame {
         btnEdit = new javax.swing.JButton();
         tbnDelete = new javax.swing.JButton();
         btnFind = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        txtPrecio = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -64,19 +66,19 @@ public class ProductosFrame extends javax.swing.JFrame {
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 530));
 
         txtCantidad.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
-        jPanel1.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 260, 260, 50));
+        jPanel1.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 230, 260, 50));
 
         txtProducto.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
         jPanel1.add(txtProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, 260, 50));
 
         txtTipo.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
-        jPanel1.add(txtTipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 100, 260, 50));
+        jPanel1.add(txtTipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 90, 260, 50));
 
         jLabel5.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("CANTIDAD");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 240, 110, 80));
+        jLabel5.setText("CANTIDAD:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 210, 110, 80));
 
         jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
@@ -87,32 +89,41 @@ public class ProductosFrame extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("TIPO:");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 80, 110, 80));
+        jLabel7.setText("UND MEDIDA:");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 70, 110, 80));
 
         jLabel8.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("PROVEEDOR:");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 160, 110, 80));
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 140, 110, 80));
 
         cbProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<SELECCIONAR>" }));
-        jPanel1.add(cbProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 180, 260, 50));
+        jPanel1.add(cbProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 160, 260, 50));
 
         btninicio.setText("INICIO");
-        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 490, 120, 40));
+        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 500, 110, 30));
 
         btnAdd.setText("AÑADIR");
-        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 350, 150, 50));
+        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 370, 140, 40));
 
         btnEdit.setText("EDITAR");
-        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 350, 150, 50));
+        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, 140, 40));
 
         tbnDelete.setText("ELIMINAR");
-        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 420, 150, 50));
+        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 440, 140, 40));
 
         btnFind.setText("BUSCAR");
-        jPanel1.add(btnFind, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 420, 150, 50));
+        jPanel1.add(btnFind, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 440, 140, 40));
+
+        jLabel9.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel9.setText("PRECIO:");
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 280, 110, 80));
+
+        txtPrecio.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
+        jPanel1.add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 300, 260, 50));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -206,6 +217,10 @@ public class ProductosFrame extends javax.swing.JFrame {
         this.txtTipo = txtTipo;
     }
 
+    public JTextField getTxtPrecio() {
+        return txtPrecio;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnEdit;
@@ -216,11 +231,13 @@ public class ProductosFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla;
     private javax.swing.JButton tbnDelete;
     private javax.swing.JTextField txtCantidad;
+    private javax.swing.JTextField txtPrecio;
     private javax.swing.JTextField txtProducto;
     private javax.swing.JTextField txtTipo;
     // End of variables declaration//GEN-END:variables

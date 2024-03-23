@@ -36,8 +36,8 @@ public class UserDAOImpl extends MySqlConnectionFactory implements UserDAO, Seri
     }
 
     @Override
-    public void eliminar(int id) throws ClassNotFoundException, SQLException {
-        eliminarGeneric(NAMETABLE, id);
+    public void eliminar() throws ClassNotFoundException, SQLException {
+        eliminarGeneric(NAMETABLE, usuario.getId());
     }
 
     @Override
