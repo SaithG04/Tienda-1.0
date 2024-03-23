@@ -163,7 +163,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
             // Mostrar el formulario de gestión de usuarios
             UserServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
-        } else if (e.getSource() == btnProductos) {
+        }else if (e.getSource() == btnProductos) {
             // Ocultar el formulario del menú principal
             instanceOfMenuPrincipalFrame.dispose();
 

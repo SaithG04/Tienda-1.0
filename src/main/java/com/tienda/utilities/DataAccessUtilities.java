@@ -116,7 +116,12 @@ public class DataAccessUtilities {
             statement.setBytes(4, user.getHashed_password());
             statement.setBytes(5, user.getSalt());
         } else if (entity instanceof Producto producto) {
-
+            statement.setInt(1, 0); //Porque es autoincrementable
+            statement.setString(2, producto.getNombre());
+            statement.setInt(3, producto.getProveedor());
+            statement.setDouble(4, producto.getCantidad());
+            statement.setDouble(5, producto.getPrecio());
+            statement.setString(6, producto.getMedida());
         }
     }
 
