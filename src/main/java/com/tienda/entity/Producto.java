@@ -4,29 +4,39 @@ package com.tienda.entity;
  *
  * @author VILLA
  */
-public class Productos {
+public class Producto {
     
     private int id; //identificador unico del producto (no se podrá duplicar)
     private String nombre; //nombre del producto
-    private String proveedor; //proveedor (vendedor) del producto
-    private int cantidad; //Stock actual 
-    private double precio; // precio actual
-
+    private int proveedor; //proveedor (vendedor) del producto
+    private double cantidad; //Stock actual 
+    private double precio;// precio actual
+    private String medida;
+    
     //Constructor con todos los argumentos para inicializar el obj de manera literal
-    public Productos(int id, String nombre, String proveedor, int cantidad, double precio) {
+    public Producto(int id, String nombre, int proveedor, double cantidad, double precio, String medida) {
         this.id = id;
         this.nombre = nombre;
         this.proveedor = proveedor;
         this.cantidad = cantidad;
         this.precio = precio;
+        this.medida = medida;
     }
     //Constructor solo para instanciar, para su luego set en cada atributo
-    public Productos(){}
+    public Producto(){}
 
     //Gettes and Setters here
     
     public int getId() {
         return id;
+    }
+
+    public String getMedida() {
+        return medida;
+    }
+
+    public void setMedida(String medida) {
+        this.medida = medida;
     }
 
     public void setId(int id) {
@@ -41,15 +51,15 @@ public class Productos {
         this.nombre = nombre;
     }
 
-    public String getProveedor() {
+    public int getProveedor() {
         return proveedor;
     }
 
-    public void setProveedor(String proveedor) {
+    public void setProveedor(int proveedor) {
         this.proveedor = proveedor;
     }
 
-    public int getCantidad() {
+    public double getCantidad() {
         return cantidad;
     }
 

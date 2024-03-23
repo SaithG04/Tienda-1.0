@@ -1,6 +1,6 @@
 package com.tienda.presentation_layer;
 
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.ServiceUtilities;
 import java.awt.Image;
 import javax.swing.*;
 
@@ -135,7 +135,7 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
     @Override
     public Image getIconImage() {
         //Icono del programa
-        return CommonUtilities.IMG;
+        return ServiceUtilities.IMG;
     }
 
     public JButton getBtnCerrarSesion() {

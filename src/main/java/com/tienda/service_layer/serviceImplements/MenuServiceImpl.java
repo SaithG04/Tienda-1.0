@@ -1,6 +1,6 @@
 package com.tienda.service_layer.serviceImplements;
 
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.MenuPrincipalFrame;
 import com.tienda.service_layer.MenuService;
 import java.awt.Component;
@@ -12,7 +12,7 @@ import javax.swing.JLabel;
  * La clase MenuServiceImpl implementa la interfaz MenuService y gestiona las
  * operaciones del menú principal.
  */
-public class MenuServiceImpl extends CommonUtilities implements MenuService, ActionListener {
+public class MenuServiceImpl extends ServiceUtilities implements MenuService, ActionListener {
 
     private static volatile MenuServiceImpl instanceOfMenuServiceImpl;
 
@@ -69,7 +69,7 @@ public class MenuServiceImpl extends CommonUtilities implements MenuService, Act
         Close(instanceOfMenuPrincipalFrame);
 
         // Actualizar el título del formulario con el nombre de usuario
-        lblTitle.setText("Has iniciado sesión como: " + LoginServiceImpl.userLogued.getUser().toUpperCase());
+        lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
 
         return instanceOfMenuPrincipalFrame;
     }

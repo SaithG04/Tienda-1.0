@@ -1,17 +1,14 @@
 package com.tienda.utilities;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.security.*;
 import javax.swing.*;
 
 /**
  * Clase base para funcionalidades generales compartidas.
  */
-public class CommonUtilities{
+public class ServiceUtilities {
 
     public static final Image IMG;
 //    public static final Color COLORERROR = new Color(255, 153, 153);
@@ -19,7 +16,7 @@ public class CommonUtilities{
     static {
         Image tempImg = null;
         try {
-            tempImg = Toolkit.getDefaultToolkit().getImage(CommonUtilities.class.getResource("/images/logo.jpg"));
+            tempImg = Toolkit.getDefaultToolkit().getImage(ServiceUtilities.class.getResource("/images/logo.jpg"));
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
@@ -38,7 +35,7 @@ public class CommonUtilities{
      * @return Objeto Icon con la imagen escalada.
      */
     public static Icon icono(String path, int width, int height) {
-        Image img = new ImageIcon(CommonUtilities.class.getResource(path))
+        Image img = new ImageIcon(ServiceUtilities.class.getResource(path))
                 .getImage().getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
         Icon ic = new ImageIcon(img);
         return ic;

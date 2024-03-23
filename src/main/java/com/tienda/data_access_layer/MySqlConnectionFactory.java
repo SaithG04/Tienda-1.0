@@ -1,6 +1,6 @@
 package com.tienda.data_access_layer;
 
-import com.tienda.utilities.CommonUtilities;
+import com.tienda.utilities.DataAccessUtilities;
 import java.sql.*;
 
 /**
@@ -8,19 +8,18 @@ import java.sql.*;
  * operations. It includes methods to connect to the database with and without a
  * username and password.
  */
-public class MySqlConnectionFactory extends CommonUtilities implements ConnectionFactory {
+public class MySqlConnectionFactory extends DataAccessUtilities implements ConnectionFactory {
 
     // Variables estáticas para el usuario y variables de instancia para la contraseña y los detalles de la base de datos
-    private static String userBD;
-    private final String passwordBD;
     private final String driver = "com.mysql.cj.jdbc.Driver"; // Driver JDBC para MySQL
     private final String type = "jdbc:mysql://"; // Protocolo JDBC para MySQL
     private final String host = "sql10.freesqldatabase.com"; // Dirección del host de la base de datos
     private final String port = "3306"; // Dirección del puerto de la base de datos
     private final String bdName = "sql10692438"; // Nombre de la base de datos
 
-    public Connection objConnection = null;
-    public ConnectionFactory connectionFactory = null;
+    private final String userBD;
+    private final String passwordBD;
+    private Connection objConnection;
 
     // Constructor por defecto, establece las credenciales por defecto
     public MySqlConnectionFactory() {
@@ -30,7 +29,7 @@ public class MySqlConnectionFactory extends CommonUtilities implements Connectio
 
     // Constructor que permite pasar las credenciales
     public MySqlConnectionFactory(String userBD, String passwordBD) {
-        MySqlConnectionFactory.userBD = userBD; // Uso de la referencia de clase para la variable estática userBD
+        this.userBD = userBD; // Uso de la referencia de clase para la variable estática userBD
         this.passwordBD = passwordBD; // Establecimiento de la contraseña proporcionada
     }
 
@@ -55,12 +54,9 @@ public class MySqlConnectionFactory extends CommonUtilities implements Connectio
     @Override
     public void closeConnection() throws ClassNotFoundException, SQLException {
         if (objConnection != null) {
-            objConnection.close();
+            if (!objConnection.isClosed()) {
+                objConnection.close();
+            }
         }
     }
-
-    public String getBdName() {
-        return bdName;
-    }
-    
 }
