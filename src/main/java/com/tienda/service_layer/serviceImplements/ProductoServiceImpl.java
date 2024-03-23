@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -24,8 +26,9 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     private final ProductosFrame instanciaFrame;
     private final JButton btnUpdate, tbnDelete, btnAdd, btnHome, btnFind;
     private final JTable tbProducto;
-    private final JTextField txtNombre, txtCantidad, txtTipo;
+    private final JTextField txtNombre, txtCantidad, txtUnidad, txtPrecio;
     private final JComboBox<String> cbProveedor;
+    private static Map<Integer, String> proveedores;
 
     private ProductoServiceImpl() {
 
@@ -39,7 +42,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         this.tbProducto = instanciaFrame.getTabla();
         this.txtCantidad = instanciaFrame.getTxtCantidad();
         this.txtNombre = instanciaFrame.getTxtProducto();
-        this.txtTipo = instanciaFrame.getTxtTipo();
+        this.txtUnidad = instanciaFrame.getTxtTipo();
+        this.txtPrecio = instanciaFrame.getTxtPrecio();
         this.cbProveedor = instanciaFrame.getCbProveedor();
     }
 
@@ -80,10 +84,12 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public void CargarKeyListeners() {}
+    public void CargarKeyListeners() {
+    }
 
     @Override
-    public void CargarMouseListeners() {}
+    public void CargarMouseListeners() {
+    }
 
     @Override
     public void QuitActionListeners() {
@@ -95,23 +101,33 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public void QuitKeyListener(Component componente) {}
+    public void QuitKeyListener(Component componente) {
+    }
 
     @Override
-    public void QuitMouseListener(Component componente) {}
+    public void QuitMouseListener(Component componente) {
+    }
 
     @Override
     public DefaultTableModel cargarProducto() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Producto","Proveedor" ,"Cantidad" , "Precio", "Unidad Medida"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Producto", "Proveedor", "Cantidad", "Precio", "Unidad Medida"}, 0);
         try {
 
             ProductoDAO productoDAO = new ProductoDAOImpl(new Producto());
-
+            proveedores = ProductoDAOImpl.getNameProveedor();
             // Obtener la lista de usuarios desde la base de datos usando las funciones definidas en UserDAOImpl
             List<Producto> lista = productoDAO.listar();
+
+            Set<Integer> claves = proveedores.keySet();
+            cbProveedor.removeAllItems();
+            cbProveedor.addItem("<SELECCIONAR>");
+            for (Integer clave : claves) {  
+                cbProveedor.addItem(proveedores.get(clave));
+            }
             lista.forEach(producto -> {
-                model.addRow(new Object[]{producto.getId(), producto.getNombre(), producto.getProveedor(), producto.getCantidad(), producto.getPrecio(), producto.getMedida()});
+                model.addRow(new Object[]{producto.getId(), producto.getNombre(), proveedores.get(producto.getProveedor()), producto.getCantidad(), producto.getPrecio(), producto.getMedida()});
             });
+
         } catch (ClassNotFoundException | SQLException e) {
             // Manejar cualquier excepción que pueda ocurrir durante la carga de usuarios
             alerta.manejarErrorConexion(this.getClass(), e);
@@ -119,9 +135,64 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         return model;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void RegistrarProducto() {
+        String nombre = txtNombre.getText();
+        String unidad = txtUnidad.getText();
+        double cantidad = Double.parseDouble(txtCantidad.getText());
+        double precio = Double.parseDouble(txtPrecio.getText());
+
+        if (nombre.isEmpty() || unidad.isEmpty() || cantidad == 0 || cbProveedor.getSelectedIndex() == 0) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return;
+        }
+        try {
+
+            Producto ProductoCreated = new Producto();
+            ProductoCreated.setId(0);
+            ProductoCreated.setNombre(nombre);
+            ProductoCreated.setCantidad(cantidad);
+            ProductoCreated.setMedida(unidad);
+            ProductoCreated.setProveedor(getIdProveedor());
+            ProductoCreated.setPrecio(precio);
+
+            ProductoDAO producDAO = new ProductoDAOImpl(ProductoCreated);
+            producDAO.registrar();
+
+            limpiarTxt();
+            tbProducto.setModel(cargarProducto());
+            // Mostrar un mensaje de registro exitoso
+            alerta.aviso("Registro exitoso.");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejar cualquier error de conexión durante el registro
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnAdd){
+            RegistrarProducto();
+        }
+    }
+
+    public int getIdProveedor() {
+        String nombre = cbProveedor.getSelectedItem().toString();
+        Set<Integer> claves = proveedores.keySet();
+        for (Integer clave : claves) {
+            if (proveedores.get(clave) == nombre) {
+                return clave;
+            }
+        }
+        return 0;
+    }
+
+    public void limpiarTxt() {
+        txtCantidad.setText("");
+        txtNombre.setText("");
+        txtPrecio.setText("");
+        txtUnidad.setText("");
+        cbProveedor.setModel(cbProveedor.getModel());
+        txtNombre.requestFocus();
+    }
 }

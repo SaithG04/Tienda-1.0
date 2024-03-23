@@ -8,7 +8,6 @@ import java.util.function.Function;
 
 public class DataAccessUtilities {
 
-
     public static final AlertsClass alerta = AlertsClass.getAlert();
 
     public <T> T getByIdGeneric(int id, String tableName) throws SQLException, ClassNotFoundException {
@@ -82,6 +81,9 @@ public class DataAccessUtilities {
                 switch (nameTable) {
                     case "users":
                         return new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4]);
+                    case "productos":
+                        return new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
+
                     default:
                         return null;
                 }
@@ -115,10 +117,15 @@ public class DataAccessUtilities {
             statement.setBytes(4, user.getHashed_password());
             statement.setBytes(5, user.getSalt());
         } else if (entity instanceof Producto producto) {
-
+            statement.setInt(1, 0); //Porque es autoincrementable
+            statement.setString(2, producto.getNombre());
+            statement.setInt(3, producto.getProveedor());
+            statement.setDouble(4, producto.getCantidad());
+            statement.setDouble(5, producto.getPrecio());
+            statement.setString(6, producto.getMedida());
         }
     }
-    
+
     private <T> void setUpdateStatementValues(PreparedStatement statement, T entity) throws SQLException {
 
         if (entity instanceof User user) {
@@ -146,7 +153,6 @@ public class DataAccessUtilities {
         queryBuilder.append(")");
         return queryBuilder.toString();
     }
-
 
     private String generateUpdateQuery(String tableName, Connection con) throws SQLException, ClassNotFoundException {
         String[] columnNames = getTableColumns(tableName, con);
