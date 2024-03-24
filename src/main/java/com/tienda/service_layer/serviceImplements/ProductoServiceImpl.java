@@ -9,6 +9,9 @@ import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +84,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         btnAdd.addActionListener(this);
         btnHome.addActionListener(this);
         btnFind.addActionListener(this);
+        CargarMouseListeners();
     }
 
     @Override
@@ -89,6 +93,12 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
 
     @Override
     public void CargarMouseListeners() {
+        tbProducto.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                rellenoCamposSeleccionados();
+            }
+        });
     }
 
     @Override
@@ -106,6 +116,9 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
 
     @Override
     public void QuitMouseListener(Component componente) {
+        for (MouseListener ml : componente.getMouseListeners()) {
+            componente.removeMouseListener(ml); // Eliminar los MouseListeners del componente
+        }
     }
 
     @Override
@@ -114,16 +127,9 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         try {
 
             ProductoDAO productoDAO = new ProductoDAOImpl(new Producto());
-            proveedores = ProductoDAOImpl.getNameProveedor();
-            // Obtener la lista de usuarios desde la base de datos usando las funciones definidas en UserDAOImpl
+            actualizarProveedores();
             List<Producto> lista = productoDAO.listar();
 
-            Set<Integer> claves = proveedores.keySet();
-            cbProveedor.removeAllItems();
-            cbProveedor.addItem("<SELECCIONAR>");
-            for (Integer clave : claves) {  
-                cbProveedor.addItem(proveedores.get(clave));
-            }
             lista.forEach(producto -> {
                 model.addRow(new Object[]{producto.getId(), producto.getNombre(), proveedores.get(producto.getProveedor()), producto.getCantidad(), producto.getPrecio(), producto.getMedida()});
             });
@@ -171,8 +177,13 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnAdd){
+        if (e.getSource() == btnAdd) {
             RegistrarProducto();
+        } else if (e.getSource() == btnHome) {
+            instanciaFrame.dispose();
+            MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+        } else if (e.getSource() == btnUpdate) {
+            actualizarProducto();
         }
     }
 
@@ -192,7 +203,69 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         txtNombre.setText("");
         txtPrecio.setText("");
         txtUnidad.setText("");
-        cbProveedor.setModel(cbProveedor.getModel());
         txtNombre.requestFocus();
+    }
+
+    private void actualizarProveedores() throws ClassNotFoundException, SQLException {
+        proveedores = ProductoDAOImpl.getNameProveedor();
+        Set<Integer> claves = proveedores.keySet();
+        cbProveedor.removeAllItems();
+        cbProveedor.addItem("<SELECCIONAR>");
+        for (Integer clave : claves) {
+            cbProveedor.addItem(proveedores.get(clave));
+        }
+    }
+
+    private void actualizarProducto() {
+        String nombre = txtNombre.getText();
+        double cantidad = Double.parseDouble(txtCantidad.getText());
+        double precio = Double.parseDouble(txtPrecio.getText());
+        String undMedida = txtUnidad.getText();
+        int idProveedor = getProvTabla(2);
+
+        try {
+            Producto prodUpdate = new Producto();
+            prodUpdate.setId((int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0));
+
+            ProductoDAO prodDAO = new ProductoDAOImpl(prodUpdate);
+            Producto prodFind = prodDAO.getById(prodUpdate.getId());
+
+            prodFind.setCantidad(cantidad);
+            prodFind.setMedida(undMedida);
+            prodFind.setNombre(nombre);
+            prodFind.setProveedor(idProveedor);
+            prodFind.setPrecio(precio);
+
+            prodDAO = new ProductoDAOImpl(prodFind);
+            prodDAO.actualizar();
+
+            tbProducto.setModel(cargarProducto());
+            alerta.aviso("Actualización exitosa.");
+            limpiarTxt();
+        } catch (SQLException | ClassNotFoundException e) {
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+    }
+
+    public void rellenoCamposSeleccionados() {
+        int row = tbProducto.getSelectedRow();
+        if (row != -1) {
+            txtNombre.setText(tbProducto.getValueAt(row, 1).toString());
+            cbProveedor.setSelectedIndex(getProvTabla(row));
+            txtCantidad.setText(tbProducto.getValueAt(row, 3).toString());
+            txtPrecio.setText(tbProducto.getValueAt(row, 4).toString());
+            txtUnidad.setText(tbProducto.getValueAt(row, 5).toString());
+        }
+    }
+    
+    private int getProvTabla(int row){
+        int index = 0;
+        String proveedor = tbProducto.getValueAt(row, 2).toString();
+        for (int i = 0; i <= cbProveedor.getItemCount(); i++){
+            if (cbProveedor.getItemAt(i) == proveedor){
+                index = i;
+            }
+        }
+        return index;
     }
 }
