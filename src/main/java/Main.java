@@ -17,6 +17,7 @@ public class Main {
         // Crear una instancia de LoginServiceImpl y cargar el formulario de inicio de sesión
         LoginServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
         LoginServiceImpl.getInstance().GetInstanceOfFrame().getTxtUsuario().requestFocus();
+        System.out.println(System.getProperty("user.dir"));
     }
 
 }

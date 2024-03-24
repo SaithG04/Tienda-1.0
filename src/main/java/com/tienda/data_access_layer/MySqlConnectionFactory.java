@@ -13,9 +13,7 @@ public class MySqlConnectionFactory extends DataAccessUtilities implements Conne
     // Variables estáticas para el usuario y variables de instancia para la contraseña y los detalles de la base de datos
     private final String driver = "com.mysql.cj.jdbc.Driver"; // Driver JDBC para MySQL
     private final String type = "jdbc:mysql://"; // Protocolo JDBC para MySQL
-    private final String host = "sql10.freesqldatabase.com"; // Dirección del host de la base de datos
-    private final String port = "3306"; // Dirección del puerto de la base de datos
-    private final String bdName = "sql10692438"; // Nombre de la base de datos
+    private final String[] properties;
 
     private final String userBD;
     private final String passwordBD;
@@ -23,12 +21,14 @@ public class MySqlConnectionFactory extends DataAccessUtilities implements Conne
 
     // Constructor por defecto, establece las credenciales por defecto
     public MySqlConnectionFactory() {
-        userBD = "sql10692438";
-        passwordBD = "rKmVRFuRS4";
+        properties = getProperties();
+        userBD = properties[3];
+        passwordBD = properties[4];
     }
 
     // Constructor que permite pasar las credenciales
     public MySqlConnectionFactory(String userBD, String passwordBD) {
+        properties = getProperties();
         this.userBD = userBD; // Uso de la referencia de clase para la variable estática userBD
         this.passwordBD = passwordBD; // Establecimiento de la contraseña proporcionada
     }
@@ -46,7 +46,7 @@ public class MySqlConnectionFactory extends DataAccessUtilities implements Conne
         // Cargar el driver de la base de datos
         Class.forName(driver);
         // Establecer la conexión utilizando los parámetros proporcionados
-        objConnection = DriverManager.getConnection(type + host + ":" + port + "/" + bdName, userBD, passwordBD);
+        objConnection = DriverManager.getConnection(type + properties[0] + ":" + properties[1] + "/" + properties[2], userBD, passwordBD);
 
         return objConnection;
     }
