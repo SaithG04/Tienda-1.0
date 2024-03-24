@@ -134,7 +134,12 @@ public class DataAccessUtilities {
             statement.setBytes(4, user.getSalt());
             statement.setInt(5, user.getId());
         } else if (entity instanceof Producto producto) {
-
+            statement.setString(1, producto.getNombre());
+            statement.setInt(2, producto.getProveedor());
+            statement.setDouble(3, producto.getCantidad());
+            statement.setDouble(4, producto.getPrecio());
+            statement.setString(5, producto.getMedida());
+            statement.setInt(6, producto.getId());
         }
     }
 
