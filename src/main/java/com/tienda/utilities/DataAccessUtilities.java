@@ -2,6 +2,7 @@ package com.tienda.utilities;
 
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import com.tienda.entity.*;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
@@ -94,6 +95,32 @@ public class DataAccessUtilities {
         };
     }
 
+    public String[] getProperties() {
+        Properties propiedades = new Properties();
+        FileInputStream entrada = null;
+        try {
+            entrada = new FileInputStream("src/main/resources/properties/config.properties");
+            propiedades.load(entrada);
+
+            String host = propiedades.getProperty("db.host");
+            String port = propiedades.getProperty("db.port");
+            String database = propiedades.getProperty("db.database");
+            String user = propiedades.getProperty("db.user");
+            String password = propiedades.getProperty("db.password");
+
+            return new String[]{host, port, database, user, password};
+        } catch (IOException ex) {
+        } finally {
+            if (entrada != null) {
+                try {
+                    entrada.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return null;
+    }
+
     private String[] getTableColumns(String tableName, Connection con) throws SQLException, ClassNotFoundException {
         java.util.List<String> columns = new ArrayList<>();
         DatabaseMetaData metaData = con.getMetaData();
@@ -170,14 +197,5 @@ public class DataAccessUtilities {
         queryBuilder.append(" WHERE id = ?");
         return queryBuilder.toString();
     }
-//
-//    public Object[] extractRowFromResultSet(ResultSet resultSet, String tableName, Connection con) throws SQLException, ClassNotFoundException {
-//        int numColumnas = getTableColumns(tableName, con).length;
-//        Object[] fila = new Object[numColumnas];
-//        for (int i = 0; i < numColumnas; i++) {
-//            fila[i] = resultSet.getObject(i + 1);
-//        }
-//        return fila;
-//    }
 
 }
