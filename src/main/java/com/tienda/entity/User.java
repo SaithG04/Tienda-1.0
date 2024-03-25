@@ -1,7 +1,5 @@
 package com.tienda.entity;
 
-import java.util.Arrays;
-
 /**
  * La clase User representa a un usuario en el sistema.
  *

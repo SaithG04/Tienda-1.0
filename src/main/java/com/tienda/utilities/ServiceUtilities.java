@@ -1,5 +1,6 @@
 package com.tienda.utilities;
 
+import com.tienda.presentation_layer.*;
 import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
 import java.awt.*;
 import java.awt.event.*;
@@ -14,6 +15,9 @@ import javax.swing.*;
 public class ServiceUtilities {
 
     public static final Image IMG;
+    public final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+    public final Cursor textCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    public final Cursor defaultCursor = Cursor.getDefaultCursor();
 
     static {
         Image tempImg = null;
@@ -185,6 +189,7 @@ public class ServiceUtilities {
         t.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
+                t.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 // Mostrar un mensaje de confirmación antes de salir de la aplicación
                 if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
                     if (LoginServiceImpl.userLogued.getStatus().equals("logged in")) {
@@ -288,4 +293,19 @@ public class ServiceUtilities {
         return false; // Si no encuentra ningún carácter no permitido, retorna falso
     }
 
+    public void volverLogin(String tableName) {
+        if (!LoginFrame.getInstance().isVisible()) {
+            alerta.mostrarError(this.getClass(), "Usted ha sido desconectado.", null);
+            switch (tableName) {
+                case "users" -> {
+                    UsersFrame.getInstance().dispose();
+                    LoginFrame.getInstance().setVisible(true);
+                }
+                case "productos" -> {
+                }
+                default ->
+                    throw new AssertionError();
+            }
+        }
+    }
 }
