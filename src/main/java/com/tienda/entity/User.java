@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 /**
  * La clase User representa a un usuario en el sistema.
- * 
+ *
  * @author isai_
  */
 public class User {
@@ -14,6 +14,7 @@ public class User {
     private String username; // Nombre de usuario
     private byte[] hashed_password; // Contraseña del usuario en formato hash
     private byte[] salt; // Valor de sal utilizado en la encriptación de la contraseña
+    private String status;
 
     /**
      * Constructor para inicializar un objeto User con su ID, nombre de usuario,
@@ -24,13 +25,15 @@ public class User {
      * @param username Username del usuario.
      * @param hashed_password Contraseña del usuario en formato hash.
      * @param salt Valor de salt utilizado en la encriptación de la contraseña.
+     * @param status
      */
-    public User(int id, String nombreCompleto, String username, byte[] hashed_password, byte[] salt) {
+    public User(int id, String nombreCompleto, String username, byte[] hashed_password, byte[] salt, String status) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.username = username;
         this.hashed_password = hashed_password;
         this.salt = salt;
+        this.status = status;
     }
 
     /**
@@ -131,6 +134,14 @@ public class User {
         this.salt = salt;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     /**
      * Devuelve una representación en forma de cadena de texto del objeto User.
      *
@@ -138,12 +149,7 @@ public class User {
      */
     @Override
     public String toString() {
-        return "User{"
-                + "id=" + id
-                + ", nombreCompleto='" + nombreCompleto + '\''
-                + ", username='" + username + '\''
-                + ", hashed_password=" + Arrays.toString(hashed_password)
-                + ", salt=" + Arrays.toString(salt)
-                + '}';
+        return "User{" + "id=" + id + ", nombreCompleto=" + nombreCompleto + ", username=" + username + ", hashed_password=" + hashed_password + ", salt=" + salt + ", status=" + status + '}';
     }
+
 }

@@ -142,14 +142,11 @@ public class DataAccessUtilities {
                     row[i] = resultSetReceived.getObject(i + 1);
                 }
 
-                switch (nameTable) {
-                    case "users":
-                        return new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4]);
-                    case "productos":
-                        return new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
-                    default:
-                        return null;
-                }
+                return switch (nameTable) {
+                    case "users" -> new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4], row[5].toString());
+                    case "productos" -> new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
+                    default -> null;
+                };
 
             } catch (SQLException e) {
                 alerta.manejarErrorConexion(this.getClass(), e);
@@ -230,6 +227,7 @@ public class DataAccessUtilities {
             statement.setString(3, user.getUsername());
             statement.setBytes(4, user.getHashed_password());
             statement.setBytes(5, user.getSalt());
+            statement.setString(6, user.getStatus());
         } else if (entity instanceof Producto producto) {
             statement.setInt(1, 0); //Porque es autoincrementable
             statement.setString(2, producto.getNombre());
@@ -255,7 +253,8 @@ public class DataAccessUtilities {
             statement.setString(2, user.getUsername());
             statement.setBytes(3, user.getHashed_password());
             statement.setBytes(4, user.getSalt());
-            statement.setInt(5, user.getId());
+            statement.setString(5, user.getStatus());
+            statement.setInt(6, user.getId());            
         } else if (entity instanceof Producto producto) {
             statement.setString(1, producto.getNombre());
             statement.setInt(2, producto.getProveedor());

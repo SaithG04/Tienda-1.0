@@ -7,7 +7,7 @@ import javax.swing.*;
 
 /**
  * Clase base para funcionalidades generales compartidas.
- * 
+ *
  * @author isai_
  */
 public class ServiceUtilities {
@@ -189,6 +189,22 @@ public class ServiceUtilities {
                     // Salir de la aplicación si se confirma
                     System.exit(0);
                 }
+            }
+        });
+    }
+
+    public void setCursor(Cursor c, JFrame t) {
+        // Eliminar cualquier WindowListener existente
+        for (WindowListener wl : t.getWindowListeners()) {
+            t.removeWindowListener(wl);
+        }
+
+        // Agregar un nuevo WindowListener para confirmar la salida de la aplicación
+        t.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                // Cuando el segundo JFrame se hace visible, restablecer el cursor
+                t.setCursor(c);
             }
         });
     }

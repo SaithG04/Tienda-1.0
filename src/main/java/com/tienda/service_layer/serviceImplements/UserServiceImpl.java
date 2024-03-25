@@ -132,6 +132,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     @Override
     public void cargarKeyListeners() {
         quitKeyListener(txtPassword);
+//        quitKeyListener(jtbUsuarios);
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -143,21 +144,34 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                     btnRevelar.setEnabled(false);
                     lblPassword.setText(""); // Limpiar el texto del JLabel cuando no hay contraseña
                 }
+                if (psw.length() != 0) {
+                    if (psw.length() < 8) {
+                        lblPassword.setText("La contraseña debe contener al menos 8 caracteres.");
+                    } else if (!contieneMayuscula(psw)) {
+                        lblPassword.setText("La contraseña debe contener al menos 1 mayúscula.");
+                    } else if (!contieneNumero(psw)) {
+                        lblPassword.setText("La contraseña debe contener al menos 1 número.");
+                    } else if (!contieneSigno(psw)) {
+                        lblPassword.setText("La contraseña debe contener al menos 1 signo.");
+                    } else if (contieneEspacioBlanco(psw)) {
+                        lblPassword.setText("La contraseña no debe contener espacios en blanco.");
+                    } else if (contieneCaracteresNoPermitidos(psw)) {
+                        lblPassword.setText("La contraseña contiene caracteres no permitidos.");
+                    } else {
+                        lblPassword.setText("");
+                    }
+                }
 
-                if (psw.length() < 8) {
-                    lblPassword.setText("La contraseña debe contener al menos 8 caracteres.");
-                } else if (!contieneMayuscula(psw)) {
-                    lblPassword.setText("La contraseña debe contener al menos 1 mayúscula.");
-                } else if (!contieneNumero(psw)) {
-                    lblPassword.setText("La contraseña debe contener al menos 1 número.");
-                } else if (!contieneSigno(psw)) {
-                    lblPassword.setText("La contraseña debe contener al menos 1 signo.");
-                } else if (contieneEspacioBlanco(psw)) {
-                    lblPassword.setText("La contraseña no debe contener espacios en blanco.");
-                } else if (contieneCaracteresNoPermitidos(psw)) {
-                    lblPassword.setText("La contraseña contiene caracteres no permitidos.");
-                } else {
-                    lblPassword.setText("");
+            }
+        });
+        jtbUsuarios.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent evt) {
+                boolean value = bloquearMultipleModificacion();
+                if (value) {
+                    if (evt.getKeyCode() == KeyEvent.VK_DOWN || evt.getKeyCode() == KeyEvent.VK_UP) {
+                        autocompletarCampos();
+                    }
                 }
             }
         });
@@ -183,6 +197,11 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                     // Autocompletar campos de texto al hacer clic izquierdo en la tabla
                     autocompletarCampos();
                 }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                bloquearMultipleModificacion();
             }
         });
     }
@@ -432,6 +451,10 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
             String username = jtbUsuarios.getValueAt(rowSelected, 2).toString();
             txtNombreCompleto.setText(nombreCompleto);
             txtUsuario.setText(username);
+            txtPassword.setText("");
+            lblPassword.setText("");
+            btnRevelar.setIcon(iconoMostrar);
+            btnRevelar.setEnabled(false);
             btnRegistrar.setEnabled(false);
             btnModificar.setEnabled(true);
         }
@@ -443,12 +466,25 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      */
     @Override
     public void limpiarCampos() {
+        limpiarCamposSinTabla();
+        jtbUsuarios.clearSelection();
+    }
+
+    public void limpiarCamposSinTabla() {
         txtNombreCompleto.setText("");
         txtUsuario.setText("");
         txtPassword.setText("");
+        lblPassword.setText("");
         btnRegistrar.setEnabled(true);
         btnModificar.setEnabled(false);
         btnRevelar.setEnabled(false);
-        lblPassword.setText("");
+    }
+
+    public boolean bloquearMultipleModificacion() {
+        if (jtbUsuarios.getSelectedRowCount() > 1) {
+            limpiarCamposSinTabla();
+            return false;
+        }
+        return true;
     }
 }
