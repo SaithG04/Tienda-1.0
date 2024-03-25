@@ -105,16 +105,18 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
 
     /**
      * Método para iniciar sesión.
+     *
+     * @param evt Evento recibido
      */
     @Override
-    public void IniciarSesion() {
+    public void IniciarSesion(AWTEvent evt) {
         if (intentos == 3) {
             // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos
             alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
             System.exit(0);
         } else {
-
-            btnAceptar.setCursor(waitCursor);
+            Component componente = evt instanceof KeyEvent ? instanceOfLoginFrame : btnAceptar;
+            componente.setCursor(waitCursor);
             try {
 
                 // Obtener usuario y contraseña del formulario de inicio de sesión
@@ -125,7 +127,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                 if (usuario.isEmpty() || password.isEmpty()) {
                     // Mostrar mensaje de alerta si hay campos vacíos
                     alerta.faltanDatos();
-                    btnAceptar.setCursor(defaultCursor);
+                    componente.setCursor(defaultCursor);
                     return; // Finalizar el método si hay campos vacíos
                 }
 
@@ -141,7 +143,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     alerta.mostrarError(this.getClass(), "El usuario no existe.", null);
                     txtPassword.setText("");
                     txtUsuario.requestFocus();
-                    btnAceptar.setCursor(defaultCursor);
+                    componente.setCursor(defaultCursor);
                     return; // Finalizar el método si el usuario no existe
                 }
 
@@ -150,7 +152,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     txtUsuario.setText("");
                     txtPassword.setText("");
                     txtUsuario.requestFocus();
-                    btnAceptar.setCursor(defaultCursor);
+                    componente.setCursor(defaultCursor);
                     return;
                 }
 
@@ -163,7 +165,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
                     txtPassword.setText("");
                     txtPassword.requestFocus();
-                    btnAceptar.setCursor(defaultCursor);
+                    componente.setCursor(defaultCursor);
                     ++intentos;
                     return; // Finalizar el método si la contraseña es incorrecta
                 }
@@ -182,7 +184,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                 instanceOfLoginFrame.dispose();
                 MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
                 intentos = 0;
-                btnAceptar.setCursor(defaultCursor);
+                componente.setCursor(defaultCursor);
             } catch (SQLException | ClassNotFoundException ex) {
                 // Manejar excepciones de base de datos y de configuración del sistema
                 alerta.mostrarError(LoginServiceImpl.class, "Error al acceder a la base de datos.", ex);
@@ -206,21 +208,12 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     @Override
     public void cargarKeyListeners() {
         quitKeyListener(txtPassword); // Eliminar los KeyListeners anteriores del campo de contraseña
-        quitKeyListener(txtUsuario); // Eliminar los KeyListeners anteriores del campo de usuario
         // Agregar KeyListeners para los campos de texto
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    IniciarSesion(); // Iniciar sesión al presionar la tecla Enter en el campo de contraseña
-                }
-            }
-        });
-        txtUsuario.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    IniciarSesion(); // Iniciar sesión al presionar la tecla Enter en el campo de usuario
+                    IniciarSesion(e); // Iniciar sesión al presionar la tecla Enter en el campo de contraseña
                 }
             }
         });
@@ -274,7 +267,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource() == btnAceptar) {
-            IniciarSesion(); // Iniciar sesión si se presiona el botón de aceptar
+            IniciarSesion(evt); // Iniciar sesión si se presiona el botón de aceptar
         } else if (evt.getSource() == btnSalir) {
             System.exit(0);
         }
