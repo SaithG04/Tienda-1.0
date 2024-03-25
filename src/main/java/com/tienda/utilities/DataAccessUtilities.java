@@ -248,20 +248,25 @@ public class DataAccessUtilities {
      */
     private <T> void setUpdateStatementValues(PreparedStatement statement, T entity) throws SQLException {
 
-        if (entity instanceof User user) {
-            statement.setString(1, user.getNombreCompleto());
-            statement.setString(2, user.getUsername());
-            statement.setBytes(3, user.getHashed_password());
-            statement.setBytes(4, user.getSalt());
-            statement.setString(5, user.getStatus());
-            statement.setInt(6, user.getId());            
-        } else if (entity instanceof Producto producto) {
-            statement.setString(1, producto.getNombre());
-            statement.setInt(2, producto.getProveedor());
-            statement.setDouble(3, producto.getCantidad());
-            statement.setDouble(4, producto.getPrecio());
-            statement.setString(5, producto.getMedida());
-            statement.setInt(6, producto.getId());
+        switch (entity) {
+            case User user -> {
+                statement.setString(1, user.getNombreCompleto());
+                statement.setString(2, user.getUsername());
+                statement.setBytes(3, user.getHashed_password());
+                statement.setBytes(4, user.getSalt());
+                statement.setString(5, user.getStatus());
+                statement.setInt(6, user.getId());
+            }
+            case Producto producto -> {
+                statement.setString(1, producto.getNombre());
+                statement.setInt(2, producto.getProveedor());
+                statement.setDouble(3, producto.getCantidad());
+                statement.setDouble(4, producto.getPrecio());
+                statement.setString(5, producto.getMedida());
+                statement.setInt(6, producto.getId());
+            }
+            default -> {
+            }
         }
     }
 

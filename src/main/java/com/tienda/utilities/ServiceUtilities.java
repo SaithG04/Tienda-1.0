@@ -1,5 +1,6 @@
 package com.tienda.utilities;
 
+import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;
@@ -186,25 +187,13 @@ public class ServiceUtilities {
             public void windowClosing(WindowEvent evt) {
                 // Mostrar un mensaje de confirmación antes de salir de la aplicación
                 if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
-                    // Salir de la aplicación si se confirma
-                    System.exit(0);
+                    if (LoginServiceImpl.userLogued.getStatus().equals("logged in")) {
+                        alerta.advertencia("Cierre sesión primero.");
+                    } else {
+                        // Salir de la aplicación si se confirma
+                        System.exit(0);
+                    }
                 }
-            }
-        });
-    }
-
-    public void setCursor(Cursor c, JFrame t) {
-        // Eliminar cualquier WindowListener existente
-        for (WindowListener wl : t.getWindowListeners()) {
-            t.removeWindowListener(wl);
-        }
-
-        // Agregar un nuevo WindowListener para confirmar la salida de la aplicación
-        t.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-                // Cuando el segundo JFrame se hace visible, restablecer el cursor
-                t.setCursor(c);
             }
         });
     }

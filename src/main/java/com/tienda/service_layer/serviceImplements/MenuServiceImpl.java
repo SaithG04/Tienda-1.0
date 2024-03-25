@@ -72,8 +72,6 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
         // Método para cerrar el formulario del menú principal
         Close(instanceOfMenuPrincipalFrame);
-        
-//        setCursorDefault(LoginServiceImpl.getInstance().getInstanceOfFrame());
 
         // Actualizar el título del formulario con el nombre de usuario
         lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
