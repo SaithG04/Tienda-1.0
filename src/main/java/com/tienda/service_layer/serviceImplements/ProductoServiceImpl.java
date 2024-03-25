@@ -9,6 +9,9 @@ import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,7 +30,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     private static volatile ProductoServiceImpl instanciaImpl;
 
     private final ProductosFrame instanciaFrame;
-    private final JButton btnUpdate, tbnDelete, btnAdd, btnHome, btnFind;
+    private final JButton btnUpdate, btnDelete, btnAdd, btnHome, btnFind;
     private final JTable tbProducto;
     private final JTextField txtNombre, txtCantidad, txtUnidad, txtPrecio;
     private final JComboBox<String> cbProveedor;
@@ -38,7 +41,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         instanciaFrame = ProductosFrame.getProcFrame();
 
         this.btnUpdate = instanciaFrame.getBtnEdit();
-        this.tbnDelete = instanciaFrame.getTbnDelete();
+        this.btnDelete = instanciaFrame.getTbnDelete();
         this.btnAdd = instanciaFrame.getBtnAdd();
         this.btnHome = instanciaFrame.getBtninicio();
         this.btnFind = instanciaFrame.getBtnFind();
@@ -79,16 +82,30 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     @Override
     public void cargarActionListeners() {
         quitActionListeners();
+        quitKeyListener(instanciaFrame);
+        quitMouseListener(instanciaFrame);
         btnUpdate.addActionListener(this);
-        tbnDelete.addActionListener(this);
+        btnDelete.addActionListener(this);
         btnAdd.addActionListener(this);
         btnHome.addActionListener(this);
         btnFind.addActionListener(this);
         cargarMouseListeners();
+        cargarKeyListeners();
     }
 
     @Override
     public void cargarKeyListeners() {
+        tbProducto.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (tbProducto.getSelectedRowCount() > 1) {
+                    limpiarTxt();
+                } else {
+                    rellenoCamposSeleccionados();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -98,13 +115,20 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             public void mouseClicked(MouseEvent e) {
                 rellenoCamposSeleccionados();
             }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (tbProducto.getSelectedRowCount() > 1) {
+                    limpiarTxt();
+                }
+            }
         });
     }
 
     @Override
     public void quitActionListeners() {
         btnUpdate.removeActionListener(this);
-        tbnDelete.removeActionListener(this);
+        btnDelete.removeActionListener(this);
         btnAdd.removeActionListener(this);
         btnHome.removeActionListener(this);
         btnFind.removeActionListener(this);
@@ -112,6 +136,9 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
 
     @Override
     public void quitKeyListener(Component componente) {
+        for (KeyListener kl : componente.getKeyListeners()) {
+            componente.removeKeyListener(kl); // Eliminar los MouseListeners del componente
+        }
     }
 
     @Override
@@ -184,6 +211,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == btnUpdate) {
             actualizarProducto();
+        } else if (e.getSource() == btnDelete) {
+            eliminarProducto();
         }
     }
 
@@ -203,7 +232,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         txtNombre.setText("");
         txtPrecio.setText("");
         txtUnidad.setText("");
-        txtNombre.requestFocus();
+        cbProveedor.setSelectedIndex(0);
     }
 
     private void actualizarProveedores() throws ClassNotFoundException, SQLException {
@@ -217,11 +246,24 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     private void actualizarProducto() {
+        if (verificarValores()) {
+            return;
+        }
+
         String nombre = txtNombre.getText();
         double cantidad = Double.parseDouble(txtCantidad.getText());
         double precio = Double.parseDouble(txtPrecio.getText());
         String undMedida = txtUnidad.getText();
         int idProveedor = getProvTabla(2);
+
+        if (esSelecionMayor(tbProducto)) {
+            alerta.advertencia("Cuidado!, esta seleccionando varios productos.");
+            return;
+        }
+        if (nombre.equals("") || undMedida.equals("") || idProveedor < 1) {
+            alerta.faltanDatos();
+            return;
+        }
 
         try {
             Producto prodUpdate = new Producto();
@@ -257,15 +299,115 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             txtUnidad.setText(tbProducto.getValueAt(row, 5).toString());
         }
     }
-    
-    private int getProvTabla(int row){
+
+    private int getProvTabla(int row) {
         int index = 0;
         String proveedor = tbProducto.getValueAt(row, 2).toString();
-        for (int i = 0; i <= cbProveedor.getItemCount(); i++){
-            if (cbProveedor.getItemAt(i) == proveedor){
+        for (int i = 0; i <= cbProveedor.getItemCount(); i++) {
+            if (cbProveedor.getItemAt(i) == proveedor) {
                 index = i;
             }
         }
         return index;
+    }
+
+    public boolean esSelecionMayor(JTable tabla) {
+        if (tabla.getSelectedRowCount() > 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void eliminarProducto() {
+        try {
+            if (alerta.confirmacion("¿Está seguro de eliminar este producto?") == 0) {
+                // Obtener el ID del producto a eliminar
+                Producto productoForDelete = new Producto();
+                productoForDelete.setId((int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0));
+                // Crear un objeto productoDAOImpl para realizar operaciones de base de datos
+                ProductoDAO producDAO = new ProductoDAOImpl(productoForDelete);
+                // Eliminar el producto de la base de datos
+                producDAO.eliminar();
+                // Actualizar tabla y limpiar campos
+                tbProducto.setModel(cargarProducto());
+                limpiarTxt();
+                alerta.aviso("Producto eliminado correctamente.");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejo de errores de conexión
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+    }
+
+    private boolean verificarValores() {
+        for (int i = 0; i < txtCantidad.getText().length(); i++) {
+            if (Character.isLetter(txtCantidad.getText().charAt(i))) {
+                alerta.advertencia("Ups, parece que tienes un valor erroneo");
+                txtCantidad.requestFocus();
+                return true;
+            }
+        }
+        for (int i = 0; i < txtPrecio.getText().length(); i++) {
+            if (Character.isLetter(txtPrecio.getText().charAt(i))) {
+                alerta.advertencia("Ups, parece que tienes un valor erroneo");
+                txtPrecio.requestFocus();
+                return true;
+            }
+        }
+        return false;
+    }
+
+//    private void buscarProducto() {
+//        DefaultTableModel model = new DefaultTableModel();
+//
+//        String nombre = txtNombre.getText();
+//        String cantidad = txtCantidad.getText();
+//        String precio = txtPrecio.getText();
+//        String undMedida = txtUnidad.getText();
+//        int idProveedor = getProveedorBuscado();
+//
+//        if (!nombre.equals("")){
+//            model.addRow(buscarEnTabla(nombre));
+//        }else if (!cantidad.equals("")){
+//            buscarEnTabla(nombre);
+//        }else if (!precio.equals("")){
+//            buscarEnTabla(nombre);
+//        }else if (!undMedida.equals("")){
+//            buscarEnTabla(nombre);
+//        }
+//        
+//    }
+
+    private int getProveedorBuscado() {
+        int proveedor = 0;
+        String seleccionado = cbProveedor.getSelectedItem().toString();
+        for (int i = 0; i < cbProveedor.getItemCount(); i++) {
+            if (cbProveedor.getSelectedItem().toString().equals(seleccionado)) {
+                proveedor = i;
+            }
+        }
+        return proveedor;
+    }
+
+    private Producto buscarEnTabla(String busqueda) {
+        Producto productoEncontrado = new Producto();
+
+        for (int i = 0; i < tbProducto.getRowCount(); i++) {
+            for (int j = 0; j < tbProducto.getColumnCount(); j++) {
+                if (busqueda.equals(tbProducto.getValueAt(i, j))) {
+                    productoEncontrado.setId((int) tbProducto.getValueAt(i, 0));
+                    productoEncontrado.setNombre((String) tbProducto.getValueAt(i, 1));
+                    productoEncontrado.setProveedor(getProveedorBuscado());
+                    productoEncontrado.setCantidad((double) tbProducto.getValueAt(i, 3));
+                    productoEncontrado.setPrecio((double) tbProducto.getValueAt(i, 4));
+                    productoEncontrado.setMedida((String) tbProducto.getValueAt(i, 5));
+                    return productoEncontrado;
+                }
+
+            }
+        }
+        return null;
+
     }
 }
