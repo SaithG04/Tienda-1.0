@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 /**
  * La clase MenuServiceImpl implementa la interfaz MenuService y gestiona las
  * operaciones del menú principal.
+ *
+ * @author isai_
  */
 public class MenuServiceImpl extends ServiceUtilities implements MenuService, ActionListener {
 
@@ -59,12 +61,12 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * @return Instancia del formulario del menú principal.
      */
     @Override
-    public MenuPrincipalFrame GetInstanceOfFrame() {
+    public MenuPrincipalFrame getInstanceOfFrame() {
         // Ubicar el formulario en el centro de la pantalla
         instanceOfMenuPrincipalFrame.setLocationRelativeTo(null);
 
         // Cargar los ActionListeners para los botones
-        CargarActionListeners();
+        cargarActionListeners();
 
         // Método para cerrar el formulario del menú principal
         Close(instanceOfMenuPrincipalFrame);
@@ -79,9 +81,9 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * Carga los ActionListeners para los botones del menú principal.
      */
     @Override
-    public void CargarActionListeners() {
+    public void cargarActionListeners() {
         // Eliminar los ActionListeners existentes para evitar duplicados
-        QuitActionListeners();
+        quitActionListeners();
 
         // Agregar ActionListeners para los botones
         btnCerrarSesion.addActionListener(this);
@@ -93,7 +95,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * Carga los KeyListeners para los botones del menú principal.
      */
     @Override
-    public void CargarKeyListeners() {
+    public void cargarKeyListeners() {
         // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
     }
 
@@ -101,7 +103,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * Carga los Mouseisteners para los botones del menú principal.
      */
     @Override
-    public void CargarMouseListeners() {
+    public void cargarMouseListeners() {
         // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
     }
 
@@ -109,7 +111,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * Elimina los ActionListeners de los botones del menú principal.
      */
     @Override
-    public void QuitActionListeners() {
+    public void quitActionListeners() {
         // Eliminar los ActionListeners de los botones
         btnCerrarSesion.removeActionListener(this);
         btnUsuarios.removeActionListener(this);
@@ -122,7 +124,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * @param componente
      */
     @Override
-    public void QuitKeyListener(Component componente) {
+    public void quitKeyListener(Component componente) {
         // Este método no se implementa en esta clase, ya que no se requiere eliminar KeyListeners en este contexto
     }
 
@@ -132,7 +134,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
      * @param componente
      */
     @Override
-    public void QuitMouseListener(Component componente) {
+    public void quitMouseListener(Component componente) {
         // Este método no se implementa en esta clase, ya que no se requiere eliminar MouseListeners en este contexto
     }
 
@@ -150,11 +152,11 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
                 instanceOfMenuPrincipalFrame.dispose();
 
                 // Mostrar el formulario de inicio de sesión
-                LoginServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+                LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
 
                 // Colocar el foco en el formulario de inicio de sesión
-                LoginServiceImpl.getInstance().GetInstanceOfFrame().requestFocus();
-                LoginServiceImpl.getInstance().GetInstanceOfFrame().getTxtUsuario().requestFocus();
+                LoginServiceImpl.getInstance().getInstanceOfFrame().requestFocus();
+                LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
             }
         } // Verificar si el evento proviene del botón "Usuarios"
         else if (e.getSource() == btnUsuarios) {
@@ -162,13 +164,13 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
             instanceOfMenuPrincipalFrame.dispose();
 
             // Mostrar el formulario de gestión de usuarios
-            UserServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
-        }else if (e.getSource() == btnProductos) {
+            UserServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+        } else if (e.getSource() == btnProductos) {
             // Ocultar el formulario del menú principal
             instanceOfMenuPrincipalFrame.dispose();
 
-            // Mostrar el formulario de gestión de usuarios
-            ProductoServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+            // Mostrar el formulario de gestión de productos
+            ProductoServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         }
     }
 }

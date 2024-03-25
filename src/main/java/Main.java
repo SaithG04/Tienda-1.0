@@ -4,6 +4,8 @@ import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
 /**
  * La clase Main es la clase principal de la aplicación que inicia la interfaz
  * de inicio de sesión.
+ * 
+ * @author isai_
  */
 public class Main {
 
@@ -15,9 +17,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // Crear una instancia de LoginServiceImpl y cargar el formulario de inicio de sesión
-        LoginServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
-        LoginServiceImpl.getInstance().GetInstanceOfFrame().getTxtUsuario().requestFocus();
-        System.out.println(System.getProperty("user.dir"));
+        LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+        LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
     }
 
 }

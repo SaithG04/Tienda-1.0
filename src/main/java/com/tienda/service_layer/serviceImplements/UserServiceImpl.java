@@ -14,15 +14,20 @@ import com.tienda.service_layer.UserService;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * La clase UserServiceImpl se encarga de gestionar la creación de usuarios.
+ * Esta clase implementa la interfaz UserService y gestiona las operaciones de
+ * usuario en la capa de servicio.
+ *
+ * @author isai_
  */
 public class UserServiceImpl extends ServiceUtilities implements ActionListener, UserService {
 
-    // Instancia única de UserServiceImpl para implementar el patrón Singleton
+    // Declaración de variables miembro
     private static volatile UserServiceImpl instanceOfUserServiceImpl;
 
-    // Componentes de la interfaz de usuario
+    // Instancia del frame de usuarios
     private final UsersFrame instanceOfUsersFrame;
+
+    // Componentes de la interfaz de usuario
     private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar;
     private final JTextField txtUsuario, txtNombreCompleto;
     private final JPasswordField txtPassword;
@@ -32,11 +37,11 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     private final JLabel lblPassword;
     private final JToggleButton btnRevelar;
 
-    // Constructor privado para garantizar la instancia única
+    private final Icon iconoMostrar, iconoOcultar;
+
+    // Constructor privado para garantizar una única instancia de UserServiceImpl
     private UserServiceImpl() {
-        // Crear una instancia del formulario de usuario (UsersFrame)
         instanceOfUsersFrame = UsersFrame.getInstance();
-        // Obtener referencias a los componentes de la interfaz de usuario
         btnRegistrar = instanceOfUsersFrame.getBtnRegistrar();
         txtPassword = instanceOfUsersFrame.getTxtPassword();
         txtUsuario = instanceOfUsersFrame.getTxtUser();
@@ -49,10 +54,16 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnLimpiar = instanceOfUsersFrame.getBtnLimpiar();
         lblPassword = instanceOfUsersFrame.getLblPassword();
         btnRevelar = instanceOfUsersFrame.getBtnRevelar();
-        
+        iconoMostrar = icono("/images/mostrar_eye.jpg", 40, 40);
+        iconoOcultar = icono("/images/ocultar_eye.jpg", 40, 40);
     }
 
-    // Método estático para obtener la única instancia de UserServiceImpl
+    /**
+     * Método para obtener una instancia única de UserServiceImpl (patrón
+     * Singleton).
+     *
+     * @return Una instancia única de UserServiceImpl.
+     */
     public static UserServiceImpl getInstance() {
         if (instanceOfUserServiceImpl == null) {
             synchronized (UserServiceImpl.class) { // Sincronización para hilos
@@ -63,191 +74,49 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         }
         return instanceOfUserServiceImpl;
     }
-    
+
+    /**
+     * Método para obtener una instancia del frame de usuarios. Este método
+     * configura el frame de usuarios y carga los listeners y datos necesarios.
+     *
+     * @return Una instancia del frame de usuarios.
+     */
     @Override
-    public UsersFrame GetInstanceOfFrame() {
-        btnRevelar.setIcon(icono("/images/mostrar_eye.jpg", 60, 60));
-        btnModificar.setEnabled(false);
-        // Configurar la ubicación del formulario de usuarios y cerrar la instancia anterior si existe
+    public UsersFrame getInstanceOfFrame() {
+        // Configuración de la ubicación del frame en el centro de la pantalla
         instanceOfUsersFrame.setLocationRelativeTo(null);
+        // Icono para revelar/ocultar la contraseña
+        btnRevelar.setIcon(iconoMostrar);
+        // Deshabilitar el botón de revelar inicialmente
+        btnRevelar.setEnabled(false);
+        // Deshabilitar el botón de modificar inicialmente
+        btnModificar.setEnabled(false);
+        // Cerrar el frame al cerrar
         Close(instanceOfUsersFrame);
-        // Establecer el enfoque en el campo de nombre completo al abrir el formulario
-        txtNombreCompleto.requestFocus();
-        // Agregar ActionListener a los botones y cargar los usuarios en un hilo separado
-        CargarActionListeners();
-        CargarMouseListeners();
-        CargarKeyListeners();
+        // Cargar listeners de acciones
+        cargarActionListeners();
+        // Cargar listeners de mouse
+        cargarMouseListeners();
+        // Cargar listeners de teclado
+        cargarKeyListeners();
+        // Limpiar tabla de usuarios
         jtbUsuarios.setModel(new DefaultTableModel(0, 0));
+        // Foco en el campo de nombre completo
+        txtNombreCompleto.requestFocus();
+        // Cargar usuarios en una nueva hebra para evitar bloqueos
         new Thread(() -> {
-            jtbUsuarios.setModel(CargarUsuarios());
+            jtbUsuarios.setModel(cargarUsuarios());
         }).start();
         return instanceOfUsersFrame;
     }
 
     /**
-     * Registra un nuevo usuario en el sistema.
+     * Método para cargar los listeners de acciones en los componentes de la
+     * interfaz.
      */
     @Override
-    public void RegistrarUsuario() {
-        // Obtener los datos ingresados por el usuario
-        String nombreCompleto = txtNombreCompleto.getText();
-        String user = txtUsuario.getText();
-        String password = String.valueOf(txtPassword.getPassword());
-
-        // Verificar si se han completado todos los campos
-        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
-            alerta.advertencia("Por favor, complete todos los campos.");
-            return;
-        }
-        
-        try {
-            
-            User userCreated = new User();
-            userCreated.setId(0);
-            userCreated.setNombreCompleto(nombreCompleto);
-            userCreated.setUsername(user);
-            userCreated.setSalt(generateSalt());
-            userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
-            
-            UserDAO userDAO = new UserDAOImpl(userCreated);
-            User userByUsername = userDAO.getUserByUsername();
-            if (userByUsername != null) {
-                alerta.advertencia("El nombre de usuario no está disponible");
-                txtUsuario.setText("");
-                txtPassword.setText("");
-                txtUsuario.requestFocus();
-            } else {
-                userDAO.registrar();
-                
-                limpiarCampos();
-                jtbUsuarios.setModel(CargarUsuarios());
-                // Mostrar un mensaje de registro exitoso
-                alerta.aviso("Registro exitoso.");
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            // Manejar cualquier error de conexión durante el registro
-            alerta.manejarErrorConexion(this.getClass(), e);
-        }
-    }
-    
-    private void ActualizarUsuario() {
-        // Obtener los datos ingresados por el usuario
-        String nombreCompleto = txtNombreCompleto.getText();
-        String user = txtUsuario.getText();
-        String password = String.valueOf(txtPassword.getPassword());
-
-        // Verificar si se han completado todos los campos
-        if (nombreCompleto.isEmpty() || user.isEmpty()) {
-            alerta.advertencia("Por favor, complete todos los campos.");
-            return;
-        }
-        
-        try {
-            
-            User userForUpdate = new User();
-            userForUpdate.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
-            
-            UserDAO userDAO = new UserDAOImpl(userForUpdate);
-            User userFind = userDAO.getById(userForUpdate.getId());
-            
-            userFind.setNombreCompleto(nombreCompleto);
-            userFind.setUsername(user);
-            userFind.setSalt(password.isEmpty() ? userFind.getSalt() : generateSalt());
-            userFind.setHashed_password(password.isEmpty() ? userFind.getHashed_password() : hashPassword(password, userFind.getSalt()));
-            
-            userDAO = new UserDAOImpl(userFind);
-            userDAO.actualizar();
-            limpiarCampos();
-            
-            if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
-                alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
-                instanceOfUsersFrame.dispose();
-                LoginServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
-                
-            } else {
-                jtbUsuarios.setModel(CargarUsuarios());
-                alerta.aviso("Actualización exitosa.");
-            }
-            
-        } catch (SQLException | ClassNotFoundException e) {
-            // Manejar cualquier error de conexión durante el registro
-            alerta.manejarErrorConexion(this.getClass(), e);
-        }
-    }
-    
-    private void EliminarUsuario() {
-        try {
-            if (alerta.confirmacion("¿Está seguro de eliminar este usuario?") == 0) {
-                User userForDelete = new User();
-                userForDelete.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
-                UserDAO userDAO = new UserDAOImpl(userForDelete);
-                User userFind = userDAO.getById(userForDelete.getId());
-                if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
-                    alerta.advertencia("Eri tonto?");
-                } else {
-                    userDAO.eliminar();
-                    jtbUsuarios.setModel(CargarUsuarios());
-                    limpiarCampos();
-                    alerta.aviso("Usuario eliminado correctamente.");
-                }
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            // Manejar cualquier error de conexión durante el registro
-            alerta.manejarErrorConexion(this.getClass(), e);
-        }
-    }
-
-    /**
-     * Carga la lista de usuarios desde la base de datos y la presenta en un
-     * modelo de tabla.
-     *
-     * @return El modelo de tabla que contiene la lista de usuarios.
-     */
-    @Override
-    public DefaultTableModel CargarUsuarios() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario"}, 0);
-        try {
-            
-            UserDAO userDAO = new UserDAOImpl(new User());
-
-            // Obtener la lista de usuarios desde la base de datos usando las funciones definidas en UserDAOImpl
-            List<User> lista = userDAO.listar();
-
-            // Iterar sobre la lista de usuarios y agregar cada uno al modelo de la tabla
-            lista.forEach(user -> {
-                model.addRow(new Object[]{user.getId(), user.getNombreCompleto(), user.getUsername()});
-            });
-        } catch (ClassNotFoundException | SQLException e) {
-            // Manejar cualquier excepción que pueda ocurrir durante la carga de usuarios
-            alerta.manejarErrorConexion(this.getClass(), e);
-        }
-        return model;
-    }
-    
-    private void autocompletarCampos() {
-        int rowSelected = jtbUsuarios.getSelectedRow();
-        if (rowSelected == -1) {
-        } else {
-            String nombreCompleto = jtbUsuarios.getValueAt(rowSelected, 1).toString();
-            String username = jtbUsuarios.getValueAt(rowSelected, 2).toString();
-            txtNombreCompleto.setText(nombreCompleto);
-            txtUsuario.setText(username);
-            btnRegistrar.setEnabled(false);
-            btnModificar.setEnabled(true);
-        }
-    }
-    
-    private void limpiarCampos() {
-        txtNombreCompleto.setText("");
-        txtUsuario.setText("");
-        txtPassword.setText("");
-        btnRegistrar.setEnabled(true);
-        btnModificar.setEnabled(false);
-    }
-    
-    @Override
-    public void CargarActionListeners() {
-        QuitActionListeners(); // Eliminar los ActionListener anteriores para evitar duplicados
+    public void cargarActionListeners() {
+        quitActionListeners();
         btnRegistrar.addActionListener(this);
         btnRegresar.addActionListener(this);
         jmiEliminar.addActionListener(this);
@@ -255,14 +124,26 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnLimpiar.addActionListener(this);
         btnRevelar.addActionListener(this);
     }
-    
+
+    /**
+     * Método para cargar los listeners de teclado en el campo de contraseña. Se
+     * valida la fortaleza de la contraseña mientras se escribe.
+     */
     @Override
-    public void CargarKeyListeners() {
-        QuitKeyListener(txtPassword);
+    public void cargarKeyListeners() {
+        quitKeyListener(txtPassword);
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent evt) {
+            public void keyReleased(KeyEvent evt) {
+                // Validar la fortaleza de la contraseña
                 String psw = String.valueOf(txtPassword.getPassword());
+                if (psw.length() > 0) {
+                    btnRevelar.setEnabled(true);
+                } else {
+                    btnRevelar.setEnabled(false);
+                    lblPassword.setText(""); // Limpiar el texto del JLabel cuando no hay contraseña
+                }
+
                 if (psw.length() < 8) {
                     lblPassword.setText("La contraseña debe contener al menos 8 caracteres.");
                 } else if (!contieneMayuscula(psw)) {
@@ -276,32 +157,42 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                 } else if (contieneCaracteresNoPermitidos(psw)) {
                     lblPassword.setText("La contraseña contiene caracteres no permitidos.");
                 } else {
-                    lblPassword.setText(""); // Reiniciar el mensaje de error si la contraseña cumple con todos los requisitos
+                    lblPassword.setText("");
                 }
             }
         });
     }
-    
+
+    /**
+     * Método para cargar los listeners de mouse en la tabla de usuarios. Se
+     * manejan eventos de clic derecho y clic izquierdo.
+     */
     @Override
-    public void CargarMouseListeners() {
+    public void cargarMouseListeners() {
         jtbUsuarios.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
-                if (SwingUtilities.isRightMouseButton(evt)) { // Verificar si se hizo clic con el botón derecho
-                    if (evt.getClickCount() == 1) { // Verificar que sea un único clic
+                if (SwingUtilities.isRightMouseButton(evt)) {
+                    if (evt.getClickCount() == 1) {
+                        // Mostrar menú contextual para eliminar usuario al hacer clic derecho
                         jmiEliminar.setText("Eliminar");
                         jpmOptions.add(jmiEliminar);
-                        jpmOptions.show(jtbUsuarios, evt.getX(), evt.getY()); // Mostrar el menú emergente en la posición del clic
+                        jpmOptions.show(jtbUsuarios, evt.getX(), evt.getY());
                     }
                 } else {
+                    // Autocompletar campos de texto al hacer clic izquierdo en la tabla
                     autocompletarCampos();
                 }
             }
         });
     }
-    
+
+    /**
+     * Método para eliminar los listeners de acciones de los componentes de la
+     * interfaz.
+     */
     @Override
-    public void QuitActionListeners() {
+    public void quitActionListeners() {
         btnRegistrar.removeActionListener(this);
         btnRegresar.removeActionListener(this);
         jmiEliminar.removeActionListener(this);
@@ -309,45 +200,255 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnModificar.removeActionListener(this);
         btnRevelar.removeActionListener(this);
     }
-    
+
+    /**
+     * Método para eliminar un listener de teclado de un componente.
+     */
     @Override
-    public void QuitKeyListener(Component componente) {
+    public void quitKeyListener(Component componente) {
+        // No se implementa en esta versión
     }
-    
+
+    /**
+     * Método para eliminar un listener de mouse de un componente.
+     */
     @Override
-    public void QuitMouseListener(Component componente) {
-        for (MouseListener ml : componente.getMouseListeners()) {
-            componente.removeMouseListener(ml); // Eliminar los MouseListeners del componente
-        }
+    public void quitMouseListener(Component componente) {
+        // No se implementa en esta versión
     }
-    
+
+    /**
+     * Método para manejar eventos de acción en los componentes de la interfaz.
+     *
+     * @param e Evento de acción generado.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        // Determinar la fuente del evento y ejecutar la acción correspondiente
         if (e.getSource() == btnRegistrar) {
-            RegistrarUsuario();
+            // Registrar un nuevo usuario al hacer clic en el botón de registrar
+            registrarUsuario();
         } else if (e.getSource() == btnRegresar) {
-            // Limpiar los campos y regresar al menú principal
+            // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
             limpiarCampos();
-            instanceOfUsersFrame.dispose(); // Cerrar el formulario de usuarios
-            MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true); // Mostrar el menú principal
+            instanceOfUsersFrame.dispose();
+            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == jmiEliminar) {
-            EliminarUsuario();
+            // Eliminar un usuario al seleccionar la opción de eliminar en el menú contextual
+            eliminarUsuario();
         } else if (e.getSource() == btnLimpiar) {
+            // Limpiar campos al hacer clic en el botón de limpiar
             limpiarCampos();
         } else if (e.getSource() == btnModificar) {
-            ActualizarUsuario();
+            // Actualizar un usuario existente al hacer clic en el botón de modificar
+            actualizarUsuario();
         } else if (e.getSource() == btnRevelar) {
+            // Mostrar u ocultar la contraseña al activar/desactivar el botón de revelar
             if (btnRevelar.isSelected()) {
-                // Cambiar la contraseña a texto plano
                 txtPassword.setEchoChar((char) 0);
-                btnRevelar.setIcon(icono("/images/ocultar_eye.jpg", 60, 60));
+                btnRevelar.setIcon(iconoOcultar);
             } else {
-                // Ocultar la contraseña
                 txtPassword.setEchoChar('\u2022');
-                btnRevelar.setIcon(icono("/images/mostrar_eye.jpg", 60, 60));
+                btnRevelar.setIcon(iconoMostrar);
             }
         }
     }
-    
+
+    /**
+     * Método para cargar la lista de usuarios en la tabla.
+     *
+     * @return Un modelo de tabla con los usuarios cargados.
+     */
+    @Override
+    public DefaultTableModel cargarUsuarios() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario"}, 0);
+        try {
+            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
+            UserDAO userDAO = new UserDAOImpl(new User());
+            // Obtener la lista de usuarios
+            List<User> lista = userDAO.listar();
+            // Agregar cada usuario a la tabla
+            lista.forEach(user -> {
+                model.addRow(new Object[]{user.getId(), user.getNombreCompleto(), user.getUsername()});
+            });
+        } catch (ClassNotFoundException | SQLException e) {
+            // Manejo de errores de conexión
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+        return model;
+    }
+
+    /**
+     * Método para registrar un nuevo usuario. Se obtienen los datos de los
+     * campos de texto y se valida su integridad antes de proceder al registro.
+     */
+    @Override
+    public void registrarUsuario() {
+        // Obtener datos de los campos de texto
+        String nombreCompleto = txtNombreCompleto.getText();
+        String user = txtUsuario.getText();
+        String password = String.valueOf(txtPassword.getPassword());
+
+        // Validar que no haya campos vacíos
+        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return;
+        }
+
+        try {
+            // Crear un nuevo objeto User con los datos ingresados
+            User userCreated = new User();
+            userCreated.setId(0);
+            userCreated.setNombreCompleto(nombreCompleto);
+            userCreated.setUsername(user);
+            userCreated.setSalt(generateSalt());
+            userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
+
+            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
+            UserDAO userDAO = new UserDAOImpl(userCreated);
+            // Verificar si el nombre de usuario ya existe en la base de datos
+            User userByUsername = userDAO.getUserByUsername();
+            if (userByUsername != null) {
+                alerta.advertencia("El nombre de usuario no está disponible");
+                txtUsuario.setText("");
+                txtPassword.setText("");
+                txtUsuario.requestFocus();
+            } else {
+                // Si el nombre de usuario no existe, registrar el nuevo usuario
+                userDAO.registrar();
+                // Limpiar campos y actualizar tabla de usuarios
+                limpiarCampos();
+                jtbUsuarios.setModel(cargarUsuarios());
+                alerta.aviso("Registro exitoso.");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejo de errores de conexión
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+    }
+
+    /**
+     * Método para actualizar un usuario existente. Se obtienen los datos de los
+     * campos de texto y se valida su integridad antes de proceder a la
+     * actualización.
+     */
+    @Override
+    public void actualizarUsuario() {
+        // Obtener datos de los campos de texto
+        String nombreCompleto = txtNombreCompleto.getText();
+        String user = txtUsuario.getText();
+        String password = String.valueOf(txtPassword.getPassword());
+
+        // Validar que no haya campos vacíos
+        if (nombreCompleto.isEmpty() || user.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return;
+        }
+
+        try {
+            // Crear un nuevo objeto User con los datos ingresados
+            User userForUpdate = new User();
+            userForUpdate.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
+
+            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
+            UserDAO userDAO = new UserDAOImpl(userForUpdate);
+            // Obtener el usuario existente a actualizar
+            User userFind = userDAO.getById(userForUpdate.getId());
+
+            // Actualizar los datos del usuario
+            userFind.setNombreCompleto(nombreCompleto);
+            userFind.setUsername(user);
+            userFind.setSalt(password.isEmpty() ? userFind.getSalt() : generateSalt());
+            userFind.setHashed_password(password.isEmpty() ? userFind.getHashed_password() : hashPassword(password, userFind.getSalt()));
+
+            // Actualizar el usuario en la base de datos
+            userDAO = new UserDAOImpl(userFind);
+            userDAO.actualizar();
+            limpiarCampos();
+
+            if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
+                // Si se actualiza el usuario logueado, mostrar mensaje y redirigir al inicio de sesión
+                alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
+                instanceOfUsersFrame.dispose();
+                LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+
+            } else {
+                // Si se actualiza otro usuario, actualizar tabla de usuarios y mostrar mensaje
+                jtbUsuarios.setModel(cargarUsuarios());
+                alerta.aviso("Actualización exitosa.");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejo de errores de conexión
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+    }
+
+    /**
+     * Método para eliminar un usuario. Se muestra un mensaje de confirmación
+     * antes de realizar la eliminación.
+     */
+    @Override
+    public void eliminarUsuario() {
+        try {
+            if (alerta.confirmacion("¿Está seguro de eliminar este usuario?") == 0) {
+                // Obtener el ID del usuario a eliminar
+                User userForDelete = new User();
+                userForDelete.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
+                // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
+                UserDAO userDAO = new UserDAOImpl(userForDelete);
+                // Obtener el usuario a eliminar
+                User userFind = userDAO.getById(userForDelete.getId());
+                if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
+                    // Evitar eliminar el usuario logueado
+                    alerta.advertencia("No puedes eliminar tu propio usuario.");
+                } else {
+                    // Eliminar el usuario de la base de datos
+                    userDAO.eliminar();
+                    // Actualizar tabla de usuarios y limpiar campos
+                    jtbUsuarios.setModel(cargarUsuarios());
+                    limpiarCampos();
+                    alerta.aviso("Usuario eliminado correctamente.");
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // Manejo de errores de conexión
+            alerta.manejarErrorConexion(this.getClass(), e);
+        }
+    }
+
+    /**
+     * Método para autocompletar los campos de texto al hacer clic en la tabla
+     * de usuarios.
+     */
+    @Override
+    public void autocompletarCampos() {
+        int rowSelected = jtbUsuarios.getSelectedRow();
+        if (rowSelected == -1) {
+            // No hacer nada si no se selecciona ninguna fila
+        } else {
+            // Obtener datos de la fila seleccionada y completar campos de texto
+            String nombreCompleto = jtbUsuarios.getValueAt(rowSelected, 1).toString();
+            String username = jtbUsuarios.getValueAt(rowSelected, 2).toString();
+            txtNombreCompleto.setText(nombreCompleto);
+            txtUsuario.setText(username);
+            btnRegistrar.setEnabled(false);
+            btnModificar.setEnabled(true);
+        }
+    }
+
+    /**
+     * Método para limpiar los campos de texto y habilitar el botón de
+     * registrar.
+     */
+    @Override
+    public void limpiarCampos() {
+        txtNombreCompleto.setText("");
+        txtUsuario.setText("");
+        txtPassword.setText("");
+        btnRegistrar.setEnabled(true);
+        btnModificar.setEnabled(false);
+        btnRevelar.setEnabled(false);
+        lblPassword.setText("");
+    }
 }

@@ -62,13 +62,13 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public ProductosFrame GetInstanceOfFrame() {
+    public ProductosFrame getInstanceOfFrame() {
         instanciaFrame.setLocationRelativeTo(null);
         Close(instanciaFrame);
         // Establecer el enfoque en el campo de nombre completo al abrir el formulario
         instanciaFrame.requestFocus();
         // Agregar ActionListener a los botones y cargar los usuarios en un hilo separado
-        CargarActionListeners();
+        cargarActionListeners();
         tbProducto.setModel(new DefaultTableModel(0, 0));
         new Thread(() -> {
             tbProducto.setModel(cargarProducto());
@@ -77,22 +77,22 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public void CargarActionListeners() {
-        QuitActionListeners();
+    public void cargarActionListeners() {
+        quitActionListeners();
         btnUpdate.addActionListener(this);
         tbnDelete.addActionListener(this);
         btnAdd.addActionListener(this);
         btnHome.addActionListener(this);
         btnFind.addActionListener(this);
-        CargarMouseListeners();
+        cargarMouseListeners();
     }
 
     @Override
-    public void CargarKeyListeners() {
+    public void cargarKeyListeners() {
     }
 
     @Override
-    public void CargarMouseListeners() {
+    public void cargarMouseListeners() {
         tbProducto.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -102,7 +102,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public void QuitActionListeners() {
+    public void quitActionListeners() {
         btnUpdate.removeActionListener(this);
         tbnDelete.removeActionListener(this);
         btnAdd.removeActionListener(this);
@@ -111,11 +111,11 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
     }
 
     @Override
-    public void QuitKeyListener(Component componente) {
+    public void quitKeyListener(Component componente) {
     }
 
     @Override
-    public void QuitMouseListener(Component componente) {
+    public void quitMouseListener(Component componente) {
         for (MouseListener ml : componente.getMouseListeners()) {
             componente.removeMouseListener(ml); // Eliminar los MouseListeners del componente
         }
@@ -181,7 +181,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             RegistrarProducto();
         } else if (e.getSource() == btnHome) {
             instanciaFrame.dispose();
-            MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == btnUpdate) {
             actualizarProducto();
         }

@@ -8,6 +8,8 @@ import javax.swing.*;
 
 /**
  * Clase para manejar alertas y diálogos comunes en la aplicación.
+ * 
+ * @author isai_
  */
 public class AlertsClass {
 
