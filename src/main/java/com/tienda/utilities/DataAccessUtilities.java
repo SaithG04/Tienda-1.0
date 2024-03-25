@@ -2,6 +2,8 @@ package com.tienda.utilities;
 
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import com.tienda.entity.*;
+import com.tienda.presentation_layer.LoginFrame;
+import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -9,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * Clase utilitaria para operaciones de acceso a datos genéricas.
- * 
+ *
  * @author isai_
  */
 public class DataAccessUtilities {
@@ -41,6 +43,7 @@ public class DataAccessUtilities {
                 }
             }
         }
+
         return null;
     }
 
@@ -54,12 +57,16 @@ public class DataAccessUtilities {
      * @throws SQLException Si ocurre un error de SQL.
      */
     public <T> void registrarGeneric(String tableName, T entity) throws ClassNotFoundException, SQLException {
-        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
-            String query = generateInsertQuery(tableName, connection); // Generar la consulta de inserción
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                setInsertStatementValues(statement, entity);
-                statement.executeUpdate();
+        if (amIConected()) {
+            try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
+                String query = generateInsertQuery(tableName, connection); // Generar la consulta de inserción
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    setInsertStatementValues(statement, entity);
+                    statement.executeUpdate();
+                }
             }
+        } else {
+            new ServiceUtilities().volverLogin(tableName);
         }
     }
 
@@ -74,14 +81,19 @@ public class DataAccessUtilities {
      */
     public <T> java.util.List<T> listarGeneric(String tableName) throws ClassNotFoundException, SQLException {
         java.util.List<T> lista = new ArrayList<>();
-        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
-            String query = "SELECT * FROM " + tableName;
-            try (PreparedStatement statement = connection.prepareStatement(query); ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    T rowData = (T) getRowGeneric(tableName, connection).apply(result);
-                    lista.add(rowData);
+        if (amIConected()) {
+
+            try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
+                String query = "SELECT * FROM " + tableName;
+                try (PreparedStatement statement = connection.prepareStatement(query); ResultSet result = statement.executeQuery()) {
+                    while (result.next()) {
+                        T rowData = (T) getRowGeneric(tableName, connection).apply(result);
+                        lista.add(rowData);
+                    }
                 }
             }
+        } else {
+            new ServiceUtilities().volverLogin(tableName);
         }
         return lista;
     }
@@ -97,12 +109,16 @@ public class DataAccessUtilities {
      * @throws SQLException Si ocurre un error de SQL.
      */
     public <T> void actualizarGeneric(String tableName, int id, T entity) throws ClassNotFoundException, SQLException {
-        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
-            String query = generateUpdateQuery(tableName, connection);
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                setUpdateStatementValues(statement, entity);
-                statement.executeUpdate();
+        if (amIConected() || LoginFrame.getInstance().isVisible()) {
+            try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
+                String query = generateUpdateQuery(tableName, connection);
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    setUpdateStatementValues(statement, entity);
+                    statement.executeUpdate();
+                }
             }
+        } else {
+            new ServiceUtilities().volverLogin(tableName);
         }
     }
 
@@ -115,13 +131,18 @@ public class DataAccessUtilities {
      * @throws SQLException Si ocurre un error de SQL.
      */
     public void eliminarGeneric(String tableName, int id) throws ClassNotFoundException, SQLException {
-        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
-            String query = "DELETE FROM " + tableName + " WHERE id = ?";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, id);
-                statement.executeUpdate();
+        if (amIConected()) {
+            try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
+                String query = "DELETE FROM " + tableName + " WHERE id = ?";
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    statement.setInt(1, id);
+                    statement.executeUpdate();
+                }
             }
+        } else {
+            new ServiceUtilities().volverLogin(tableName);
         }
+
     }
 
     /**
@@ -143,9 +164,12 @@ public class DataAccessUtilities {
                 }
 
                 return switch (nameTable) {
-                    case "users" -> new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4], row[5].toString());
-                    case "productos" -> new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
-                    default -> null;
+                    case "users" ->
+                        new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4], row[5].toString());
+                    case "productos" ->
+                        new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
+                    default ->
+                        null;
                 };
 
             } catch (SQLException e) {
@@ -302,7 +326,6 @@ public class DataAccessUtilities {
      * @throws SQLException Si ocurre un error de SQL.
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      */
-    
     private String generateUpdateQuery(String tableName, Connection con) throws SQLException, ClassNotFoundException {
         String[] columnNames = getTableColumns(tableName, con);
         StringBuilder queryBuilder = new StringBuilder();
@@ -315,6 +338,11 @@ public class DataAccessUtilities {
         }
         queryBuilder.append(" WHERE id = ?");
         return queryBuilder.toString();
+    }
+
+    public boolean amIConected() throws SQLException, ClassNotFoundException {
+        User user = getByIdGeneric(LoginServiceImpl.userLogued.getId(), "users");
+        return user.getStatus().equals("logged in");
     }
 
 }

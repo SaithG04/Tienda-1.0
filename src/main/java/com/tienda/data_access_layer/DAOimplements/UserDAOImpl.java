@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Implementación concreta de la interfaz UserDAO que proporciona métodos para
  * realizar operaciones CRUD en la tabla de usuarios.
- * 
+ *
  * @author isai_
  */
 public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Serializable {
@@ -94,7 +94,7 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
     }
 
     /**
-     * Obtiene un usuario por su nombre de usuario.
+     * Obtiene un usuario por su nombre de usuario. Solo usado por el Login
      *
      * @return El usuario encontrado, o null si no se encuentra.
      * @throws SQLException Si ocurre un error de SQL.

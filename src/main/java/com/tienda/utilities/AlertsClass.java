@@ -8,7 +8,7 @@ import javax.swing.*;
 
 /**
  * Clase para manejar alertas y diálogos comunes en la aplicación.
- * 
+ *
  * @author isai_
  */
 public class AlertsClass {
@@ -48,7 +48,7 @@ public class AlertsClass {
     public void mostrarError(Class<?> clase, String mensaje, Exception ex) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, mensaje, "Error", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);       
         if (ex != null) {
             Logger.getLogger(clase.getName()).log(Level.SEVERE, null, ex);
         }
@@ -84,8 +84,9 @@ public class AlertsClass {
      * @param mensaje Mensaje de advertencia.
      */
     public void advertencia(String mensaje) {
+        Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, mensaje, "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);       
     }
 
     /**
@@ -103,8 +104,7 @@ public class AlertsClass {
     public void faltanDatos() {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, "Complete todos los campos.", "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
-//        System.out.println("");
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);       
     }
 
     /**
@@ -116,7 +116,6 @@ public class AlertsClass {
      */
     public int confirmacion(String txt) {
 
-        Toolkit.getDefaultToolkit().beep();
         int value = JOptionPane.showOptionDialog(null, txt, "Confirmar", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/question.png", 30, 30), botones2, botones2[1]);
 

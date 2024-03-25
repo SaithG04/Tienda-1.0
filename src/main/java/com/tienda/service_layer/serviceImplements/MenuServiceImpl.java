@@ -150,13 +150,14 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         if (e.getSource() == btnCerrarSesion) {
             // Mostrar una confirmación antes de cerrar la sesión
             if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
+                instanceOfMenuPrincipalFrame.setCursor(waitCursor);
                 try {
                     LoginServiceImpl.userLogued.setStatus("logged out");
                     UserDAO userDao = new UserDAOImpl(LoginServiceImpl.userLogued);
                     userDao.actualizar();
                     // Ocultar el formulario del menú principal
                     instanceOfMenuPrincipalFrame.dispose();
-
+                    instanceOfMenuPrincipalFrame.setCursor(defaultCursor);
                     // Mostrar el formulario de inicio de sesión
                     LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
 

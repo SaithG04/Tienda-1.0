@@ -51,11 +51,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Contador de intentos de inicio de sesión.
      */
     private int intentos = 0;
-    /**
-     * Cursores de espera / default
-     */
-    private final Cursor waitCursor;
-    private final Cursor defaultCursor;
 
     /**
      * Constructor privado para garantizar la implementación del patrón
@@ -69,8 +64,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
         btnSalir = instanceOfLoginFrame.getBtnSalir();
         txtPassword = instanceOfLoginFrame.getTxtContraseña();
         txtUsuario = instanceOfLoginFrame.getTxtUsuario();
-        defaultCursor = Cursor.getDefaultCursor();
-        waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     }
 
     /**
@@ -116,7 +109,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             System.exit(0);
         } else {
             Component componente = evt instanceof KeyEvent ? instanceOfLoginFrame : btnAceptar;
-            componente.setCursor(waitCursor);
+            setCursores(componente, waitCursor);
             try {
 
                 // Obtener usuario y contraseña del formulario de inicio de sesión
@@ -127,7 +120,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                 if (usuario.isEmpty() || password.isEmpty()) {
                     // Mostrar mensaje de alerta si hay campos vacíos
                     alerta.faltanDatos();
-                    componente.setCursor(defaultCursor);
+                    setCursores(componente, defaultCursor);
                     return; // Finalizar el método si hay campos vacíos
                 }
 
@@ -143,7 +136,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     alerta.mostrarError(this.getClass(), "El usuario no existe.", null);
                     txtPassword.setText("");
                     txtUsuario.requestFocus();
-                    componente.setCursor(defaultCursor);
+                    setCursores(componente, defaultCursor);
                     return; // Finalizar el método si el usuario no existe
                 }
 
@@ -152,7 +145,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     txtUsuario.setText("");
                     txtPassword.setText("");
                     txtUsuario.requestFocus();
-                    componente.setCursor(defaultCursor);
+                    setCursores(componente, defaultCursor);
                     return;
                 }
 
@@ -165,7 +158,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                     alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
                     txtPassword.setText("");
                     txtPassword.requestFocus();
-                    componente.setCursor(defaultCursor);
+                    setCursores(componente, defaultCursor);
                     ++intentos;
                     return; // Finalizar el método si la contraseña es incorrecta
                 }
@@ -184,14 +177,21 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                 instanceOfLoginFrame.dispose();
                 MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
                 intentos = 0;
-                componente.setCursor(defaultCursor);
+                setCursores(componente, defaultCursor);
             } catch (SQLException | ClassNotFoundException ex) {
                 // Manejar excepciones de base de datos y de configuración del sistema
                 alerta.mostrarError(LoginServiceImpl.class, "Error al acceder a la base de datos.", ex);
+                setCursores(componente, defaultCursor);
             }
         }
     }
 
+    private void setCursores(Component comp, Cursor cursor){
+        comp.setCursor(cursor);
+        txtUsuario.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
+        txtPassword.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
+    }
+    
     /**
      * Método para cargar los ActionListeners de los botones.
      */
@@ -211,11 +211,17 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
         // Agregar KeyListeners para los campos de texto
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    IniciarSesion(e); // Iniciar sesión al presionar la tecla Enter en el campo de contraseña
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    IniciarSesion(evt); // Iniciar sesión al presionar la tecla Enter en el campo de contraseña
                 }
             }
+            @Override
+            public void keyReleased(KeyEvent evt) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                IniciarSesion(evt); // Iniciar sesión al soltar la tecla Enter en el campo de contraseña
+            }
+        }
         });
     }
 
@@ -272,4 +278,5 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             System.exit(0);
         }
     }
+    
 }
