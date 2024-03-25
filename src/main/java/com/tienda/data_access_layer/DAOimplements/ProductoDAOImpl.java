@@ -25,8 +25,8 @@ public class ProductoDAOImpl extends DataAccessUtilities implements Serializable
     }
 
     @Override
-    public void registrar() throws ClassNotFoundException, SQLException {
-        registrarGeneric(NAMETABLE, producto);
+    public boolean registrar() throws ClassNotFoundException, SQLException {
+        return registrarGeneric(NAMETABLE, producto);
     }
 
     @Override
@@ -35,13 +35,13 @@ public class ProductoDAOImpl extends DataAccessUtilities implements Serializable
     }
 
     @Override
-    public void actualizar() throws ClassNotFoundException, SQLException {
-        actualizarGeneric(NAMETABLE, producto.getId(), producto);
+    public boolean actualizar() throws ClassNotFoundException, SQLException {
+        return actualizarGeneric(NAMETABLE, producto.getId(), producto);
     }
 
     @Override
-    public void eliminar() throws ClassNotFoundException, SQLException {
-        eliminarGeneric(NAMETABLE, producto.getId());
+    public boolean eliminar() throws ClassNotFoundException, SQLException {
+        return eliminarGeneric(NAMETABLE, producto.getId());
     }
 
     public static Map<Integer, String> getNameProveedor() throws ClassNotFoundException, SQLException {

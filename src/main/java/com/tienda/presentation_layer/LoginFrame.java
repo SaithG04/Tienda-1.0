@@ -107,7 +107,7 @@ public class LoginFrame extends javax.swing.JFrame {
         Container.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 210, 270, 60));
 
         txtContraseña.setBackground(new java.awt.Color(255, 255, 204));
-        txtContraseña.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtContraseña.setFont(new java.awt.Font("Swis721 Ex BT", 0, 10)); // NOI18N
         txtContraseña.setForeground(new java.awt.Color(0, 0, 0));
         txtContraseña.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Container.add(txtContraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, 270, 60));
@@ -116,14 +116,14 @@ public class LoginFrame extends javax.swing.JFrame {
         btnAceptar.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
         btnAceptar.setForeground(new java.awt.Color(255, 255, 255));
         btnAceptar.setText("ACEPTAR");
-        btnAceptar.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnAceptar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Container.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 450, 330, 58));
 
         btnSalir.setBackground(new java.awt.Color(102, 102, 102));
         btnSalir.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
         btnSalir.setForeground(new java.awt.Color(255, 255, 255));
         btnSalir.setText("SALIR");
-        btnSalir.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnSalir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Container.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 450, 330, 58));
 
         getContentPane().add(Container, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 550));

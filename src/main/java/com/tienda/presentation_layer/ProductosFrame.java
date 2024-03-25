@@ -17,7 +17,7 @@ public class ProductosFrame extends javax.swing.JFrame {
 
     private static ProductosFrame instancia;
     
-    public ProductosFrame() {
+    private ProductosFrame() {
         initComponents();
     }
 

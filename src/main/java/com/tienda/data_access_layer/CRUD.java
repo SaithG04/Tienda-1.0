@@ -27,10 +27,11 @@ public interface CRUD<T> {
     /**
      * Registra un nuevo objeto en la base de datos.
      *
+     * @return 
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    void registrar() throws ClassNotFoundException, SQLException;
+    boolean registrar() throws ClassNotFoundException, SQLException;
 
     /**
      * Lista todos los objetos almacenados en la base de datos.
@@ -44,16 +45,18 @@ public interface CRUD<T> {
     /**
      * Actualiza los datos de un objeto en la base de datos.
      *
+     * @return 
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    void actualizar() throws ClassNotFoundException, SQLException;
+    boolean actualizar() throws ClassNotFoundException, SQLException;
 
     /**
      * Elimina un objeto de la base de datos.
      *
+     * @return 
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    void eliminar() throws ClassNotFoundException, SQLException;
+    boolean eliminar() throws ClassNotFoundException, SQLException;
 }

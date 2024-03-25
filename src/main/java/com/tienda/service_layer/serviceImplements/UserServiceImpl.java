@@ -5,13 +5,12 @@ import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.UsersFrame;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
 import com.tienda.service_layer.UserService;
-import java.awt.Cursor;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -29,12 +28,12 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     private final UsersFrame instanceOfUsersFrame;
 
     // Componentes de la interfaz de usuario
-    private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar;
+    private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar, btnRefresh;
     private final JTextField txtUsuario, txtNombreCompleto;
     private final JPasswordField txtPassword;
     private final JTable jtbUsuarios;
     private final JPopupMenu jpmOptions;
-    private final JMenuItem jmiEliminar;
+    private final JMenuItem jmiEliminar, jmiDesconectar;
     private final JLabel lblPassword;
     private final JToggleButton btnRevelar;
 
@@ -55,6 +54,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnLimpiar = instanceOfUsersFrame.getBtnLimpiar();
         lblPassword = instanceOfUsersFrame.getLblPassword();
         btnRevelar = instanceOfUsersFrame.getBtnRevelar();
+        jmiDesconectar = instanceOfUsersFrame.getMiDesconectar();
+        btnRefresh = instanceOfUsersFrame.getBtnRefresh();
         iconoMostrar = icono("/images/mostrar_eye.jpg", 40, 40);
         iconoOcultar = icono("/images/ocultar_eye.jpg", 40, 40);
     }
@@ -124,6 +125,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnModificar.addActionListener(this);
         btnLimpiar.addActionListener(this);
         btnRevelar.addActionListener(this);
+        jmiDesconectar.addActionListener(this);
+        btnRefresh.addActionListener(this);
     }
 
     /**
@@ -133,7 +136,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     @Override
     public void cargarKeyListeners() {
         quitKeyListener(txtPassword);
-//        quitKeyListener(jtbUsuarios);
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -191,7 +193,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                     if (evt.getClickCount() == 1) {
                         // Mostrar menú contextual para eliminar usuario al hacer clic derecho
                         jmiEliminar.setText("Eliminar");
-                        jpmOptions.add(jmiEliminar);
+                        jmiDesconectar.setText("Desconectar");
                         jpmOptions.show(jtbUsuarios, evt.getX(), evt.getY());
                     }
                 } else {
@@ -216,9 +218,11 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnRegistrar.removeActionListener(this);
         btnRegresar.removeActionListener(this);
         jmiEliminar.removeActionListener(this);
+        jmiDesconectar.removeActionListener(this);
         btnLimpiar.removeActionListener(this);
         btnModificar.removeActionListener(this);
         btnRevelar.removeActionListener(this);
+        btnRefresh.removeActionListener(this);
     }
 
     /**
@@ -256,6 +260,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         } else if (e.getSource() == jmiEliminar) {
             // Eliminar un usuario al seleccionar la opción de eliminar en el menú contextual
             eliminarUsuario();
+        } else if (e.getSource() == jmiDesconectar) {
+            desconectar();
         } else if (e.getSource() == btnLimpiar) {
             // Limpiar campos al hacer clic en el botón de limpiar
             limpiarCampos();
@@ -270,6 +276,14 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
             } else {
                 txtPassword.setEchoChar('\u2022');
                 btnRevelar.setIcon(iconoMostrar);
+            }
+        } else if (e.getSource() == btnRefresh) {
+            try {
+                setCursores(btnRefresh, waitCursor);
+                jtbUsuarios.setModel(new DefaultTableModel(0, 0));
+                jtbUsuarios.setModel(cargarUsuarios());
+            } finally {
+                setCursores(btnRefresh, defaultCursor);
             }
         }
     }
@@ -292,8 +306,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                 model.addRow(new Object[]{user.getId(), user.getNombreCompleto(), user.getUsername(), user.getStatus()});
             });
         } catch (ClassNotFoundException | SQLException e) {
-            // Manejo de errores de conexión
-            alerta.manejarErrorConexion(this.getClass(), e);
+            errorSQL(this.getClass(), e);
         }
         return model;
     }
@@ -304,52 +317,42 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      */
     @Override
     public void registrarUsuario() {
-        // Obtener datos de los campos de texto
-        setCursores(instanceOfUsersFrame, waitCursor);
-        String nombreCompleto = txtNombreCompleto.getText();
-        String user = txtUsuario.getText();
-        String password = String.valueOf(txtPassword.getPassword());
-
-        // Validar que no haya campos vacíos
-        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
-            setCursores(instanceOfUsersFrame, defaultCursor);
-            alerta.advertencia("Por favor, complete todos los campos.");
-            return;
-        }
-
         try {
-            // Crear un nuevo objeto User con los datos ingresados
+            setCursores(instanceOfUsersFrame, waitCursor);
+            String nombreCompleto = txtNombreCompleto.getText();
+            String user = txtUsuario.getText();
+            String password = String.valueOf(txtPassword.getPassword());
+            if (camposVacios(nombreCompleto, user, password)) {
+                return;
+            }
             User userCreated = new User();
-            userCreated.setId(0);
             userCreated.setNombreCompleto(nombreCompleto);
             userCreated.setUsername(user);
             userCreated.setSalt(generateSalt());
             userCreated.setHashed_password(hashPassword(password, userCreated.getSalt()));
             userCreated.setStatus("logged out");
 
-            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
             UserDAO userDAO = new UserDAOImpl(userCreated);
-            // Verificar si el nombre de usuario ya existe en la base de datos
             User userByUsername = userDAO.getUserByUsername();
+
             if (userByUsername != null) {
                 txtUsuario.setText("");
                 txtPassword.setText("");
                 txtUsuario.requestFocus();
-                setCursores(instanceOfUsersFrame, defaultCursor);
+
                 alerta.advertencia("El nombre de usuario no está disponible");
             } else {
-                // Si el nombre de usuario no existe, registrar el nuevo usuario
-                userDAO.registrar();
-                // Limpiar campos y actualizar tabla de usuarios
+                boolean registrado = userDAO.registrar();
                 limpiarCampos();
-                jtbUsuarios.setModel(cargarUsuarios());
-                setCursores(instanceOfUsersFrame, defaultCursor);
-                alerta.aviso("Registro exitoso.");
+                if (registrado) {
+                    alerta.aviso("Registro exitoso.");
+                    jtbUsuarios.setModel(cargarUsuarios());
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
-            // Manejo de errores de conexión           
+            errorSQL(this.getClass(), e);
+        } finally {
             setCursores(instanceOfUsersFrame, defaultCursor);
-            alerta.manejarErrorConexion(this.getClass(), e);
         }
     }
 
@@ -360,58 +363,47 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      */
     @Override
     public void actualizarUsuario() {
-        // Obtener datos de los campos de texto
-        setCursores(instanceOfUsersFrame, waitCursor);
-        String nombreCompleto = txtNombreCompleto.getText();
-        String user = txtUsuario.getText();
-        String password = String.valueOf(txtPassword.getPassword());
-
-        // Validar que no haya campos vacíos
-        if (nombreCompleto.isEmpty() || user.isEmpty()) {
-            setCursores(instanceOfUsersFrame, defaultCursor);
-            alerta.advertencia("Por favor, complete todos los campos.");
-            return;
-        }
 
         try {
-            // Crear un nuevo objeto User con los datos ingresados
+            setCursores(instanceOfUsersFrame, waitCursor);
+            String nombreCompleto = txtNombreCompleto.getText();
+            String user = txtUsuario.getText();
+            String password = String.valueOf(txtPassword.getPassword());
+
+            if (camposVacios(nombreCompleto, user)) {
+                return;
+            }
             User userForUpdate = new User();
             userForUpdate.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
-
-            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
-            UserDAO userDAO = new UserDAOImpl(userForUpdate);
-            // Obtener el usuario existente a actualizar
+            UserDAOImpl userDAO = new UserDAOImpl(userForUpdate);
             User userFind = userDAO.getById(userForUpdate.getId());
 
-            // Actualizar los datos del usuario
             userFind.setNombreCompleto(nombreCompleto);
             userFind.setUsername(user);
-            userFind.setSalt(password.isEmpty() ? userFind.getSalt() : generateSalt());
-            userFind.setHashed_password(password.isEmpty() ? userFind.getHashed_password() : hashPassword(password, userFind.getSalt()));
+            if (!password.isEmpty()) {
+                userFind.setSalt(generateSalt());
+                userFind.setHashed_password(hashPassword(password, userFind.getSalt()));
+            }
             userFind.setStatus("logged out");
 
-            // Actualizar el usuario en la base de datos
             userDAO = new UserDAOImpl(userFind);
-            userDAO.actualizar();
             limpiarCampos();
+            boolean actualizado = userDAO.actualizar();
 
-            if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
-                // Si se actualiza el usuario logueado, mostrar mensaje y redirigir al inicio de sesión
-                setCursores(instanceOfUsersFrame, defaultCursor);
-                instanceOfUsersFrame.dispose();
-                LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-                alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
-            } else {
-                // Si se actualiza otro usuario, actualizar tabla de usuarios y mostrar mensaje
-                jtbUsuarios.setModel(cargarUsuarios());
-                setCursores(instanceOfUsersFrame, defaultCursor);
-                alerta.aviso("Actualización exitosa.");
+            if (actualizado) {
+                if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
+                    instanceOfUsersFrame.dispose();
+                    LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+                    alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
+                } else {
+                    jtbUsuarios.setModel(cargarUsuarios());
+                    alerta.aviso("Actualización exitosa.");
+                }
             }
-
         } catch (SQLException | ClassNotFoundException e) {
-            // Manejo de errores de conexión          
+            errorSQL(this.getClass(), e);
+        } finally {
             setCursores(instanceOfUsersFrame, defaultCursor);
-            alerta.manejarErrorConexion(this.getClass(), e);
         }
     }
 
@@ -433,22 +425,53 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                 User userFind = userDAO.getById(userForDelete.getId());
                 if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
                     // Evitar eliminar el usuario logueado
-                    setCursores(instanceOfUsersFrame, defaultCursor);
                     alerta.advertencia("No puedes eliminar tu propio usuario.");
                 } else {
                     // Eliminar el usuario de la base de datos
-                    userDAO.eliminar();
-                    // Actualizar tabla de usuarios y limpiar campos
-                    jtbUsuarios.setModel(cargarUsuarios());
                     limpiarCampos();
-                    setCursores(instanceOfUsersFrame, defaultCursor);
-                    alerta.aviso("Usuario eliminado correctamente.");
+                    boolean eliminado = userDAO.eliminar();
+                    if (eliminado) {
+                        // Actualizar tabla de usuarios y limpiar campos
+                        jtbUsuarios.setModel(cargarUsuarios());
+                        alerta.aviso("Usuario eliminado correctamente.");
+                    }
                 }
-
             } catch (SQLException | ClassNotFoundException e) {
                 // Manejo de errores de conexión
+                errorSQL(this.getClass(), e);
+            } finally {
                 setCursores(instanceOfUsersFrame, defaultCursor);
-                alerta.manejarErrorConexion(this.getClass(), e);
+            }
+        }
+    }
+
+    @Override
+    public void desconectar() {
+        if (alerta.confirmacion("¿Está seguro de desconectar este usuario?") == 0) {
+            try {
+                setCursores(instanceOfUsersFrame, waitCursor);
+                User userForDisconect = new User();
+                userForDisconect.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
+                UserDAOImpl userDAO = new UserDAOImpl(userForDisconect);
+                User userFind = userDAO.getById(userForDisconect.getId());
+                if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
+                    alerta.mostrarError(this.getClass(), "Operación inválida.", null);
+                } else if (userFind.getStatus().equals("logged out")) {
+                    alerta.mostrarError(this.getClass(), "El usuario no está conectado.", null);
+                } else {
+                    userFind.setStatus("logged out");
+                    userDAO = new UserDAOImpl(userFind);
+                    limpiarCampos();
+                    boolean actualizado = userDAO.actualizar();
+                    if (actualizado) {
+                        jtbUsuarios.setModel(cargarUsuarios());
+                        alerta.info("Usuario desconectado correctamente.");
+                    }
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                errorSQL(this.getClass(), e);
+            } finally {
+                setCursores(instanceOfUsersFrame, defaultCursor);
             }
         }
     }
@@ -487,6 +510,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         jtbUsuarios.clearSelection();
     }
 
+    @Override
     public void limpiarCamposSinTabla() {
         txtNombreCompleto.setText("");
         txtUsuario.setText("");
@@ -497,6 +521,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         btnRevelar.setEnabled(false);
     }
 
+    @Override
     public boolean bloquearMultipleModificacion() {
         if (jtbUsuarios.getSelectedRowCount() > 1) {
             limpiarCamposSinTabla();
@@ -505,10 +530,29 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         return true;
     }
 
-    private void setCursores(Component comp, Cursor cursor) {
+    @Override
+    public void setCursores(Component comp, Cursor cursor) {
         comp.setCursor(cursor);
         txtUsuario.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
         txtNombreCompleto.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
         txtPassword.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
+    }
+
+    @Override
+    public boolean camposVacios(String nombreCompleto, String user) {
+        if (nombreCompleto.isEmpty() || user.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean camposVacios(String nombreCompleto, String user, String password) {
+        if (nombreCompleto.isEmpty() || user.isEmpty() || password.isEmpty()) {
+            alerta.advertencia("Por favor, complete todos los campos.");
+            return true;
+        }
+        return false;
     }
 }
