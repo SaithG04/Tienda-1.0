@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Serializable {
 
-    private final User usuario;
+    private User usuario;
     private static final String NAMETABLE = "users";
 
     /**
@@ -24,6 +24,14 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
      * @param usuario El usuario asociado al DAO.
      */
     public UserDAOImpl(User usuario) {
+        this.usuario = usuario;
+    }
+
+    public User getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(User usuario) {
         this.usuario = usuario;
     }
 

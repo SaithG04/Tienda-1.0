@@ -1,12 +1,14 @@
 package com.tienda.service_layer.serviceImplements;
 
+import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
+import com.tienda.data_access_layer.UserDAO;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.MenuPrincipalFrame;
 import com.tienda.service_layer.MenuService;
 import java.awt.Component;
 import java.awt.event.*;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+import java.sql.SQLException;
+import javax.swing.*;
 
 /**
  * La clase MenuServiceImpl implementa la interfaz MenuService y gestiona las
@@ -70,6 +72,8 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
         // Método para cerrar el formulario del menú principal
         Close(instanceOfMenuPrincipalFrame);
+        
+//        setCursorDefault(LoginServiceImpl.getInstance().getInstanceOfFrame());
 
         // Actualizar el título del formulario con el nombre de usuario
         lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
@@ -148,15 +152,25 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         if (e.getSource() == btnCerrarSesion) {
             // Mostrar una confirmación antes de cerrar la sesión
             if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
-                // Ocultar el formulario del menú principal
-                instanceOfMenuPrincipalFrame.dispose();
+                try {
+                    LoginServiceImpl.userLogued.setStatus("logged out");
+                    UserDAO userDao = new UserDAOImpl(LoginServiceImpl.userLogued);
+                    userDao.actualizar();
+                    // Ocultar el formulario del menú principal
+                    instanceOfMenuPrincipalFrame.dispose();
 
-                // Mostrar el formulario de inicio de sesión
-                LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+                    // Mostrar el formulario de inicio de sesión
+                    LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
 
-                // Colocar el foco en el formulario de inicio de sesión
-                LoginServiceImpl.getInstance().getInstanceOfFrame().requestFocus();
-                LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
+                    // Colocar el foco en el formulario de inicio de sesión
+                    LoginServiceImpl.getInstance().getInstanceOfFrame().requestFocus();
+                    LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
+                } catch (ClassNotFoundException | SQLException ex) {
+                    alerta.manejarErrorConexion(this.getClass(), ex);
+                    if (ex instanceof SQLException) {
+                        System.exit(0);
+                    }
+                }
             }
         } // Verificar si el evento proviene del botón "Usuarios"
         else if (e.getSource() == btnUsuarios) {
