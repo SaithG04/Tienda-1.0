@@ -17,6 +17,7 @@ public class ServiceUtilities {
     public static final Image IMG;
     public final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     public final Cursor textCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    public final Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     public final Cursor defaultCursor = Cursor.getDefaultCursor();
 
     static {
@@ -300,12 +301,25 @@ public class ServiceUtilities {
                 case "users" -> {
                     UsersFrame.getInstance().dispose();
                     LoginFrame.getInstance().setVisible(true);
+                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
                 }
                 case "productos" -> {
+                    ProductosFrame.getProcFrame().dispose();
+                    LoginFrame.getInstance().setVisible(true);
+                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
                 }
                 default ->
                     throw new AssertionError();
             }
+        }
+    }
+
+    public void errorSQL(Class clase, Exception ex) {
+        if (ex.getMessage().contains("No suitable driver") || ex.getMessage().contains("Communications link failure")) {
+            alerta.mostrarError(clase, "Se ha perdido la conexión a Internet.", ex);
+            System.exit(0);
+        } else {
+            alerta.manejarErrorConexion(clase, ex);
         }
     }
 }

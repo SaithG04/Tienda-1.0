@@ -2,7 +2,9 @@ package com.tienda.data_access_layer.DAOimplements;
 
 import com.tienda.data_access_layer.*;
 import com.tienda.entity.User;
+import com.tienda.presentation_layer.UsersFrame;
 import com.tienda.utilities.DataAccessUtilities;
+import com.tienda.utilities.ServiceUtilities;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.List;
@@ -55,8 +57,8 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
      * @throws SQLException Si ocurre un error de SQL.
      */
     @Override
-    public void registrar() throws ClassNotFoundException, SQLException {
-        registrarGeneric(NAMETABLE, usuario);
+    public boolean registrar() throws ClassNotFoundException, SQLException {
+        return registrarGeneric(NAMETABLE, usuario);
     }
 
     /**
@@ -78,8 +80,8 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
      * @throws SQLException Si ocurre un error de SQL.
      */
     @Override
-    public void actualizar() throws ClassNotFoundException, SQLException {
-        actualizarGeneric(NAMETABLE, usuario.getId(), usuario);
+    public boolean actualizar() throws ClassNotFoundException, SQLException {
+        return actualizarGeneric(NAMETABLE, usuario.getId(), usuario);
     }
 
     /**
@@ -89,8 +91,8 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
      * @throws SQLException Si ocurre un error de SQL.
      */
     @Override
-    public void eliminar() throws ClassNotFoundException, SQLException {
-        eliminarGeneric(NAMETABLE, usuario.getId());
+    public boolean eliminar() throws ClassNotFoundException, SQLException {
+        return eliminarGeneric(NAMETABLE, usuario.getId());
     }
 
     /**
@@ -103,6 +105,19 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
     @Override
     public User getUserByUsername() throws SQLException, ClassNotFoundException {
         String query = "SELECT * FROM users WHERE username COLLATE utf8_bin = ?";
+        if (UsersFrame.getInstance().isVisible()) {
+            if (amIConected()) {
+                return intentarBusqueda(query);
+            } else {
+                new ServiceUtilities().volverLogin(NAMETABLE);
+            }
+        } else {
+            return intentarBusqueda(query);
+        }
+        return null; // Devolver nulo si no se encuentra el usuario
+    }
+
+    private User intentarBusqueda(String query) throws ClassNotFoundException, SQLException {
         try (Connection con = MySqlConnectionFactory.getInstance().getConnection(); PreparedStatement pst = con.prepareStatement(query)) {
             pst.setString(1, usuario.getUsername());
             try (ResultSet resultSet = pst.executeQuery()) {
@@ -111,7 +126,7 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
                 }
             }
         }
-        return null; // Devolver nulo si no se encuentra el usuario
+        return null;
     }
 
 }

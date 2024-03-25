@@ -39,6 +39,7 @@ public class UsersFrame extends javax.swing.JFrame {
 
         jpmOptions = new javax.swing.JPopupMenu();
         miEliminar = new javax.swing.JMenuItem();
+        miDesconectar = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         txtUser = new javax.swing.JTextField();
         btnRegistrar = new javax.swing.JButton();
@@ -54,9 +55,13 @@ public class UsersFrame extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         lblPassword = new javax.swing.JLabel();
         btnRevelar = new javax.swing.JToggleButton();
+        btnRefresh = new javax.swing.JButton();
 
         miEliminar.setText("jMenuItem1");
         jpmOptions.add(miEliminar);
+
+        miDesconectar.setText("jMenuItem1");
+        jpmOptions.add(miDesconectar);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Usuarios");
@@ -65,6 +70,8 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 204, 153));
         jPanel1.setPreferredSize(new java.awt.Dimension(850, 550));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        txtUser.setFont(new java.awt.Font("Swis721 Cn BT", 0, 14)); // NOI18N
         jPanel1.add(txtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 100, 280, 60));
 
         btnRegistrar.setBackground(new java.awt.Color(0, 0, 0));
@@ -73,6 +80,8 @@ public class UsersFrame extends javax.swing.JFrame {
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.setPreferredSize(new java.awt.Dimension(850, 550));
         jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 100, 130, 60));
+
+        txtPassword.setFont(new java.awt.Font("Swis721 Cn BT", 0, 12)); // NOI18N
         jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 240, 60));
 
         btnRegresar.setBackground(new java.awt.Color(0, 0, 0));
@@ -81,6 +90,7 @@ public class UsersFrame extends javax.swing.JFrame {
         btnRegresar.setText("REGRESAR");
         jPanel1.add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 100, 130, 60));
 
+        jtbUsuarios.setFont(new java.awt.Font("Swis721 Cn BT", 0, 13)); // NOI18N
         jtbUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -94,7 +104,7 @@ public class UsersFrame extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jtbUsuarios);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 800, 420));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 790, 400));
 
         jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
@@ -107,6 +117,8 @@ public class UsersFrame extends javax.swing.JFrame {
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Password:");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 180, 110, 60));
+
+        txtNombreCompleto.setFont(new java.awt.Font("Swis721 Cn BT", 0, 14)); // NOI18N
         jPanel1.add(txtNombreCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 20, 570, 60));
 
         jLabel8.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
@@ -133,6 +145,12 @@ public class UsersFrame extends javax.swing.JFrame {
         btnRevelar.setFont(new java.awt.Font("Swis721 Ex BT", 0, 12)); // NOI18N
         btnRevelar.setPreferredSize(new java.awt.Dimension(26, 11));
         jPanel1.add(btnRevelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 190, 40, 40));
+
+        btnRefresh.setBackground(new java.awt.Color(0, 0, 0));
+        btnRefresh.setFont(new java.awt.Font("Swis721 Ex BT", 0, 11)); // NOI18N
+        btnRefresh.setForeground(new java.awt.Color(204, 204, 204));
+        btnRefresh.setText("Refrescar tabla");
+        jPanel1.add(btnRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(659, 680, 160, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -197,9 +215,18 @@ public class UsersFrame extends javax.swing.JFrame {
         return btnRevelar;
     }
 
+    public JMenuItem getMiDesconectar() {
+        return miDesconectar;
+    }
+
+    public JButton getBtnRefresh() {
+        return btnRefresh;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnModificar;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JToggleButton btnRevelar;
@@ -211,6 +238,7 @@ public class UsersFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu jpmOptions;
     private javax.swing.JTable jtbUsuarios;
     private javax.swing.JLabel lblPassword;
+    private javax.swing.JMenuItem miDesconectar;
     private javax.swing.JMenuItem miEliminar;
     private javax.swing.JTextField txtNombreCompleto;
     private javax.swing.JPasswordField txtPassword;

@@ -53,21 +53,25 @@ public class DataAccessUtilities {
      * @param tableName El nombre de la tabla de la base de datos.
      * @param entity El objeto a registrar.
      * @param <T> El tipo de objeto a registrar.
+     * @return
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    public <T> void registrarGeneric(String tableName, T entity) throws ClassNotFoundException, SQLException {
+    public <T> boolean registrarGeneric(String tableName, T entity) throws ClassNotFoundException, SQLException {
         if (amIConected()) {
             try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
                 String query = generateInsertQuery(tableName, connection); // Generar la consulta de inserción
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
                     setInsertStatementValues(statement, entity);
                     statement.executeUpdate();
+                    return true;
                 }
             }
         } else {
             new ServiceUtilities().volverLogin(tableName);
+            return false;
         }
+
     }
 
     /**
@@ -105,20 +109,23 @@ public class DataAccessUtilities {
      * @param id El ID del objeto a actualizar.
      * @param entity El objeto con los datos actualizados.
      * @param <T> El tipo de objeto a actualizar.
+     * @return 
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    public <T> void actualizarGeneric(String tableName, int id, T entity) throws ClassNotFoundException, SQLException {
+    public <T> boolean actualizarGeneric(String tableName, int id, T entity) throws ClassNotFoundException, SQLException {
         if (amIConected() || LoginFrame.getInstance().isVisible()) {
             try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
                 String query = generateUpdateQuery(tableName, connection);
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
                     setUpdateStatementValues(statement, entity);
                     statement.executeUpdate();
+                    return true;
                 }
             }
         } else {
             new ServiceUtilities().volverLogin(tableName);
+            return false;
         }
     }
 
@@ -130,17 +137,19 @@ public class DataAccessUtilities {
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    public void eliminarGeneric(String tableName, int id) throws ClassNotFoundException, SQLException {
+    public boolean eliminarGeneric(String tableName, int id) throws ClassNotFoundException, SQLException {
         if (amIConected()) {
             try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
                 String query = "DELETE FROM " + tableName + " WHERE id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
                     statement.setInt(1, id);
                     statement.executeUpdate();
+                    return true;
                 }
             }
         } else {
             new ServiceUtilities().volverLogin(tableName);
+            return false;
         }
 
     }

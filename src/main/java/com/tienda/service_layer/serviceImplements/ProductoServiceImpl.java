@@ -162,24 +162,22 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             });
 
         } catch (ClassNotFoundException | SQLException e) {
-            // Manejar cualquier excepción que pueda ocurrir durante la carga de usuarios
-            alerta.manejarErrorConexion(this.getClass(), e);
+            errorSQL(this.getClass(), e);
         }
         return model;
     }
 
     public void RegistrarProducto() {
-        String nombre = txtNombre.getText();
-        String unidad = txtUnidad.getText();
-        double cantidad = Double.parseDouble(txtCantidad.getText());
-        double precio = Double.parseDouble(txtPrecio.getText());
-
-        if (nombre.isEmpty() || unidad.isEmpty() || cantidad == 0 || cbProveedor.getSelectedIndex() == 0) {
-            alerta.advertencia("Por favor, complete todos los campos.");
-            return;
-        }
         try {
+            String nombre = txtNombre.getText();
+            String unidad = txtUnidad.getText();
+            double cantidad = Double.parseDouble(txtCantidad.getText());
+            double precio = Double.parseDouble(txtPrecio.getText());
 
+            if (nombre.isEmpty() || unidad.isEmpty() || cantidad == 0 || cbProveedor.getSelectedIndex() == 0) {
+                alerta.advertencia("Por favor, complete todos los campos.");
+                return;
+            }
             Producto ProductoCreated = new Producto();
             ProductoCreated.setId(0);
             ProductoCreated.setNombre(nombre);
@@ -189,16 +187,15 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             ProductoCreated.setPrecio(precio);
 
             ProductoDAO producDAO = new ProductoDAOImpl(ProductoCreated);
-            producDAO.registrar();
-
             limpiarTxt();
-            tbProducto.setModel(cargarProducto());
-            // Mostrar un mensaje de registro exitoso
-            alerta.aviso("Registro exitoso.");
-
+            boolean registrado = producDAO.registrar();
+            if (registrado) {
+                tbProducto.setModel(cargarProducto());
+                // Mostrar un mensaje de registro exitoso
+                alerta.aviso("Registro exitoso.");
+            }
         } catch (SQLException | ClassNotFoundException e) {
-            // Manejar cualquier error de conexión durante el registro
-            alerta.manejarErrorConexion(this.getClass(), e);
+            errorSQL(this.getClass(), e);
         }
     }
 
@@ -279,11 +276,12 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             prodFind.setPrecio(precio);
 
             prodDAO = new ProductoDAOImpl(prodFind);
-            prodDAO.actualizar();
-
-            tbProducto.setModel(cargarProducto());
-            alerta.aviso("Actualización exitosa.");
             limpiarTxt();
+            boolean actualizado = prodDAO.actualizar();
+            if (actualizado) {
+                tbProducto.setModel(cargarProducto());
+                alerta.aviso("Actualización exitosa.");
+            }
         } catch (SQLException | ClassNotFoundException e) {
             alerta.manejarErrorConexion(this.getClass(), e);
         }
@@ -327,12 +325,14 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
                 productoForDelete.setId((int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0));
                 // Crear un objeto productoDAOImpl para realizar operaciones de base de datos
                 ProductoDAO producDAO = new ProductoDAOImpl(productoForDelete);
-                // Eliminar el producto de la base de datos
-                producDAO.eliminar();
-                // Actualizar tabla y limpiar campos
-                tbProducto.setModel(cargarProducto());
                 limpiarTxt();
-                alerta.aviso("Producto eliminado correctamente.");
+                // Eliminar el producto de la base de datos
+                boolean eliminado = producDAO.eliminar();
+                if (eliminado) {
+                    // Actualizar tabla
+                    tbProducto.setModel(cargarProducto());
+                    alerta.aviso("Producto eliminado correctamente.");
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
             // Manejo de errores de conexión
@@ -378,7 +378,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
 //        }
 //        
 //    }
-
     private int getProveedorBuscado() {
         int proveedor = 0;
         String seleccionado = cbProveedor.getSelectedItem().toString();
