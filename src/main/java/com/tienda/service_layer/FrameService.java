@@ -5,24 +5,50 @@ import java.awt.Component;
 /**
  * La interfaz FrameService proporciona métodos para cerrar y cargar un marco
  * (frame).
+ *
+ * @param <T> El tipo de objeto que representa el marco.
+ * @author isai_
  */
 public interface FrameService<T> {
 
     /**
-     * Método para cargar el marco.
+     * Método para obtener una instancia del marco.
+     *
+     * @return Una instancia del marco.
      */
-    T GetInstanceOfFrame();
-    
-    void CargarActionListeners();
+    T getInstanceOfFrame();
 
-    void CargarKeyListeners();
+    /**
+     * Método para cargar action listeners en el marco.
+     */
+    void cargarActionListeners();
 
-    void CargarMouseListeners();
+    /**
+     * Método para cargar key listeners en el marco.
+     */
+    void cargarKeyListeners();
 
-    void QuitActionListeners();
+    /**
+     * Método para cargar mouse listeners en el marco.
+     */
+    void cargarMouseListeners();
 
-    void QuitKeyListener(Component componente);
+    /**
+     * Método para quitar action listeners del marco.
+     */
+    void quitActionListeners();
 
-    void QuitMouseListener(Component componente);
+    /**
+     * Método para quitar key listeners de un componente del marco.
+     *
+     * @param componente El componente del cual quitar los key listeners.
+     */
+    void quitKeyListener(Component componente);
 
+    /**
+     * Método para quitar mouse listeners de un componente del marco.
+     *
+     * @param componente El componente del cual quitar los mouse listeners.
+     */
+    void quitMouseListener(Component componente);
 }

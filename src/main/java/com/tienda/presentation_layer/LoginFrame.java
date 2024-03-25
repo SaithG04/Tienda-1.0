@@ -2,14 +2,12 @@ package com.tienda.presentation_layer;
 
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Image;
-import java.awt.event.*;
 import javax.swing.*;
 
 /**
- *
- * @author isai_
- *
  * La clase LoginFrame representa la ventana de inicio de sesión del sistema.
+ * 
+ * @author isai_
  */
 public class LoginFrame extends javax.swing.JFrame {
 

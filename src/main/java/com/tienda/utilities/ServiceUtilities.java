@@ -7,11 +7,12 @@ import javax.swing.*;
 
 /**
  * Clase base para funcionalidades generales compartidas.
+ * 
+ * @author isai_
  */
 public class ServiceUtilities {
 
     public static final Image IMG;
-//    public static final Color COLORERROR = new Color(255, 153, 153);
 
     static {
         Image tempImg = null;
@@ -167,8 +168,13 @@ public class ServiceUtilities {
         return salt;
     }
 
+    /**
+     * Método para cerrar una ventana y confirmar la salida de la aplicación al
+     * hacer clic en el botón de cerrar.
+     *
+     * @param t JFrame que se va a cerrar.
+     */
     public void Close(JFrame t) {
-
         // Eliminar cualquier WindowListener existente
         for (WindowListener wl : t.getWindowListeners()) {
             t.removeWindowListener(wl);
@@ -178,14 +184,23 @@ public class ServiceUtilities {
         t.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
+                // Mostrar un mensaje de confirmación antes de salir de la aplicación
                 if (alerta.confirmacion("¿Salir de la aplicación?") == 0) {
+                    // Salir de la aplicación si se confirma
                     System.exit(0);
                 }
             }
         });
-
     }
 
+    /**
+     * Método para verificar si una cadena de texto contiene al menos una letra
+     * mayúscula.
+     *
+     * @param texto Cadena de texto a verificar.
+     * @return true si la cadena contiene al menos una letra mayúscula, false en
+     * caso contrario.
+     */
     public boolean contieneMayuscula(String texto) {
         for (int i = 0; i < texto.length(); i++) {
             if (Character.isUpperCase(texto.charAt(i))) {
@@ -195,6 +210,14 @@ public class ServiceUtilities {
         return false; // Si no encuentra ninguna mayúscula, retorna falso
     }
 
+    /**
+     * Método para verificar si una cadena de texto contiene al menos un dígito
+     * numérico.
+     *
+     * @param texto Cadena de texto a verificar.
+     * @return true si la cadena contiene al menos un dígito numérico, false en
+     * caso contrario.
+     */
     public boolean contieneNumero(String texto) {
         for (int i = 0; i < texto.length(); i++) {
             if (Character.isDigit(texto.charAt(i))) {
@@ -204,6 +227,14 @@ public class ServiceUtilities {
         return false; // Si no encuentra ningún número, retorna falso
     }
 
+    /**
+     * Método para verificar si una cadena de texto contiene al menos un
+     * carácter especial.
+     *
+     * @param texto Cadena de texto a verificar.
+     * @return true si la cadena contiene al menos un carácter especial, false
+     * en caso contrario.
+     */
     public boolean contieneSigno(String texto) {
         for (int i = 0; i < texto.length(); i++) {
             char c = texto.charAt(i);
@@ -214,6 +245,14 @@ public class ServiceUtilities {
         return false; // Si no encuentra ningún signo, retorna falso
     }
 
+    /**
+     * Método para verificar si una cadena de texto contiene al menos un espacio
+     * en blanco.
+     *
+     * @param texto Cadena de texto a verificar.
+     * @return true si la cadena contiene al menos un espacio en blanco, false
+     * en caso contrario.
+     */
     public boolean contieneEspacioBlanco(String texto) {
         for (int i = 0; i < texto.length(); i++) {
             if (Character.isWhitespace(texto.charAt(i))) {
@@ -223,10 +262,20 @@ public class ServiceUtilities {
         return false; // Si no encuentra ningún espacio en blanco, retorna falso
     }
 
+    /**
+     * Método para verificar si una cadena de texto contiene caracteres no
+     * permitidos.
+     *
+     * @param texto Cadena de texto a verificar.
+     * @return true si la cadena contiene caracteres no permitidos, false en
+     * caso contrario.
+     */
     public boolean contieneCaracteresNoPermitidos(String texto) {
+        // Definir los caracteres no permitidos
         String caracteresNoPermitidos = "!@#$%^&*()+=-[]{},<>?/\\|";
         for (int i = 0; i < texto.length(); i++) {
             char c = texto.charAt(i);
+            // Verificar si el carácter actual está en la lista de caracteres no permitidos
             if (caracteresNoPermitidos.indexOf(c) != -1) {
                 return true; // Si encuentra al menos un carácter no permitido, retorna verdadero
             }

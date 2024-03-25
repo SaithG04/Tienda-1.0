@@ -73,7 +73,7 @@ public class UsersFrame extends javax.swing.JFrame {
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.setPreferredSize(new java.awt.Dimension(850, 550));
         jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 100, 130, 60));
-        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 210, 60));
+        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 240, 60));
 
         btnRegresar.setBackground(new java.awt.Color(0, 0, 0));
         btnRegresar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
@@ -131,7 +131,8 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.add(lblPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 250, 570, 20));
 
         btnRevelar.setFont(new java.awt.Font("Swis721 Ex BT", 0, 12)); // NOI18N
-        jPanel1.add(btnRevelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 180, 60, 60));
+        btnRevelar.setPreferredSize(new java.awt.Dimension(26, 11));
+        jPanel1.add(btnRevelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 190, 40, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

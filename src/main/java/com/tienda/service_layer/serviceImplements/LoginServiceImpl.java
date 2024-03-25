@@ -16,6 +16,11 @@ import java.sql.SQLException;
 /**
  * La clase LoginServiceImpl implementa la interfaz LoginService y maneja el
  * inicio de sesión de usuario.
+ *
+ * Este servicio gestiona la autenticación de usuarios y proporciona
+ * funcionalidades para interactuar con el formulario de inicio de sesión.
+ *
+ * @author isai_
  */
 public class LoginServiceImpl extends ServiceUtilities implements ActionListener, LoginService {
 
@@ -83,11 +88,11 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * @return Instancia del formulario de inicio de sesión.
      */
     @Override
-    public LoginFrame GetInstanceOfFrame() {
+    public LoginFrame getInstanceOfFrame() {
         instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
         txtUsuario.requestFocus(); // Foco en el campo de usuario
-        CargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
-        CargarActionListeners(); // Cargar los ActionListeners para los botones
+        cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
+        cargarActionListeners(); // Cargar los ActionListeners para los botones
         return instanceOfLoginFrame;
     }
 
@@ -143,7 +148,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
 
             // Cerrar la ventana de inicio de sesión y mostrar el menú principal
             instanceOfLoginFrame.dispose();
-            MenuServiceImpl.getInstance().GetInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
             intentos = 0;
 
         } catch (SQLException | ClassNotFoundException ex) {
@@ -163,8 +168,8 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Método para cargar los ActionListeners de los botones.
      */
     @Override
-    public void CargarActionListeners() {
-        QuitActionListeners(); // Eliminar los ActionListeners anteriores
+    public void cargarActionListeners() {
+        quitActionListeners(); // Eliminar los ActionListeners anteriores
         btnAceptar.addActionListener(this); // Agregar ActionListener para el botón de aceptar
         btnSalir.addActionListener(this); // Agregar ActionListener para el botón de salir
     }
@@ -173,9 +178,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Método para cargar los KeyListeners de los campos de texto.
      */
     @Override
-    public void CargarKeyListeners() {
-        QuitKeyListener(txtPassword); // Eliminar los KeyListeners anteriores del campo de contraseña
-        QuitKeyListener(txtUsuario); // Eliminar los KeyListeners anteriores del campo de usuario
+    public void cargarKeyListeners() {
+        quitKeyListener(txtPassword); // Eliminar los KeyListeners anteriores del campo de contraseña
+        quitKeyListener(txtUsuario); // Eliminar los KeyListeners anteriores del campo de usuario
         // Agregar KeyListeners para los campos de texto
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
@@ -199,7 +204,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Método para cargar los MouseListeners.
      */
     @Override
-    public void CargarMouseListeners() {
+    public void cargarMouseListeners() {
         // No tiene MouseListeners
     }
 
@@ -207,7 +212,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Método para eliminar los ActionListeners de los botones.
      */
     @Override
-    public void QuitActionListeners() {
+    public void quitActionListeners() {
         btnAceptar.removeActionListener(this); // Eliminar ActionListener del botón de aceptar
         btnSalir.removeActionListener(this); // Eliminar ActionListener del botón de salir
     }
@@ -218,7 +223,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * @param componente El componente del cual se eliminarán los KeyListeners.
      */
     @Override
-    public void QuitKeyListener(Component componente) {
+    public void quitKeyListener(Component componente) {
         for (KeyListener ml : componente.getKeyListeners()) {
             componente.removeKeyListener(ml); // Eliminar los MouseListeners del componente
         }
@@ -231,7 +236,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * MouseListeners.
      */
     @Override
-    public void QuitMouseListener(Component componente) {
+    public void quitMouseListener(Component componente) {
         // No tiene MouseListeners
     }
 

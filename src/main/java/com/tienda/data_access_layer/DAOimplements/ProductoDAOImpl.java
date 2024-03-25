@@ -2,6 +2,7 @@ package com.tienda.data_access_layer.DAOimplements;
 
 import com.tienda.data_access_layer.*;
 import com.tienda.entity.Producto;
+import com.tienda.utilities.DataAccessUtilities;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.*;
 /**
  * Implementación del DAO de usuario para acceder a la base de datos.
  */
-public class ProductoDAOImpl extends MySqlConnectionFactory implements Serializable, ProductoDAO {
+public class ProductoDAOImpl extends DataAccessUtilities implements Serializable, ProductoDAO {
 
     private final Producto producto;
     private static final String NAMETABLE = "productos";
@@ -45,7 +46,7 @@ public class ProductoDAOImpl extends MySqlConnectionFactory implements Serializa
 
     public static Map<Integer, String> getNameProveedor() throws ClassNotFoundException, SQLException {
         String query = "SELECT id, razon_social from proveedores";
-        try (Connection connection = new MySqlConnectionFactory().getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
             if (resultSet.next()) {
                 // Extraer los datos de la fila del ResultSet usando la función de extracción
                 Map<Integer, String> rowData = new HashMap<Integer, String>();

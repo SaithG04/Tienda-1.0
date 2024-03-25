@@ -5,6 +5,8 @@ import java.sql.*;
 /**
  * La interfaz ConnectionFactory proporciona métodos para la conexión a la base
  * de datos y operaciones relacionadas.
+ * 
+ * @author isai_
  */
 public interface ConnectionFactory {
 
