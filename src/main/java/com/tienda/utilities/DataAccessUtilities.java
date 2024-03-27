@@ -47,6 +47,16 @@ public class DataAccessUtilities {
         return null;
     }
 
+    public <T> T getEntityByOtherParameterGeneric(String tableName, String parameterName, Object parameter) throws SQLException, ClassNotFoundException {
+        String query = "SELECT * FROM " + tableName + " WHERE " + parameterName + " COLLATE utf8_bin = ?";
+        if (amIConected()) {
+            return getByOtherParameter(query, parameter, tableName);
+        } else {
+            new ServiceUtilities().volverLogin(tableName);
+        }
+        return null; // Devolver nulo si no se encuentra el usuario
+    }
+
     /**
      * Registra un nuevo objeto en la tabla especificada.
      *
@@ -109,7 +119,7 @@ public class DataAccessUtilities {
      * @param id El ID del objeto a actualizar.
      * @param entity El objeto con los datos actualizados.
      * @param <T> El tipo de objeto a actualizar.
-     * @return 
+     * @return
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
@@ -134,6 +144,7 @@ public class DataAccessUtilities {
      *
      * @param tableName El nombre de la tabla de la base de datos.
      * @param id El ID del objeto a eliminar.
+     * @return
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
@@ -179,8 +190,8 @@ public class DataAccessUtilities {
                         new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
                     case "proveedores" ->
                         new Proveedor((int) row[0], row[1].toString(), row[2].toString(), row[3].toString(), row[4].toString(),
-                                row[5].toString(), row[6].toString(), row[7].toString(), row[8].toString(), row[9].toString(), 
-                                row[10].toString(), (java.sql.Date) row[11], row[12].toString());
+                        row[5].toString(), row[6].toString(), row[7].toString(), row[8].toString(), row[9].toString(),
+                        row[10].toString(), (java.sql.Date) row[11], row[12].toString());
                     default ->
                         null;
                 };
@@ -219,6 +230,24 @@ public class DataAccessUtilities {
                 try {
                     entrada.close();
                 } catch (IOException e) {
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean amIConected() throws SQLException, ClassNotFoundException {
+        User user = getByIdGeneric(LoginServiceImpl.userLogued.getId(), "users");
+        return user.getStatus().equals("logged in");
+    }
+
+    public <T> T getByOtherParameter(String query, Object parameter, String tableName) throws ClassNotFoundException, SQLException {
+        try (Connection con = MySqlConnectionFactory.getInstance().getConnection(); PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setObject(1, parameter);
+            try (ResultSet resultSet = pst.executeQuery()) {
+                if (resultSet.next()) {
+                    T rowData = (T) getRowGeneric(tableName, con).apply(resultSet);
+                    return rowData;
                 }
             }
         }
@@ -272,6 +301,20 @@ public class DataAccessUtilities {
             statement.setDouble(4, producto.getCantidad());
             statement.setDouble(5, producto.getPrecio());
             statement.setString(6, producto.getMedida());
+        } else if (entity instanceof Proveedor proveedor) {
+            statement.setInt(1, 0);
+            statement.setString(2, proveedor.getRuc());
+            statement.setString(3, proveedor.getRazon_social());
+            statement.setString(4, proveedor.getDescripcion());
+            statement.setString(5, proveedor.getDireccion());
+            statement.setString(6, proveedor.getTelefono());
+            statement.setString(7, proveedor.getCorreo());
+            statement.setString(8, proveedor.getWeb());
+            statement.setString(9, proveedor.getContacto());
+            statement.setString(10, proveedor.getCategoria());
+            statement.setString(11, proveedor.getEstado());
+            statement.setDate(12, proveedor.getFecha_registro());
+            statement.setString(13, proveedor.getObservaciones());
         }
     }
 
@@ -301,6 +344,21 @@ public class DataAccessUtilities {
                 statement.setDouble(4, producto.getPrecio());
                 statement.setString(5, producto.getMedida());
                 statement.setInt(6, producto.getId());
+            }
+            case Proveedor proveedor -> {  
+                statement.setString(1, proveedor.getRuc());
+                statement.setString(2, proveedor.getRazon_social());
+                statement.setString(3, proveedor.getDescripcion());
+                statement.setString(4, proveedor.getDireccion());
+                statement.setString(5, proveedor.getTelefono());
+                statement.setString(6, proveedor.getCorreo());
+                statement.setString(7, proveedor.getWeb());
+                statement.setString(8, proveedor.getContacto());
+                statement.setString(9, proveedor.getCategoria());
+                statement.setString(10, proveedor.getEstado());
+                statement.setDate(11, proveedor.getFecha_registro());
+                statement.setString(12, proveedor.getObservaciones());
+                statement.setInt(13, proveedor.getId());
             }
             default -> {
             }
@@ -351,11 +409,6 @@ public class DataAccessUtilities {
         }
         queryBuilder.append(" WHERE id = ?");
         return queryBuilder.toString();
-    }
-
-    public boolean amIConected() throws SQLException, ClassNotFoundException {
-        User user = getByIdGeneric(LoginServiceImpl.userLogued.getId(), "users");
-        return user.getStatus().equals("logged in");
     }
 
 }

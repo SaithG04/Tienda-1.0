@@ -4,11 +4,12 @@ import com.tienda.data_access_layer.DAOImplements.ProveedorDAOImpl;
 import com.tienda.data_access_layer.ProveedorDAO;
 import com.tienda.entity.Proveedor;
 import com.tienda.presentation_layer.ProveedorFrame;
-import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -26,6 +27,11 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
     private final ProveedorFrame instanceOfProveedorFrame;
 
     private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar, btnRefresh;
+    private final ButtonGroup bgEstado;
+    private final JTextField txtRuc, txtRazonSocial, txtDireccion, txtWeb, txtTelefono, txtCorreo;
+    private final JTextArea txtDescripcion, txtContacto, txtObservaciones;
+    private final JComboBox cbCategoria;
+    private final JRadioButton rbActivo, rbInactivo;
     private final JTable jtbProveedores;
     private final JPopupMenu jpmOptions;
     private final JMenuItem jmiEliminar;
@@ -33,14 +39,28 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
 //    private final Icon iconoMostrar;
     private ProveedorServiceImpl() {
         instanceOfProveedorFrame = ProveedorFrame.getInstance();
+
         btnRegistrar = instanceOfProveedorFrame.getBtnRegistrar();
         btnRegresar = instanceOfProveedorFrame.getBtnRegresar();
-        jtbProveedores = instanceOfProveedorFrame.getJtbProveedores();
-        jpmOptions = instanceOfProveedorFrame.getJpmOptions();
-        jmiEliminar = instanceOfProveedorFrame.getMiEliminar();
         btnModificar = instanceOfProveedorFrame.getBtnModificar();
         btnLimpiar = instanceOfProveedorFrame.getBtnLimpiar();
         btnRefresh = instanceOfProveedorFrame.getBtnRefresh();
+        bgEstado = instanceOfProveedorFrame.getBgEstado();
+        txtRuc = instanceOfProveedorFrame.getTxtRuc();
+        txtRazonSocial = instanceOfProveedorFrame.getTxtRazonSocial();
+        txtDireccion = instanceOfProveedorFrame.getTxtDireccion();
+        txtWeb = instanceOfProveedorFrame.getTxtWeb();
+        txtTelefono = instanceOfProveedorFrame.getTxtTelefono();
+        txtContacto = instanceOfProveedorFrame.getTxtContacto();
+        txtCorreo = instanceOfProveedorFrame.getTxtCorreo();
+        txtDescripcion = instanceOfProveedorFrame.getTxtDescripcion();
+        txtObservaciones = instanceOfProveedorFrame.getTxtObservaciones();
+        cbCategoria = instanceOfProveedorFrame.getCbCategoria();
+        rbActivo = instanceOfProveedorFrame.getRbActivo();
+        rbInactivo = instanceOfProveedorFrame.getRbInactivo();
+        jtbProveedores = instanceOfProveedorFrame.getJtbProveedores();
+        jpmOptions = instanceOfProveedorFrame.getJpmOptions();
+        jmiEliminar = instanceOfProveedorFrame.getMiEliminar();
 //        iconoMostrar = icono("/images/mostrar_eye.jpg", 40, 40);
     }
 
@@ -87,6 +107,9 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         new Thread(() -> {
             jtbProveedores.setModel(cargarProveedores());
         }).start();
+        //Hacer no editable la tabla Proveedores
+        configurarTablaNoEditable(jtbProveedores);
+        listarCategorias();
         return instanceOfProveedorFrame;
     }
 
@@ -111,15 +134,57 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      */
     @Override
     public void cargarKeyListeners() {
+        quitKeyListener(txtRuc);
+        quitKeyListener(txtRazonSocial);
+        quitKeyListener(txtDireccion);
+        quitKeyListener(txtTelefono);
+        quitKeyListener(txtCorreo);
+        quitKeyListener(txtWeb);
         jtbProveedores.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
-                boolean value = bloquearMultipleModificacion();
+                boolean value = bloquearMultipleModificacionGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
                 if (value) {
                     if (evt.getKeyCode() == KeyEvent.VK_DOWN || evt.getKeyCode() == KeyEvent.VK_UP) {
                         autocompletarCampos();
                     }
                 }
+            }
+        });
+        txtRuc.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarSoloNumeros(evt, txtRuc.getText(), (short) 11);
+            }
+        });
+        txtRazonSocial.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarLength(evt, txtRazonSocial.getText(), (short) 255);
+            }
+        });
+        txtDireccion.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarLength(evt, txtDireccion.getText(), (short) 255);
+            }
+        });
+        txtTelefono.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarLength(evt, txtTelefono.getText(), (short) 100);
+            }
+        });
+        txtCorreo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarLength(evt, txtCorreo.getText(), (short) 255);
+            }
+        });
+        txtWeb.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                validarLength(evt, txtWeb.getText(), (short) 255);
             }
         });
     }
@@ -147,7 +212,7 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
 
             @Override
             public void mouseReleased(MouseEvent evt) {
-                bloquearMultipleModificacion();
+                bloquearMultipleModificacionGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
             }
         });
     }
@@ -195,7 +260,7 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
             registrarProveedor();
         } else if (e.getSource() == btnRegresar) {
             // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
-            limpiarCampos();
+            limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
             instanceOfProveedorFrame.dispose();
             MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == jmiEliminar) {
@@ -203,7 +268,7 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
             eliminarProveedor();
         } else if (e.getSource() == btnLimpiar) {
             // Limpiar campos al hacer clic en el botón de limpiar
-            limpiarCampos();
+            limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
         } else if (e.getSource() == btnModificar) {
             // Actualizar un usuario existente al hacer clic en el botón de modificar
             actualizarProveedor();
@@ -218,15 +283,28 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         }
     }
 
-    public DefaultTableModel cargarProveedores() {
+    public void limpiarCamposSinTabla() {
+        txtRuc.setText("");
+        txtRazonSocial.setText("");
+        txtDescripcion.setText("");
+        txtDireccion.setText("");
+        txtTelefono.setText("");
+        txtCorreo.setText("");
+        txtWeb.setText("");
+        txtContacto.setText("");
+        txtObservaciones.setText("");
+        cbCategoria.setSelectedIndex(-1);
+        bgEstado.clearSelection();
+        btnRegistrar.setEnabled(true);
+        btnModificar.setEnabled(false);
+    }
+
+    private DefaultTableModel cargarProveedores() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "RUC", "Razón social", "Descripción", "Dirección", "Telefono",
             "Correo", "Web", "Contacto", "Categoría", "Estado", "Fecha registro", "Observaciones"}, 0);
         try {
-            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
             ProveedorDAO proveedorDAO = new ProveedorDAOImpl(new Proveedor());
-            // Obtener la lista de usuarios
             List<Proveedor> lista = proveedorDAO.listar();
-            // Agregar cada usuario a la tabla
             lista.forEach(proveedores -> {
                 model.addRow(new Object[]{proveedores.getId(), proveedores.getRuc(), proveedores.getRazon_social(), proveedores.getDescripcion(),
                     proveedores.getDireccion(), proveedores.getTelefono(), proveedores.getCorreo(), proveedores.getWeb(), proveedores.getContacto(),
@@ -238,29 +316,59 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         return model;
     }
 
-    /**
-     * Método para registrar un nuevo usuario. Se obtienen los datos de los
-     * campos de texto y se valida su integridad antes de proceder al registro.
-     */
-    public void registrarProveedor() {
+    private void registrarProveedor() {
         try {
             setCursores(waitCursor);
-//            if (camposVaciosGeneric(nombreCompleto, user, password)) {
-//                return;
-//            }
+            String ruc = txtRuc.getText();
+            String razonSocial = txtRazonSocial.getText();
+            String descripcion = txtDescripcion.getText();
+            String direccion = txtDireccion.getText();
+            String telefono = txtTelefono.getText();
+            String correo = txtCorreo.getText();
+            String web = txtWeb.getText();
+            String contacto = txtContacto.getText();
+            String observaciones = txtObservaciones.getText();
+            if (algunCampoVacioGeneric(ruc, razonSocial, direccion, telefono, correo, contacto)) {
+                alerta.faltanDatos();
+                return;
+            }
+
+            if (cbCategoria.getSelectedIndex() == -1) {
+                alerta.faltanDatos();
+                return;
+            }
+            String categoria = cbCategoria.getSelectedItem().toString();
             Proveedor proveedorCreated = new Proveedor();
 
-            ProveedorDAO proveedorDAO = new ProveedorDAOImpl(proveedorCreated);
-//            Proveedor userByUsername = userDAO.getUserByUsername();
+            proveedorCreated.setRuc(ruc);
+            proveedorCreated.setRazon_social(razonSocial);
+            proveedorCreated.setDescripcion(descripcion);
+            proveedorCreated.setDireccion(direccion);
+            proveedorCreated.setTelefono(telefono);
+            proveedorCreated.setCorreo(correo);
+            proveedorCreated.setWeb(web);
+            proveedorCreated.setContacto(contacto);
+            proveedorCreated.setObservaciones(observaciones);
+            proveedorCreated.setCategoria(categoria);
+            proveedorCreated.setEstado("Activo");
 
-            if (proveedorDAO != null) {
-                alerta.advertencia("El nombre de usuario no está disponible");
+            LocalDate fechaActual = LocalDate.now();
+            Date fechaSQL = Date.valueOf(fechaActual);
+            proveedorCreated.setFecha_registro(fechaSQL);
+
+            ProveedorDAO proveedorDAO = new ProveedorDAOImpl(proveedorCreated);
+            Proveedor proveedor = proveedorDAO.getProveedorByRuc();
+
+            if (proveedor != null) {
+                alerta.advertencia("Ya existe un proveedor con ese número de ruc.");
+                txtRuc.setText("");
+                txtRuc.requestFocus();
             } else {
                 boolean registrado = proveedorDAO.registrar();
-                limpiarCampos();
+                limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
                 if (registrado) {
-                    alerta.aviso("Registro exitoso.");
                     jtbProveedores.setModel(cargarProveedores());
+                    alerta.aviso("Registro exitoso.");
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -275,21 +383,54 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * campos de texto y se valida su integridad antes de proceder a la
      * actualización.
      */
-    public void actualizarProveedor() {
+    private void actualizarProveedor() {
 
         try {
             setCursores(waitCursor);
+            String ruc = txtRuc.getText();
+            String razonSocial = txtRazonSocial.getText();
+            String descripcion = txtDescripcion.getText();
+            String direccion = txtDireccion.getText();
+            String telefono = txtTelefono.getText();
+            String correo = txtCorreo.getText();
+            String web = txtWeb.getText();
+            String contacto = txtContacto.getText();
+            String observaciones = txtObservaciones.getText();
+            if (algunCampoVacioGeneric(ruc, razonSocial, direccion, telefono, correo, contacto)) {
+                alerta.faltanDatos();
+                return;
+            }
 
-//            if (camposVaciosGeneric(nombreCompleto, user)) {
-//                return;
-//            }
+            if (cbCategoria.getSelectedIndex() == -1) {
+                alerta.faltanDatos();
+                return;
+            }
+            String categoria = cbCategoria.getSelectedItem().toString();
+            if (!rbActivo.isSelected() && !rbInactivo.isSelected()) {
+                alerta.faltanDatos();
+                return;
+            }
+            String estado = rbActivo.isSelected() ? "Activo" : "Inactivo";
+
             Proveedor proveedorForUpdate = new Proveedor();
             proveedorForUpdate.setId((int) jtbProveedores.getValueAt(jtbProveedores.getSelectedRow(), 0));
             ProveedorDAO proveedorDAO = new ProveedorDAOImpl(proveedorForUpdate);
-            Proveedor proveedorFind = proveedorDAO.getById();
+            proveedorForUpdate = proveedorDAO.getById();
 
-            proveedorDAO = new ProveedorDAOImpl(proveedorFind);
-            limpiarCampos();
+            proveedorForUpdate.setRuc(ruc);
+            proveedorForUpdate.setRazon_social(razonSocial);
+            proveedorForUpdate.setDescripcion(descripcion);
+            proveedorForUpdate.setDireccion(direccion);
+            proveedorForUpdate.setTelefono(telefono);
+            proveedorForUpdate.setCorreo(correo);
+            proveedorForUpdate.setWeb(web);
+            proveedorForUpdate.setContacto(contacto);
+            proveedorForUpdate.setObservaciones(observaciones);
+            proveedorForUpdate.setCategoria(categoria);
+            proveedorForUpdate.setEstado(estado);
+            limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
+
+            proveedorDAO.setEntity(proveedorForUpdate);
             boolean actualizado = proveedorDAO.actualizar();
 
             if (actualizado) {
@@ -307,7 +448,7 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para eliminar un usuario. Se muestra un mensaje de confirmación
      * antes de realizar la eliminación.
      */
-    public void eliminarProveedor() {
+    private void eliminarProveedor() {
         if (alerta.confirmacion("¿Está seguro de eliminar este proveedor?") == 0) {
             try {
                 setCursores(waitCursor);
@@ -315,14 +456,13 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
                 proveedorForDelete.setId((int) jtbProveedores.getValueAt(jtbProveedores.getSelectedRow(), 0));
                 ProveedorDAO proveedorDAO = new ProveedorDAOImpl(proveedorForDelete);
                 // Eliminar el usuario de la base de datos
-                limpiarCampos();
+                limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
                 boolean eliminado = proveedorDAO.eliminar();
                 if (eliminado) {
                     // Actualizar tabla de usuarios y limpiar campos
                     jtbProveedores.setModel(cargarProveedores());
                     alerta.aviso("Proveedor eliminado correctamente.");
                 }
-
             } catch (SQLException | ClassNotFoundException e) {
                 // Manejo de errores de conexión
                 errorSQL(this.getClass(), e);
@@ -336,43 +476,63 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para autocompletar los campos de texto al hacer clic en la tabla
      * de usuarios.
      */
-    public void autocompletarCampos() {
+    private void autocompletarCampos() {
         int rowSelected = jtbProveedores.getSelectedRow();
-        if (rowSelected == -1) {
-            // No hacer nada si no se selecciona ninguna fila
-        } else {
+
+        String ruc = txtRuc.getText();
+        String razonSocial = txtRazonSocial.getText();
+        String descripcion = txtDescripcion.getText();
+        String direccion = txtDireccion.getText();
+        String telefono = txtTelefono.getText();
+        String correo = txtCorreo.getText();
+        String web = txtWeb.getText();
+        String contacto = txtContacto.getText();
+        String observaciones = txtObservaciones.getText();
+
+        boolean todosVacios = todosCamposVacios(ruc, razonSocial, descripcion, direccion,
+                telefono, correo, web, contacto, observaciones);
+
+        if (rowSelected != -1 && todosVacios && cbCategoria.getSelectedIndex() == -1 && !rbActivo.isSelected() && !rbInactivo.isSelected()) {
             // Obtener datos de la fila seleccionada y completar campos de texto
-            String nombreCompleto = jtbProveedores.getValueAt(rowSelected, 1).toString();
-            String username = jtbProveedores.getValueAt(rowSelected, 2).toString();
+            ruc = jtbProveedores.getValueAt(rowSelected, 1).toString();
+            razonSocial = jtbProveedores.getValueAt(rowSelected, 2).toString();
+            descripcion = jtbProveedores.getValueAt(rowSelected, 3).toString();
+            direccion = jtbProveedores.getValueAt(rowSelected, 4).toString();
+            telefono = jtbProveedores.getValueAt(rowSelected, 5).toString();
+            correo = jtbProveedores.getValueAt(rowSelected, 6).toString();
+            web = jtbProveedores.getValueAt(rowSelected, 7).toString();
+            contacto = jtbProveedores.getValueAt(rowSelected, 8).toString();
+            String categoria = jtbProveedores.getValueAt(rowSelected, 9).toString();
+            String estado = jtbProveedores.getValueAt(rowSelected, 10).toString();
+            observaciones = jtbProveedores.getValueAt(rowSelected, 12).toString();
+            txtRuc.setText(ruc);
+            txtRazonSocial.setText(razonSocial);
+            txtDescripcion.setText(descripcion);
+            txtDireccion.setText(direccion);
+            txtTelefono.setText(telefono);
+            txtCorreo.setText(correo);
+            txtWeb.setText(web);
+            txtContacto.setText(contacto);
+            cbCategoria.setSelectedItem(categoria);
+            if (estado.equals("Activo")) {
+                rbActivo.setSelected(true);
+            } else {
+                rbInactivo.setSelected(true);
+            }
+            txtObservaciones.setText(observaciones);
             btnRegistrar.setEnabled(false);
             btnModificar.setEnabled(true);
         }
-    }
-
-    /**
-     * Método para limpiar los campos de texto y habilitar el botón de
-     * registrar.
-     */
-    public void limpiarCampos() {
-        limpiarCamposSinTabla();
-        jtbProveedores.clearSelection();
-    }
-
-    public void limpiarCamposSinTabla() {
-        btnRegistrar.setEnabled(true);
-        btnModificar.setEnabled(false);
-    }
-
-    public boolean bloquearMultipleModificacion() {
-        if (jtbProveedores.getSelectedRowCount() > 1) {
-            limpiarCamposSinTabla();
-            return false;
-        }
-        return true;
     }
 
     private void setCursores(Cursor cursor) {
         setCursoresGeneric(new Component[]{instanceOfProveedorFrame, btnRegistrar, btnModificar, btnRefresh}, cursor);
     }
 
+    private void listarCategorias() {
+        cbCategoria.removeAllItems();
+        String[] categorías = {"Productos alimenticios", "Maquinaria TI"};
+        addAllItems(cbCategoria, categorías);
+        cbCategoria.setSelectedIndex(-1);
+    }
 }

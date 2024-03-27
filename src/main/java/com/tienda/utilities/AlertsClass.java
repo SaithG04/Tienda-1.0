@@ -1,7 +1,6 @@
 package com.tienda.utilities;
 
 import java.awt.Toolkit;
-import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.logging.*;
 import javax.swing.*;

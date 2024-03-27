@@ -4,7 +4,6 @@ import com.tienda.data_access_layer.DAOimplements.ProductoDAOImpl;
 import com.tienda.data_access_layer.ProductoDAO;
 import com.tienda.entity.Producto;
 import com.tienda.presentation_layer.ProductosFrame;
-import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

@@ -12,13 +12,18 @@ import java.util.*;
  */
 public class ProductoDAOImpl extends DataAccessUtilities implements Serializable, ProductoDAO {
 
-    private final Producto producto;
+    private Producto producto;
     private static final String NAMETABLE = "productos";
 
     public ProductoDAOImpl(Producto producto) {
         this.producto = producto;
     }
 
+    @Override
+    public void setEntity(Producto producto) {
+        this.producto = producto;
+    }
+    
     @Override
     public Producto getById() throws SQLException, ClassNotFoundException {
         return getByIdGeneric(producto.getId(), NAMETABLE);

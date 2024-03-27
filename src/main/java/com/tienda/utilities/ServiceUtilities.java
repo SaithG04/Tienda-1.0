@@ -1,13 +1,12 @@
 package com.tienda.utilities;
 
+import com.tienda.service_layer.*;
 import com.tienda.presentation_layer.*;
-import com.tienda.service_layer.LoginServiceImpl;
-import com.tienda.service_layer.ProveedorServiceImpl;
-import com.tienda.service_layer.UserServiceImpl;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;
 import javax.swing.*;
+import javax.swing.table.*;
 
 /**
  * Clase base para funcionalidades generales compartidas.
@@ -369,14 +368,49 @@ public class ServiceUtilities {
         tabla.clearSelection();
     }
 
-    public boolean camposVaciosGeneric(String[] arrayString) {
+    public boolean algunCampoVacioGeneric(String... arrayString) {
         for (String str : arrayString) {
             if (str.isEmpty()) {
-                alerta.faltanDatos();
-                return true; // Si encuentra un string vacío, muestra alerta y retorna verdadero
+                return true; // Si encuentra un string vacío, retorna verdadero
             }
         }
         return false; // Si no encuentra ningún string vacío, retorna falso
     }
 
+    public boolean todosCamposVacios(String... arrayString) {
+        for (String str : arrayString) {
+            if (!str.isEmpty()) {
+                return false; // Si encuentra un string no vacío, retorna falso
+            }
+        }
+        return true; // Si no encuentra ningún string no vacío, retorna verdadero
+    }
+
+    public void configurarTablaNoEditable(JTable tabla) {
+        // Obtener el modelo de la tabla
+        TableModel modelo = tabla.getModel();
+
+        // Verificar si el modelo es editable (DefaultTableModel)
+        if (modelo instanceof DefaultTableModel defaultModel) {
+            // Si es un DefaultTableModel, hacemos que todas las celdas no sean editables
+            defaultModel.setRowCount(0); // Limpiar cualquier dato existente
+            tabla.setModel(defaultModel);
+        } else {
+            // Si no es un DefaultTableModel, configuramos cada celda individualmente como no editable
+            for (int i = 0; i < tabla.getRowCount(); i++) {
+                for (int j = 0; j < tabla.getColumnCount(); j++) {
+                    tabla.setValueAt(tabla.getValueAt(i, j), i, j);
+                }
+            }
+        }
+
+        // Hacer que la tabla no sea editable
+        tabla.setDefaultEditor(Object.class, null);
+    }
+
+    public <T> void addAllItems(JComboBox<T> comboBox, T[] items) {
+        for (T item : items) {
+            comboBox.addItem(item);
+        }
+    }
 }
