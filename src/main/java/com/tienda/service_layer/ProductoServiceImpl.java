@@ -1,10 +1,10 @@
-package com.tienda.service_layer.serviceImplements;
+package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOimplements.ProductoDAOImpl;
 import com.tienda.data_access_layer.ProductoDAO;
 import com.tienda.entity.Producto;
 import com.tienda.presentation_layer.ProductosFrame;
-import com.tienda.service_layer.ProductoService;
+import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -25,7 +25,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class ProductoServiceImpl extends ServiceUtilities implements ProductoService, ActionListener {
+public class ProductoServiceImpl extends ServiceUtilities implements ActionListener, FrameService<ProductosFrame> {
 
     private static volatile ProductoServiceImpl instanciaImpl;
 
@@ -148,7 +148,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
         }
     }
 
-    @Override
     public DefaultTableModel cargarProducto() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Producto", "Proveedor", "Cantidad", "Precio", "Unidad Medida"}, 0);
         try {

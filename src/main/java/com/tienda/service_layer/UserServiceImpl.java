@@ -1,17 +1,16 @@
-package com.tienda.service_layer.serviceImplements;
+package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.UsersFrame;
+import com.tienda.service_layer.FrameService;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.*;
-import com.tienda.service_layer.UserService;
-import java.util.function.Function;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class UserServiceImpl extends ServiceUtilities implements ActionListener, UserService {
+public class UserServiceImpl extends ServiceUtilities implements ActionListener, FrameService<UsersFrame> {
 
     // Declaración de variables miembro
     private static volatile UserServiceImpl instanceOfUserServiceImpl;
@@ -294,7 +293,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      *
      * @return Un modelo de tabla con los usuarios cargados.
      */
-    @Override
     public DefaultTableModel cargarUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario", "Estado"}, 0);
         try {
@@ -316,7 +314,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * Método para registrar un nuevo usuario. Se obtienen los datos de los
      * campos de texto y se valida su integridad antes de proceder al registro.
      */
-    @Override
     public void registrarUsuario() {
         try {
             setCursores(waitCursor);
@@ -368,7 +365,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * campos de texto y se valida su integridad antes de proceder a la
      * actualización.
      */
-    @Override
     public void actualizarUsuario() {
 
         try {
@@ -418,7 +414,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * Método para eliminar un usuario. Se muestra un mensaje de confirmación
      * antes de realizar la eliminación.
      */
-    @Override
     public void eliminarUsuario() {
         if (alerta.confirmacion("¿Está seguro de eliminar este usuario?") == 0) {
             try {
@@ -452,7 +447,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         }
     }
 
-    @Override
     public void desconectar() {
         if (alerta.confirmacion("¿Está seguro de desconectar este usuario?") == 0) {
             try {

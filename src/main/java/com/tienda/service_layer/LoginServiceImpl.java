@@ -1,10 +1,10 @@
-package com.tienda.service_layer.serviceImplements;
+package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.presentation_layer.LoginFrame;
-import com.tienda.service_layer.LoginService;
+import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
 
 import javax.swing.*;
@@ -22,7 +22,7 @@ import java.sql.SQLException;
  *
  * @author isai_
  */
-public class LoginServiceImpl extends ServiceUtilities implements ActionListener, LoginService {
+public class LoginServiceImpl extends ServiceUtilities implements ActionListener, FrameService<LoginFrame> {
 
     // Declaración de variables de instancia
     /**
@@ -101,7 +101,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      *
      * @param evt Evento recibido
      */
-    @Override
     public void IniciarSesion(AWTEvent evt) {
         if (intentos == 3) {
             // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos

@@ -1,10 +1,10 @@
-package com.tienda.service_layer.serviceImplements;
+package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.MenuPrincipalFrame;
-import com.tienda.service_layer.MenuService;
+import com.tienda.service_layer.FrameService;
 import java.awt.Component;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -16,7 +16,7 @@ import javax.swing.*;
  *
  * @author isai_
  */
-public class MenuServiceImpl extends ServiceUtilities implements MenuService, ActionListener {
+public class MenuServiceImpl extends ServiceUtilities implements ActionListener, FrameService<MenuPrincipalFrame> {
 
     private static volatile MenuServiceImpl instanceOfMenuServiceImpl;
 
