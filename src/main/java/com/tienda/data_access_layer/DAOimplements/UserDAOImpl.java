@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Serializable {
 
-    private final User usuario;
+    private User usuario;
     private static final String NAMETABLE = "users";
 
     /**
@@ -28,6 +28,11 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
         this.usuario = usuario;
     }
 
+    @Override
+    public void setEntity(User usuario) {
+        this.usuario = usuario;
+    }
+    
     /**
      * Obtiene un usuario por su ID.
      *
@@ -97,26 +102,14 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
         String query = "SELECT * FROM users WHERE username COLLATE utf8_bin = ?";
         if (UsersFrame.getInstance().isVisible()) {
             if (amIConected()) {
-                return intentarBusqueda(query);
+                return getByOtherParameter(query, usuario.getUsername(), NAMETABLE);
             } else {
                 new ServiceUtilities().volverLogin(NAMETABLE);
             }
         } else {
-            return intentarBusqueda(query);
+            return getByOtherParameter(query, usuario.getUsername(), NAMETABLE);
         }
         return null; // Devolver nulo si no se encuentra el usuario
-    }
-
-    private User intentarBusqueda(String query) throws ClassNotFoundException, SQLException {
-        try (Connection con = MySqlConnectionFactory.getInstance().getConnection(); PreparedStatement pst = con.prepareStatement(query)) {
-            pst.setString(1, usuario.getUsername());
-            try (ResultSet resultSet = pst.executeQuery()) {
-                if (resultSet.next()) {
-                    return (User) getRowGeneric(NAMETABLE, con).apply(resultSet);
-                }
-            }
-        }
-        return null;
     }
 
 }

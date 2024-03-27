@@ -145,4 +145,9 @@ public class Proveedor {
         this.observaciones = observaciones;
     }
 
+    @Override
+    public String toString() {
+        return "Proveedor{" + "id=" + id + ", ruc=" + ruc + ", razon_social=" + razon_social + ", descripcion=" + descripcion + ", direccion=" + direccion + ", telefono=" + telefono + ", correo=" + correo + ", web=" + web + ", contacto=" + contacto + ", categoria=" + categoria + ", estado=" + estado + ", fecha_registro=" + fecha_registro + ", observaciones=" + observaciones + '}';
+    }
+
 }

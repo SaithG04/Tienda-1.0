@@ -13,6 +13,8 @@ import java.util.*;
  * @author isai_
  */
 public interface CRUD<T> {
+    
+    void setEntity(T t);
 
     /**
      * Obtiene un objeto por su ID.

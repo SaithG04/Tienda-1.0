@@ -4,7 +4,6 @@ import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.presentation_layer.LoginFrame;
-import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
 
 import javax.swing.*;

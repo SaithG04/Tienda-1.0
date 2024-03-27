@@ -1,15 +1,15 @@
 package com.tienda.data_access_layer.DAOImplements;
 
-import com.tienda.data_access_layer.ProveedorDAO;
+import com.tienda.data_access_layer.*;
 import com.tienda.entity.Proveedor;
 import com.tienda.utilities.*;
 import java.io.Serializable;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class ProveedorDAOImpl extends DataAccessUtilities implements ProveedorDAO, Serializable {
 
-    private final Proveedor proveedor;
+    private Proveedor proveedor;
     private static final String NAMETABLE = "proveedores";
 
     /**
@@ -18,6 +18,11 @@ public class ProveedorDAOImpl extends DataAccessUtilities implements ProveedorDA
      * @param proveedor El proveedor asociado al DAO.
      */
     public ProveedorDAOImpl(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    @Override
+    public void setEntity(Proveedor proveedor) {
         this.proveedor = proveedor;
     }
 
@@ -46,4 +51,8 @@ public class ProveedorDAOImpl extends DataAccessUtilities implements ProveedorDA
         return eliminarGeneric(NAMETABLE, proveedor.getId());
     }
 
+    @Override
+    public Proveedor getProveedorByRuc() throws SQLException, ClassNotFoundException {
+        return getEntityByOtherParameterGeneric(NAMETABLE, "ruc", proveedor.getRuc());
+    }
 }

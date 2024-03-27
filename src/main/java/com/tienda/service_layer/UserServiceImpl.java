@@ -5,7 +5,6 @@ import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.UsersFrame;
-import com.tienda.service_layer.FrameService;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -109,6 +108,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         new Thread(() -> {
             jtbUsuarios.setModel(cargarUsuarios());
         }).start();
+        //Hacer no editable la tabla Usuarios
+        configurarTablaNoEditable(jtbUsuarios);
         return instanceOfUsersFrame;
     }
 
@@ -136,6 +137,20 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     @Override
     public void cargarKeyListeners() {
         quitKeyListener(txtPassword);
+        quitKeyListener(txtNombreCompleto);
+        quitKeyListener(txtUsuario);
+        txtNombreCompleto.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                ValidarSoloLetras(evt, txtNombreCompleto.getText(), (short) 255);
+            }
+        });
+        txtUsuario.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent evt) {
+                ValidarSoloLetras(evt, txtUsuario.getText(), (short) 10);
+            }
+        });
         txtPassword.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -289,11 +304,25 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     }
 
     /**
+     * Método para limpiar los campos de texto y habilitar el botón de
+     * registrar.
+     */
+    public void limpiarCamposSinTabla() {
+        txtNombreCompleto.setText("");
+        txtUsuario.setText("");
+        txtPassword.setText("");
+        lblPassword.setText("");
+        btnRegistrar.setEnabled(true);
+        btnModificar.setEnabled(false);
+        btnRevelar.setEnabled(false);
+    }
+
+    /**
      * Método para cargar la lista de usuarios en la tabla.
      *
      * @return Un modelo de tabla con los usuarios cargados.
      */
-    public DefaultTableModel cargarUsuarios() {
+    private DefaultTableModel cargarUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario", "Estado"}, 0);
         try {
             // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
@@ -314,17 +343,18 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * Método para registrar un nuevo usuario. Se obtienen los datos de los
      * campos de texto y se valida su integridad antes de proceder al registro.
      */
-    public void registrarUsuario() {
+    private void registrarUsuario() {
         try {
             setCursores(waitCursor);
             String nombreCompleto = txtNombreCompleto.getText();
             String user = txtUsuario.getText();
             String password = String.valueOf(txtPassword.getPassword());
-            
-            if (camposVaciosGeneric(new String[]{nombreCompleto, user, password})) {
+
+            if (algunCampoVacioGeneric(nombreCompleto, user, password)) {
+                alerta.faltanDatos();
                 return;
             }
-            if(!lblPassword.getText().equals("")){
+            if (!lblPassword.getText().equals("")) {
                 alerta.sound();
                 txtPassword.requestFocus();
                 return;
@@ -365,7 +395,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * campos de texto y se valida su integridad antes de proceder a la
      * actualización.
      */
-    public void actualizarUsuario() {
+    private void actualizarUsuario() {
 
         try {
             setCursores(waitCursor);
@@ -373,31 +403,32 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
             String user = txtUsuario.getText();
             String password = String.valueOf(txtPassword.getPassword());
 
-            if (camposVaciosGeneric(new String[]{nombreCompleto, user})) {
+            if (algunCampoVacioGeneric(nombreCompleto, user)) {
+                alerta.faltanDatos();
                 return;
             }
             User userForUpdate = new User();
             userForUpdate.setId((int) jtbUsuarios.getValueAt(jtbUsuarios.getSelectedRow(), 0));
-            UserDAOImpl userDAO = new UserDAOImpl(userForUpdate);
-            User userFind = userDAO.getById();
+            UserDAO userDAO = new UserDAOImpl(userForUpdate);
+            userForUpdate = userDAO.getById();
 
-            userFind.setNombreCompleto(nombreCompleto);
-            userFind.setUsername(user);
+            userForUpdate.setNombreCompleto(nombreCompleto);
+            userForUpdate.setUsername(user);
             if (!password.isEmpty()) {
-                userFind.setSalt(generateSalt());
-                userFind.setHashed_password(hashPassword(password, userFind.getSalt()));
+                userForUpdate.setSalt(generateSalt());
+                userForUpdate.setHashed_password(hashPassword(password, userForUpdate.getSalt()));
             }
-            userFind.setStatus("logged out");
-
-            userDAO = new UserDAOImpl(userFind);
+            userForUpdate.setStatus("logged out");
             limpiarCamposGeneric(jtbUsuarios, instanceOfUserServiceImpl);
+
+            userDAO.setEntity(userForUpdate);
             boolean actualizado = userDAO.actualizar();
 
             if (actualizado) {
-                if (userFind.getId() == LoginServiceImpl.userLogued.getId()) {
+                if (userForUpdate.getId() == LoginServiceImpl.userLogued.getId()) {
+                    alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
                     instanceOfUsersFrame.dispose();
                     LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-                    alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
                 } else {
                     jtbUsuarios.setModel(cargarUsuarios());
                     alerta.aviso("Actualización exitosa.");
@@ -414,7 +445,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * Método para eliminar un usuario. Se muestra un mensaje de confirmación
      * antes de realizar la eliminación.
      */
-    public void eliminarUsuario() {
+    private void eliminarUsuario() {
         if (alerta.confirmacion("¿Está seguro de eliminar este usuario?") == 0) {
             try {
                 setCursores(waitCursor);
@@ -447,7 +478,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         }
     }
 
-    public void desconectar() {
+    private void desconectar() {
         if (alerta.confirmacion("¿Está seguro de desconectar este usuario?") == 0) {
             try {
                 setCursores(waitCursor);
@@ -481,14 +512,20 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
      * Método para autocompletar los campos de texto al hacer clic en la tabla
      * de usuarios.
      */
-    public void autocompletarCampos() {
+    private void autocompletarCampos() {
         int rowSelected = jtbUsuarios.getSelectedRow();
-        if (rowSelected == -1) {
-            // No hacer nada si no se selecciona ninguna fila
-        } else {
+        String nombreCompleto = txtNombreCompleto.getText();
+        String username = txtUsuario.getText();
+        String passwordTxt = String.valueOf(txtPassword.getPassword());
+
+        // Verificar si todos los campos de texto están vacíos
+        boolean todosVacios = todosCamposVacios(nombreCompleto, username, passwordTxt);
+
+        // Verificar si se selecciona alguna fila y todos los campos están vacíos
+        if (rowSelected != -1 && todosVacios) {
             // Obtener datos de la fila seleccionada y completar campos de texto
-            String nombreCompleto = jtbUsuarios.getValueAt(rowSelected, 1).toString();
-            String username = jtbUsuarios.getValueAt(rowSelected, 2).toString();
+            nombreCompleto = jtbUsuarios.getValueAt(rowSelected, 1).toString();
+            username = jtbUsuarios.getValueAt(rowSelected, 2).toString();
             txtNombreCompleto.setText(nombreCompleto);
             txtUsuario.setText(username);
             txtPassword.setText("");
@@ -500,21 +537,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         }
     }
 
-    /**
-     * Método para limpiar los campos de texto y habilitar el botón de
-     * registrar.
-     */
-    public void limpiarCamposSinTabla() {
-        txtNombreCompleto.setText("");
-        txtUsuario.setText("");
-        txtPassword.setText("");
-        lblPassword.setText("");
-        btnRegistrar.setEnabled(true);
-        btnModificar.setEnabled(false);
-        btnRevelar.setEnabled(false);
-    }
-
-    public void setCursores(Cursor cursor) {
+    private void setCursores(Cursor cursor) {
         setCursoresGeneric(new Component[]{instanceOfUsersFrame, txtUsuario, txtNombreCompleto, txtPassword, btnRegistrar, btnModificar, btnRefresh}, cursor);
     }
 }
