@@ -66,6 +66,7 @@ public class LoginFrame extends javax.swing.JFrame {
         txtContraseña = new javax.swing.JPasswordField();
         btnAceptar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Acceder");
@@ -76,15 +77,16 @@ public class LoginFrame extends javax.swing.JFrame {
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        Container.setBackground(new java.awt.Color(255, 204, 102));
+        Container.setBackground(new java.awt.Color(153, 255, 204));
         Container.setPreferredSize(new java.awt.Dimension(850, 550));
         Container.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setBackground(new java.awt.Color(255, 153, 51));
-        jLabel3.setFont(new java.awt.Font("Swis721 BT", 1, 48)); // NOI18N
+        jLabel3.setBackground(new java.awt.Color(0, 204, 204));
+        jLabel3.setFont(new java.awt.Font("Swis721 Cn BT", 1, 60)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("REGISTRO DEL SISTEMA");
+        jLabel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jLabel3.setOpaque(true);
         Container.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 830, 130));
 
@@ -92,39 +94,47 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("USUARIO:");
-        Container.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 210, 120, 60));
+        Container.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 210, 120, 60));
 
         jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel6.setText("CONTRASEÑA:");
-        Container.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 290, -1, 60));
+        Container.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 290, -1, 60));
 
-        txtUsuario.setBackground(new java.awt.Color(255, 255, 204));
+        txtUsuario.setBackground(new java.awt.Color(0, 102, 102));
         txtUsuario.setFont(new java.awt.Font("Swis721 Ex BT", 0, 13)); // NOI18N
-        txtUsuario.setForeground(new java.awt.Color(0, 0, 0));
+        txtUsuario.setForeground(new java.awt.Color(153, 255, 204));
         txtUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Container.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 210, 270, 60));
+        txtUsuario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Container.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 210, 270, 60));
 
-        txtContraseña.setBackground(new java.awt.Color(255, 255, 204));
+        txtContraseña.setBackground(new java.awt.Color(0, 102, 102));
         txtContraseña.setFont(new java.awt.Font("Swis721 Ex BT", 0, 10)); // NOI18N
-        txtContraseña.setForeground(new java.awt.Color(0, 0, 0));
+        txtContraseña.setForeground(new java.awt.Color(153, 255, 204));
         txtContraseña.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Container.add(txtContraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 290, 270, 60));
+        txtContraseña.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        Container.add(txtContraseña, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 290, 270, 60));
 
-        btnAceptar.setBackground(new java.awt.Color(102, 102, 102));
+        btnAceptar.setBackground(new java.awt.Color(0, 102, 102));
         btnAceptar.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
-        btnAceptar.setForeground(new java.awt.Color(255, 255, 255));
+        btnAceptar.setForeground(new java.awt.Color(204, 255, 204));
         btnAceptar.setText("ACEPTAR");
+        btnAceptar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnAceptar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Container.add(btnAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 450, 330, 58));
 
-        btnSalir.setBackground(new java.awt.Color(102, 102, 102));
+        btnSalir.setBackground(new java.awt.Color(0, 102, 102));
         btnSalir.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
-        btnSalir.setForeground(new java.awt.Color(255, 255, 255));
+        btnSalir.setForeground(new java.awt.Color(204, 255, 204));
         btnSalir.setText("SALIR");
+        btnSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnSalir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Container.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 450, 330, 58));
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/grupo.png"))); // NOI18N
+        Container.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 200, 150, 160));
 
         getContentPane().add(Container, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 550));
 

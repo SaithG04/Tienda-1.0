@@ -108,10 +108,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
             System.exit(0);
         } else {
-            Component componente = evt instanceof KeyEvent ? instanceOfLoginFrame : btnAceptar;
             try {
 
-                setCursores(componente, waitCursor);
+                setCursores(waitCursor);
                 // Obtener usuario y contraseña del formulario de inicio de sesión
                 String usuario = txtUsuario.getText();
                 String password = String.valueOf(txtPassword.getPassword());
@@ -176,15 +175,13 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             } catch (SQLException | ClassNotFoundException ex) {
                 errorSQL(this.getClass(), ex);
             } finally {
-                setCursores(componente, defaultCursor);
+                setCursores(defaultCursor);
             }
         }
     }
 
-    private void setCursores(Component comp, Cursor cursor) {
-        comp.setCursor(cursor);
-        txtUsuario.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
-        txtPassword.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
+    private void setCursores(Cursor cursor) {
+        setCursoresGeneric(new Component[]{instanceOfLoginFrame, txtUsuario, txtPassword, btnAceptar, btnSalir}, cursor);
     }
 
     /**

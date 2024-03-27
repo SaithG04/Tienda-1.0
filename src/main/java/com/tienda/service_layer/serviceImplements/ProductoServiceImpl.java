@@ -267,7 +267,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ProductoSer
             prodUpdate.setId((int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0));
 
             ProductoDAO prodDAO = new ProductoDAOImpl(prodUpdate);
-            Producto prodFind = prodDAO.getById(prodUpdate.getId());
+            Producto prodFind = prodDAO.getById();
 
             prodFind.setCantidad(cantidad);
             prodFind.setMedida(undMedida);

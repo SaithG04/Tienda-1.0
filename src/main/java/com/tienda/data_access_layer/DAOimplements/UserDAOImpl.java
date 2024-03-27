@@ -3,8 +3,7 @@ package com.tienda.data_access_layer.DAOimplements;
 import com.tienda.data_access_layer.*;
 import com.tienda.entity.User;
 import com.tienda.presentation_layer.UsersFrame;
-import com.tienda.utilities.DataAccessUtilities;
-import com.tienda.utilities.ServiceUtilities;
+import com.tienda.utilities.*;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Serializable {
 
-    private User usuario;
+    private final User usuario;
     private static final String NAMETABLE = "users";
 
     /**
@@ -29,25 +28,16 @@ public class UserDAOImpl extends DataAccessUtilities implements UserDAO, Seriali
         this.usuario = usuario;
     }
 
-    public User getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(User usuario) {
-        this.usuario = usuario;
-    }
-
     /**
      * Obtiene un usuario por su ID.
      *
-     * @param id El ID del usuario a buscar.
      * @return El usuario encontrado, o null si no se encuentra.
      * @throws SQLException Si ocurre un error de SQL.
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      */
     @Override
-    public User getById(int id) throws SQLException, ClassNotFoundException {
-        return getByIdGeneric(id, NAMETABLE);
+    public User getById() throws SQLException, ClassNotFoundException {
+        return getByIdGeneric(usuario.getId(), NAMETABLE);
     }
 
     /**

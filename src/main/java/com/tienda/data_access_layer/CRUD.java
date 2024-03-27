@@ -17,12 +17,11 @@ public interface CRUD<T> {
     /**
      * Obtiene un objeto por su ID.
      *
-     * @param id El ID del objeto a buscar.
      * @return El objeto encontrado por su ID, o null si no se encuentra.
      * @throws SQLException Si ocurre un error de SQL.
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      */
-    T getById(int id) throws SQLException, ClassNotFoundException;
+    T getById() throws SQLException, ClassNotFoundException;
 
     /**
      * Registra un nuevo objeto en la base de datos.

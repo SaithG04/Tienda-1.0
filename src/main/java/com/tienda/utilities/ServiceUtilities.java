@@ -2,6 +2,8 @@ package com.tienda.utilities;
 
 import com.tienda.presentation_layer.*;
 import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
+import com.tienda.service_layer.serviceImplements.ProveedorServiceImpl;
+import com.tienda.service_layer.serviceImplements.UserServiceImpl;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;
@@ -308,6 +310,11 @@ public class ServiceUtilities {
                     LoginFrame.getInstance().setVisible(true);
                     LoginFrame.getInstance().getTxtUsuario().requestFocus();
                 }
+                case "proveedores" -> {
+                    ProveedorFrame.getInstance().dispose();
+                    LoginFrame.getInstance().setVisible(true);
+                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
+                }
                 default ->
                     throw new AssertionError();
             }
@@ -322,4 +329,54 @@ public class ServiceUtilities {
             alerta.manejarErrorConexion(clase, ex);
         }
     }
+
+    public void setCursoresGeneric(Component[] componentArray, Cursor cursor) {
+        for (Component component : componentArray) {
+            if (component instanceof JTextField || component instanceof JPasswordField) {
+                component.setCursor(cursor.equals(defaultCursor) ? textCursor : cursor);
+            } else if (component instanceof JButton) {
+                component.setCursor(cursor.equals(defaultCursor) ? handCursor : cursor);
+            } else {
+                component.setCursor(cursor);
+            }
+        }
+    }
+
+    public <T> boolean bloquearMultipleModificacionGeneric(JTable tabla, T clase) {
+        if (tabla.getSelectedRowCount() > 1) {
+            switch (clase) {
+                case UserServiceImpl userServiceImpl ->
+                    userServiceImpl.limpiarCamposSinTabla();
+                case ProveedorServiceImpl proveedorServiceImpl ->
+                    proveedorServiceImpl.limpiarCamposSinTabla();
+                default -> {
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public <T> void limpiarCamposGeneric(JTable tabla, T clase) {
+        switch (clase) {
+            case UserServiceImpl userServiceImpl ->
+                userServiceImpl.limpiarCamposSinTabla();
+            case ProveedorServiceImpl proveedorServiceImpl ->
+                proveedorServiceImpl.limpiarCamposSinTabla();
+            default -> {
+            }
+        }
+        tabla.clearSelection();
+    }
+
+    public boolean camposVaciosGeneric(String[] arrayString) {
+        for (String str : arrayString) {
+            if (str.isEmpty()) {
+                alerta.faltanDatos();
+                return true; // Si encuentra un string vacío, muestra alerta y retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ningún string vacío, retorna falso
+    }
+
 }
