@@ -1,9 +1,9 @@
 package com.tienda.utilities;
 
 import com.tienda.presentation_layer.*;
-import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
-import com.tienda.service_layer.serviceImplements.ProveedorServiceImpl;
-import com.tienda.service_layer.serviceImplements.UserServiceImpl;
+import com.tienda.service_layer.LoginServiceImpl;
+import com.tienda.service_layer.ProveedorServiceImpl;
+import com.tienda.service_layer.UserServiceImpl;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.*;

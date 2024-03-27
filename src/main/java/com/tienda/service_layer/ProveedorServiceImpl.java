@@ -1,11 +1,11 @@
-package com.tienda.service_layer.serviceImplements;
+package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOImplements.ProveedorDAOImpl;
 import com.tienda.data_access_layer.ProveedorDAO;
 import com.tienda.entity.Proveedor;
 import com.tienda.presentation_layer.ProveedorFrame;
+import com.tienda.service_layer.FrameService;
 import com.tienda.utilities.ServiceUtilities;
-import com.tienda.service_layer.ProveedorService;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class ProveedorServiceImpl extends ServiceUtilities implements ActionListener, ProveedorService {
+public class ProveedorServiceImpl extends ServiceUtilities implements ActionListener, FrameService<ProveedorFrame> {
 
     private static volatile ProveedorServiceImpl instanceOfProveedorServiceImpl;
 
@@ -218,7 +218,6 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         }
     }
 
-    @Override
     public DefaultTableModel cargarProveedores() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "RUC", "Razón social", "Descripción", "Dirección", "Telefono",
             "Correo", "Web", "Contacto", "Categoría", "Estado", "Fecha registro", "Observaciones"}, 0);
@@ -243,7 +242,6 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para registrar un nuevo usuario. Se obtienen los datos de los
      * campos de texto y se valida su integridad antes de proceder al registro.
      */
-    @Override
     public void registrarProveedor() {
         try {
             setCursores(waitCursor);
@@ -277,7 +275,6 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * campos de texto y se valida su integridad antes de proceder a la
      * actualización.
      */
-    @Override
     public void actualizarProveedor() {
 
         try {
@@ -310,7 +307,6 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para eliminar un usuario. Se muestra un mensaje de confirmación
      * antes de realizar la eliminación.
      */
-    @Override
     public void eliminarProveedor() {
         if (alerta.confirmacion("¿Está seguro de eliminar este proveedor?") == 0) {
             try {
@@ -340,7 +336,6 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para autocompletar los campos de texto al hacer clic en la tabla
      * de usuarios.
      */
-    @Override
     public void autocompletarCampos() {
         int rowSelected = jtbProveedores.getSelectedRow();
         if (rowSelected == -1) {
@@ -358,19 +353,16 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
      * Método para limpiar los campos de texto y habilitar el botón de
      * registrar.
      */
-    @Override
     public void limpiarCampos() {
         limpiarCamposSinTabla();
         jtbProveedores.clearSelection();
     }
 
-    @Override
     public void limpiarCamposSinTabla() {
         btnRegistrar.setEnabled(true);
         btnModificar.setEnabled(false);
     }
 
-    @Override
     public boolean bloquearMultipleModificacion() {
         if (jtbProveedores.getSelectedRowCount() > 1) {
             limpiarCamposSinTabla();

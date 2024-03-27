@@ -3,7 +3,7 @@ package com.tienda.utilities;
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import com.tienda.entity.*;
 import com.tienda.presentation_layer.LoginFrame;
-import com.tienda.service_layer.serviceImplements.LoginServiceImpl;
+import com.tienda.service_layer.LoginServiceImpl;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
