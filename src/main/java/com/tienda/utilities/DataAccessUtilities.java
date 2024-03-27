@@ -177,6 +177,10 @@ public class DataAccessUtilities {
                         new User((int) row[0], row[1].toString(), row[2].toString(), (byte[]) row[3], (byte[]) row[4], row[5].toString());
                     case "productos" ->
                         new Producto((int) row[0], row[1].toString(), (int) row[2], (double) row[3], (double) row[4], row[5].toString());
+                    case "proveedores" ->
+                        new Proveedor((int) row[0], row[1].toString(), row[2].toString(), row[3].toString(), row[4].toString(),
+                                row[5].toString(), row[6].toString(), row[7].toString(), row[8].toString(), row[9].toString(), 
+                                row[10].toString(), (java.sql.Date) row[11], row[12].toString());
                     default ->
                         null;
                 };

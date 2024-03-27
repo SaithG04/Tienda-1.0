@@ -48,7 +48,7 @@ public class AlertsClass {
     public void mostrarError(Class<?> clase, String mensaje, Exception ex) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, mensaje, "Error", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);       
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/den.png", 30, 30), botones, botones[0]);
         if (ex != null) {
             Logger.getLogger(clase.getName()).log(Level.SEVERE, null, ex);
         }
@@ -86,7 +86,7 @@ public class AlertsClass {
     public void advertencia(String mensaje) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, mensaje, "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);       
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
     }
 
     /**
@@ -104,7 +104,7 @@ public class AlertsClass {
     public void faltanDatos() {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showOptionDialog(null, "Complete todos los campos.", "Advertencia", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);       
+                JOptionPane.PLAIN_MESSAGE, ServiceUtilities.icono("/images/warning.png", 30, 30), botones, botones[0]);
     }
 
     /**
@@ -122,6 +122,10 @@ public class AlertsClass {
         return value;
     }
 
+    public void sound() {
+        Toolkit.getDefaultToolkit().beep();
+    }
+
     /**
      * Muestra un cuadro de diálogo de entrada.
      *
@@ -129,26 +133,26 @@ public class AlertsClass {
      * @param titulo Título del cuadro de diálogo.
      * @return Texto ingresado por el usuario.
      */
-    public String entrada(String mensaje, String titulo) {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel(mensaje));
-        JTextField textField = new JTextField(10);
-        textField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent evt) {
-                ServiceUtilities.validarValorDecimal(evt, textField.getText());
-            }
-        });
-
-        panel.add(textField);
-        String texto = "";
-
-        int option = JOptionPane.showOptionDialog(null, panel, titulo,
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.informationIcon"), null, null);
-
-        if (option == JOptionPane.OK_OPTION) {
-            return textField.getText();
-        }
-        return texto;
-    }
+//    public String entrada(String mensaje, String titulo) {
+//        JPanel panel = new JPanel();
+//        panel.add(new JLabel(mensaje));
+//        JTextField textField = new JTextField(10);
+//        textField.addKeyListener(new KeyAdapter() {
+//            @Override
+//            public void keyTyped(KeyEvent evt) {
+//                ServiceUtilities.validarValorDecimal(evt, textField.getText());
+//            }
+//        });
+//
+//        panel.add(textField);
+//        String texto = "";
+//
+//        int option = JOptionPane.showOptionDialog(null, panel, titulo,
+//                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.informationIcon"), null, null);
+//
+//        if (option == JOptionPane.OK_OPTION) {
+//            return textField.getText();
+//        }
+//        return texto;
+//    }
 }

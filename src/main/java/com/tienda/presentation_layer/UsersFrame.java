@@ -67,7 +67,7 @@ public class UsersFrame extends javax.swing.JFrame {
         setTitle("Usuarios");
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 204, 153));
+        jPanel1.setBackground(new java.awt.Color(153, 255, 204));
         jPanel1.setPreferredSize(new java.awt.Dimension(850, 550));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -75,7 +75,7 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.add(txtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 100, 280, 60));
 
         btnRegistrar.setBackground(new java.awt.Color(0, 0, 0));
-        btnRegistrar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnRegistrar.setFont(new java.awt.Font("Swis721 BT", 1, 12)); // NOI18N
         btnRegistrar.setForeground(new java.awt.Color(153, 255, 153));
         btnRegistrar.setText("REGISTRAR");
         btnRegistrar.setPreferredSize(new java.awt.Dimension(850, 550));
@@ -85,7 +85,7 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 240, 60));
 
         btnRegresar.setBackground(new java.awt.Color(0, 0, 0));
-        btnRegresar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnRegresar.setFont(new java.awt.Font("Swis721 BT", 1, 12)); // NOI18N
         btnRegresar.setForeground(new java.awt.Color(153, 255, 153));
         btnRegresar.setText("REGRESAR");
         jPanel1.add(btnRegresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 100, 130, 60));
@@ -106,13 +106,13 @@ public class UsersFrame extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 790, 400));
 
-        jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel6.setText("Nombre Completo:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 140, 60));
 
-        jLabel7.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Password:");
@@ -121,20 +121,20 @@ public class UsersFrame extends javax.swing.JFrame {
         txtNombreCompleto.setFont(new java.awt.Font("Swis721 Cn BT", 0, 14)); // NOI18N
         jPanel1.add(txtNombreCompleto, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 20, 570, 60));
 
-        jLabel8.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Swis721 BT", 1, 15)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("Username:");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 100, 110, 60));
 
         btnLimpiar.setBackground(new java.awt.Color(0, 0, 0));
-        btnLimpiar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnLimpiar.setFont(new java.awt.Font("Swis721 BT", 1, 12)); // NOI18N
         btnLimpiar.setForeground(new java.awt.Color(153, 255, 153));
         btnLimpiar.setText("LIMPIAR");
         jPanel1.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 180, 130, 60));
 
         btnModificar.setBackground(new java.awt.Color(0, 0, 0));
-        btnModificar.setFont(new java.awt.Font("Swis721 Lt BT", 1, 12)); // NOI18N
+        btnModificar.setFont(new java.awt.Font("Swis721 BT", 1, 12)); // NOI18N
         btnModificar.setForeground(new java.awt.Color(153, 255, 153));
         btnModificar.setText("MODIFICAR");
         jPanel1.add(btnModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 180, 130, 60));
@@ -147,7 +147,7 @@ public class UsersFrame extends javax.swing.JFrame {
         jPanel1.add(btnRevelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 190, 40, 40));
 
         btnRefresh.setBackground(new java.awt.Color(0, 0, 0));
-        btnRefresh.setFont(new java.awt.Font("Swis721 Ex BT", 0, 11)); // NOI18N
+        btnRefresh.setFont(new java.awt.Font("Swis721 BT", 0, 11)); // NOI18N
         btnRefresh.setForeground(new java.awt.Color(204, 204, 204));
         btnRefresh.setText("Refrescar tabla");
         jPanel1.add(btnRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(659, 680, 160, -1));

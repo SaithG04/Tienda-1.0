@@ -25,7 +25,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
     // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
-    private final JButton btnCerrarSesion, btnUsuarios, btnProductos;
+    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores;
 
     /**
      * Constructor privado para el patrón Singleton.
@@ -39,6 +39,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         btnCerrarSesion = instanceOfMenuPrincipalFrame.getBtnCerrarSesion();
         btnUsuarios = instanceOfMenuPrincipalFrame.getBtnUsuarios();
         btnProductos = instanceOfMenuPrincipalFrame.getBtnProductos();
+        btnProveedores = instanceOfMenuPrincipalFrame.getBtnProveedores();
     }
 
     /**
@@ -91,6 +92,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         btnCerrarSesion.addActionListener(this);
         btnUsuarios.addActionListener(this);
         btnProductos.addActionListener(this);
+        btnProveedores.addActionListener(this);
     }
 
     /**
@@ -118,6 +120,7 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
         btnCerrarSesion.removeActionListener(this);
         btnUsuarios.removeActionListener(this);
         btnProductos.removeActionListener(this);
+        btnProveedores.removeActionListener(this);
     }
 
     /**
@@ -184,6 +187,12 @@ public class MenuServiceImpl extends ServiceUtilities implements MenuService, Ac
 
             // Mostrar el formulario de gestión de productos
             ProductoServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+        } else if (e.getSource() == btnProveedores) {
+            // Ocultar el formulario del menú principal
+            instanceOfMenuPrincipalFrame.dispose();
+
+            // Mostrar el formulario de gestión de productos
+            ProveedorServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         }
     }
 }

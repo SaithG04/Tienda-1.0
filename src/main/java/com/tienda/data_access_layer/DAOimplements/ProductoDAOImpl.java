@@ -20,8 +20,8 @@ public class ProductoDAOImpl extends DataAccessUtilities implements Serializable
     }
 
     @Override
-    public Producto getById(int id) throws SQLException, ClassNotFoundException {
-        return getByIdGeneric(id, NAMETABLE);
+    public Producto getById() throws SQLException, ClassNotFoundException {
+        return getByIdGeneric(producto.getId(), NAMETABLE);
     }
 
     @Override
