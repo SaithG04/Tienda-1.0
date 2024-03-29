@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.tienda.presentation_layer;
 
 import javax.swing.JButton;
@@ -40,14 +36,14 @@ public class ProductosFrame extends javax.swing.JFrame {
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         tbnDelete = new javax.swing.JButton();
-        btnFind = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         txtPrecio = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setBackground(new java.awt.Color(153, 255, 204));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 204, 102));
+        jPanel1.setBackground(new java.awt.Color(153, 255, 204));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tabla.setModel(new javax.swing.table.DefaultTableModel(
@@ -63,7 +59,7 @@ public class ProductosFrame extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tabla);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 530));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 10, 440, 520));
 
         txtCantidad.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
         jPanel1.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 230, 260, 50));
@@ -80,6 +76,7 @@ public class ProductosFrame extends javax.swing.JFrame {
         jLabel5.setText("CANTIDAD:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 210, 110, 80));
 
+        jLabel6.setBackground(new java.awt.Color(153, 255, 204));
         jLabel6.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -101,20 +98,33 @@ public class ProductosFrame extends javax.swing.JFrame {
         cbProveedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<SELECCIONAR>" }));
         jPanel1.add(cbProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 160, 260, 50));
 
+        btninicio.setBackground(new java.awt.Color(0, 102, 102));
+        btninicio.setForeground(new java.awt.Color(204, 255, 204));
         btninicio.setText("INICIO");
-        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 500, 110, 30));
+        btninicio.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btninicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 460, 140, 40));
 
+        btnAdd.setBackground(new java.awt.Color(0, 102, 102));
+        btnAdd.setForeground(new java.awt.Color(204, 255, 204));
         btnAdd.setText("AÑADIR");
-        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 370, 140, 40));
+        btnAdd.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 390, 140, 40));
 
+        btnEdit.setBackground(new java.awt.Color(0, 102, 102));
+        btnEdit.setForeground(new java.awt.Color(204, 255, 204));
         btnEdit.setText("EDITAR");
-        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 370, 140, 40));
+        btnEdit.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 390, 140, 40));
 
+        tbnDelete.setBackground(new java.awt.Color(0, 102, 102));
+        tbnDelete.setForeground(new java.awt.Color(204, 255, 204));
         tbnDelete.setText("ELIMINAR");
-        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 440, 140, 40));
-
-        btnFind.setText("BUSCAR");
-        jPanel1.add(btnFind, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 440, 140, 40));
+        tbnDelete.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        tbnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 460, 140, 40));
 
         jLabel9.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
@@ -125,7 +135,7 @@ public class ProductosFrame extends javax.swing.JFrame {
         txtPrecio.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 18)); // NOI18N
         jPanel1.add(txtPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 300, 260, 50));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 550));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -151,14 +161,6 @@ public class ProductosFrame extends javax.swing.JFrame {
 
     public void setBtnEdit(JButton btnEdit) {
         this.btnEdit = btnEdit;
-    }
-
-    public JButton getBtnFind() {
-        return btnFind;
-    }
-
-    public void setBtnFind(JButton btnFind) {
-        this.btnFind = btnFind;
     }
 
     public JButton getBtninicio() {
@@ -224,7 +226,6 @@ public class ProductosFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnFind;
     private javax.swing.JButton btninicio;
     private javax.swing.JComboBox<String> cbProveedor;
     private javax.swing.JLabel jLabel5;

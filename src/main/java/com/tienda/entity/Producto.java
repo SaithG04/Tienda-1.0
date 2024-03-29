@@ -25,6 +25,11 @@ public class Producto {
     //Constructor solo para instanciar, para su luego set en cada atributo
     public Producto(){}
 
+    @Override
+    public String toString() {
+        return "Producto{" + "id=" + id + ", nombre=" + nombre + ", proveedor=" + proveedor + ", cantidad=" + cantidad + ", precio=" + precio + ", medida=" + medida + '}';
+    }
+
     //Gettes and Setters here
     
     public int getId() {
