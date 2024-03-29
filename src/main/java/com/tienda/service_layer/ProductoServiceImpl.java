@@ -104,6 +104,19 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
                 }
             }
         });
+        txtCantidad.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+               validarValorDecimal(e, txtCantidad.getText());
+            }
+        });
+        txtPrecio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                validarValorDecimal(e, txtPrecio.getText());
+    }
+
+    });
 
     }
 
@@ -202,6 +215,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         if (e.getSource() == btnAdd) {
             RegistrarProducto();
         } else if (e.getSource() == btnHome) {
+            limpiarTxt();
             instanciaFrame.dispose();
             MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == btnUpdate) {
@@ -236,7 +250,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         cbProveedor.removeAllItems();
         cbProveedor.addItem("<SELECCIONAR>");
         for (Integer clave : claves) {
-            cbProveedor.addItem(proveedores.get(clave));
+            cbProveedor.addItem(proveedores.get((int) clave));
         }
     }
 
