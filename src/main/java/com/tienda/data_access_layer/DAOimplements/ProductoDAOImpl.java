@@ -23,7 +23,7 @@ public class ProductoDAOImpl extends DataAccessUtilities implements Serializable
     public void setEntity(Producto producto) {
         this.producto = producto;
     }
-    
+
     @Override
     public Producto getById() throws SQLException, ClassNotFoundException {
         return getByIdGeneric(producto.getId(), NAMETABLE);
@@ -51,15 +51,28 @@ public class ProductoDAOImpl extends DataAccessUtilities implements Serializable
 
     public static Map<Integer, String> getNameProveedor() throws ClassNotFoundException, SQLException {
         String query = "SELECT id, razon_social from proveedores";
-        try (Connection connection = MySqlConnectionFactory.getInstance().getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
-            if (resultSet.next()) {
+        Connection connection = MySqlConnectionFactory.getInstance().getConnection();
+        Statement statement = connection.createStatement();
+        Map<Integer, String> rowData = new HashMap<Integer, String>();
+
+        try (ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
                 // Extraer los datos de la fila del ResultSet usando la función de extracción
-                Map<Integer, String> rowData = new HashMap<Integer, String>();
-                rowData.put(Integer.parseInt(resultSet.getString("id")),resultSet.getString("razon_social"));
+                rowData.put(Integer.parseInt(resultSet.getString("id")), resultSet.getString("razon_social"));
                 // Mapear los datos extraídos a un objeto DTO usando la función de mapeo
-                return rowData;
             }
-            return null;
+            return rowData;
+
+        } catch (SQLException e) {
+            alerta.aviso("Ocurrio un error en base de datos.");
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
         }
+        return null;
     }
 }

@@ -6,6 +6,7 @@ import com.tienda.entity.Producto;
 import com.tienda.presentation_layer.ProductosFrame;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -15,9 +16,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -29,7 +33,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
     private static volatile ProductoServiceImpl instanciaImpl;
 
     private final ProductosFrame instanciaFrame;
-    private final JButton btnUpdate, btnDelete, btnAdd, btnHome, btnFind;
+    private final JButton btnUpdate, btnDelete, btnAdd, btnHome;
     private final JTable tbProducto;
     private final JTextField txtNombre, txtCantidad, txtUnidad, txtPrecio;
     private final JComboBox<String> cbProveedor;
@@ -43,7 +47,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         this.btnDelete = instanciaFrame.getTbnDelete();
         this.btnAdd = instanciaFrame.getBtnAdd();
         this.btnHome = instanciaFrame.getBtninicio();
-        this.btnFind = instanciaFrame.getBtnFind();
         this.tbProducto = instanciaFrame.getTabla();
         this.txtCantidad = instanciaFrame.getTxtCantidad();
         this.txtNombre = instanciaFrame.getTxtProducto();
@@ -87,7 +90,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         btnDelete.addActionListener(this);
         btnAdd.addActionListener(this);
         btnHome.addActionListener(this);
-        btnFind.addActionListener(this);
         cargarMouseListeners();
         cargarKeyListeners();
     }
@@ -103,6 +105,19 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
                     rellenoCamposSeleccionados();
                 }
             }
+        });
+        txtCantidad.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                validarValorDecimal(e, txtCantidad.getText());
+            }
+        });
+        txtPrecio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                validarValorDecimal(e, txtPrecio.getText());
+            }
+
         });
 
     }
@@ -130,7 +145,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         btnDelete.removeActionListener(this);
         btnAdd.removeActionListener(this);
         btnHome.removeActionListener(this);
-        btnFind.removeActionListener(this);
     }
 
     @Override
@@ -150,7 +164,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
     public DefaultTableModel cargarProducto() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Producto", "Proveedor", "Cantidad", "Precio", "Unidad Medida"}, 0);
         try {
-
+            setCursores(waitCursor);
             ProductoDAO productoDAO = new ProductoDAOImpl(new Producto());
             actualizarProveedores();
             List<Producto> lista = productoDAO.listar();
@@ -161,12 +175,15 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
 
         } catch (ClassNotFoundException | SQLException e) {
             errorSQL(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
         return model;
     }
 
     public void RegistrarProducto() {
         try {
+            setCursores(waitCursor);
             String nombre = txtNombre.getText();
             String unidad = txtUnidad.getText();
             double cantidad = Double.parseDouble(txtCantidad.getText());
@@ -194,6 +211,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
             }
         } catch (SQLException | ClassNotFoundException e) {
             errorSQL(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
     }
 
@@ -202,6 +221,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         if (e.getSource() == btnAdd) {
             RegistrarProducto();
         } else if (e.getSource() == btnHome) {
+            limpiarTxt();
             instanciaFrame.dispose();
             MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         } else if (e.getSource() == btnUpdate) {
@@ -236,7 +256,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         cbProveedor.removeAllItems();
         cbProveedor.addItem("<SELECCIONAR>");
         for (Integer clave : claves) {
-            cbProveedor.addItem(proveedores.get(clave));
+            cbProveedor.addItem(proveedores.get((int) clave));
         }
     }
 
@@ -244,12 +264,12 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         if (verificarValores()) {
             return;
         }
-
+        int idProducto = (int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0);
         String nombre = txtNombre.getText();
         double cantidad = Double.parseDouble(txtCantidad.getText());
         double precio = Double.parseDouble(txtPrecio.getText());
         String undMedida = txtUnidad.getText();
-        int idProveedor = getProvTabla(2);
+        int idProveedor = getProvTabla();
 
         if (esSelecionMayor(tbProducto)) {
             alerta.advertencia("Cuidado!, esta seleccionando varios productos.");
@@ -261,19 +281,20 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         }
 
         try {
+            setCursores(waitCursor);
             Producto prodUpdate = new Producto();
-            prodUpdate.setId((int) tbProducto.getValueAt(tbProducto.getSelectedRow(), 0));
 
             ProductoDAO prodDAO = new ProductoDAOImpl(prodUpdate);
-            Producto prodFind = prodDAO.getById();
+//            Producto prodFind = prodDAO.getById();
+            prodUpdate.setId(idProducto);
+            prodUpdate.setCantidad(cantidad);
+            prodUpdate.setMedida(undMedida);
+            prodUpdate.setNombre(nombre);
+            prodUpdate.setProveedor(idProveedor);
+            prodUpdate.setPrecio(precio);
 
-            prodFind.setCantidad(cantidad);
-            prodFind.setMedida(undMedida);
-            prodFind.setNombre(nombre);
-            prodFind.setProveedor(idProveedor);
-            prodFind.setPrecio(precio);
-
-            prodDAO = new ProductoDAOImpl(prodFind);
+            prodDAO.setEntity(prodUpdate);
+            System.out.println(prodUpdate.toString());
             limpiarTxt();
             boolean actualizado = prodDAO.actualizar();
             if (actualizado) {
@@ -282,6 +303,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
             }
         } catch (SQLException | ClassNotFoundException e) {
             alerta.manejarErrorConexion(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
     }
 
@@ -289,24 +312,28 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         int row = tbProducto.getSelectedRow();
         if (row != -1) {
             txtNombre.setText(tbProducto.getValueAt(row, 1).toString());
-            cbProveedor.setSelectedIndex(getProvTabla(row));
+            cbProveedor.setSelectedItem(tbProducto.getValueAt(row, 2));
             txtCantidad.setText(tbProducto.getValueAt(row, 3).toString());
             txtPrecio.setText(tbProducto.getValueAt(row, 4).toString());
             txtUnidad.setText(tbProducto.getValueAt(row, 5).toString());
         }
     }
 
-    private int getProvTabla(int row) {
-        int index = 0;
-        String proveedor = tbProducto.getValueAt(row, 2).toString();
-        for (int i = 0; i <= cbProveedor.getItemCount(); i++) {
-            if (cbProveedor.getItemAt(i) == proveedor) {
-                index = i;
+    private int getProvTabla() {
+        try {
+            proveedores = ProductoDAOImpl.getNameProveedor();
+            String proveedor = cbProveedor.getSelectedItem().toString();
+            for (int a : proveedores.keySet()){
+                if(proveedores.get(a).equals(proveedor)){
+                   return a;
+                }
             }
+        } catch (ClassNotFoundException | SQLException ex) {
+            alerta.aviso("Error al intentar encontrar el proveedor");
         }
-        return index;
+        return -1;
     }
-
+    
     public boolean esSelecionMayor(JTable tabla) {
         if (tabla.getSelectedRowCount() > 1) {
             return true;
@@ -317,6 +344,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
 
     private void eliminarProducto() {
         try {
+            setCursores(waitCursor);
             if (alerta.confirmacion("¿Está seguro de eliminar este producto?") == 0) {
                 // Obtener el ID del producto a eliminar
                 Producto productoForDelete = new Producto();
@@ -335,6 +363,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         } catch (SQLException | ClassNotFoundException e) {
             // Manejo de errores de conexión
             alerta.manejarErrorConexion(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
     }
 
@@ -356,55 +386,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         return false;
     }
 
-//    private void buscarProducto() {
-//        DefaultTableModel model = new DefaultTableModel();
-//
-//        String nombre = txtNombre.getText();
-//        String cantidad = txtCantidad.getText();
-//        String precio = txtPrecio.getText();
-//        String undMedida = txtUnidad.getText();
-//        int idProveedor = getProveedorBuscado();
-//
-//        if (!nombre.equals("")){
-//            model.addRow(buscarEnTabla(nombre));
-//        }else if (!cantidad.equals("")){
-//            buscarEnTabla(nombre);
-//        }else if (!precio.equals("")){
-//            buscarEnTabla(nombre);
-//        }else if (!undMedida.equals("")){
-//            buscarEnTabla(nombre);
-//        }
-//        
-//    }
-    private int getProveedorBuscado() {
-        int proveedor = 0;
-        String seleccionado = cbProveedor.getSelectedItem().toString();
-        for (int i = 0; i < cbProveedor.getItemCount(); i++) {
-            if (cbProveedor.getSelectedItem().toString().equals(seleccionado)) {
-                proveedor = i;
-            }
-        }
-        return proveedor;
-    }
-
-    private Producto buscarEnTabla(String busqueda) {
-        Producto productoEncontrado = new Producto();
-
-        for (int i = 0; i < tbProducto.getRowCount(); i++) {
-            for (int j = 0; j < tbProducto.getColumnCount(); j++) {
-                if (busqueda.equals(tbProducto.getValueAt(i, j))) {
-                    productoEncontrado.setId((int) tbProducto.getValueAt(i, 0));
-                    productoEncontrado.setNombre((String) tbProducto.getValueAt(i, 1));
-                    productoEncontrado.setProveedor(getProveedorBuscado());
-                    productoEncontrado.setCantidad((double) tbProducto.getValueAt(i, 3));
-                    productoEncontrado.setPrecio((double) tbProducto.getValueAt(i, 4));
-                    productoEncontrado.setMedida((String) tbProducto.getValueAt(i, 5));
-                    return productoEncontrado;
-                }
-
-            }
-        }
-        return null;
-
+    private void setCursores(Cursor cursor) {
+        setCursoresGeneric(new Component[]{instanciaFrame, txtCantidad, txtNombre, txtPrecio, txtUnidad, cbProveedor, tbProducto, btnAdd, btnDelete, btnHome, btnUpdate}, cursor);
     }
 }
