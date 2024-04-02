@@ -167,10 +167,10 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
                         lblPassword.setText("La contraseña debe contener al menos 8 caracteres.");
                     } else if (!contieneMayuscula(psw)) {
                         lblPassword.setText("La contraseña debe contener al menos 1 mayúscula.");
+                    } else if (!contieneMinuscula(psw)) {
+                        lblPassword.setText("La contraseña debe contener al menos 1 minúscula.");
                     } else if (!contieneNumero(psw)) {
                         lblPassword.setText("La contraseña debe contener al menos 1 número.");
-                    } else if (!contieneSigno(psw)) {
-                        lblPassword.setText("La contraseña debe contener al menos 1 signo.");
                     } else if (contieneEspacioBlanco(psw)) {
                         lblPassword.setText("La contraseña no debe contener espacios en blanco.");
                     } else if (contieneCaracteresNoPermitidos(psw)) {

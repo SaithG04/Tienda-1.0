@@ -43,6 +43,7 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         btnUsuarios = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
+        lblRecuperar3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(" Administrador");
@@ -134,6 +135,13 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
         jLabel11.setText("USUARIOS");
         container.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 460, 167, 30));
 
+        lblRecuperar3.setBackground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setFont(new java.awt.Font("BankGothic Lt BT", 1, 12)); // NOI18N
+        lblRecuperar3.setForeground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
+        container.add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 500, 220, 40));
+
         getContentPane().add(container, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 551));
 
         pack();
@@ -180,6 +188,7 @@ public class MenuPrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel lblRecuperar3;
     private javax.swing.JLabel lblTitle;
     // End of variables declaration//GEN-END:variables
 }

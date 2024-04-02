@@ -2,23 +2,20 @@
 import com.tienda.service_layer.LoginServiceImpl;
 
 /**
- * La clase Main es la clase principal de la aplicación que inicia la interfaz
- * de inicio de sesión.
- * 
- * @author isai_
+ * Clase principal que contiene el método main.
  */
 public class Main {
 
     /**
-     * Método principal que inicia la aplicación.
+     * Método principal que se ejecuta al iniciar el programa. Crea una
+     * instancia de LoginServiceImpl y carga el formulario de inicio de sesión.
+     * Solicita el enfoque en el campo de texto del usuario en el formulario de
+     * inicio de sesión.
      *
-     * @param args Los argumentos de la línea de comandos (no se utilizan en
-     * este caso).
+     * @param args Argumentos de la línea de comandos.
      */
     public static void main(String[] args) {
-        // Crear una instancia de LoginServiceImpl y cargar el formulario de inicio de sesión
         LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
         LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
     }
-
 }

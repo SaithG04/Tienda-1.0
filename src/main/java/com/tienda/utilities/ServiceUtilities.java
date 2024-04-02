@@ -221,6 +221,15 @@ public class ServiceUtilities {
         }
         return false; // Si no encuentra ninguna mayúscula, retorna falso
     }
+    
+    public boolean contieneMinuscula(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            if (Character.isLowerCase(texto.charAt(i))) {
+                return true; // Si encuentra al menos una mayúscula, retorna verdadero
+            }
+        }
+        return false; // Si no encuentra ninguna mayúscula, retorna falso
+    }
 
     /**
      * Método para verificar si una cadena de texto contiene al menos un dígito
@@ -284,7 +293,7 @@ public class ServiceUtilities {
      */
     public boolean contieneCaracteresNoPermitidos(String texto) {
         // Definir los caracteres no permitidos
-        String caracteresNoPermitidos = "!@#$%^&*()+=-[]{},<>?/\\|";
+        String caracteresNoPermitidos = "!@#$%^&*()+=_.-[]{},<>?/\\|";
         for (int i = 0; i < texto.length(); i++) {
             char c = texto.charAt(i);
             // Verificar si el carácter actual está en la lista de caracteres no permitidos
