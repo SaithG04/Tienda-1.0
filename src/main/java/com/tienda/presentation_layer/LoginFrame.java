@@ -57,6 +57,7 @@ public class LoginFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         Container = new javax.swing.JPanel();
+        javax.swing.JLabel lblRecuperar3 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel5 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
@@ -81,6 +82,13 @@ public class LoginFrame extends javax.swing.JFrame {
         Container.setPreferredSize(new java.awt.Dimension(850, 550));
         Container.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        lblRecuperar3.setBackground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setFont(new java.awt.Font("BankGothic Lt BT", 1, 12)); // NOI18N
+        lblRecuperar3.setForeground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
+        Container.add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 100, 220, 40));
+
         jLabel3.setBackground(new java.awt.Color(0, 204, 204));
         jLabel3.setFont(new java.awt.Font("Swis721 Cn BT", 1, 60)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
@@ -88,7 +96,7 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel3.setText("REGISTRO DEL SISTEMA");
         jLabel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jLabel3.setOpaque(true);
-        Container.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 830, 130));
+        Container.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 830, 90));
 
         jLabel5.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));

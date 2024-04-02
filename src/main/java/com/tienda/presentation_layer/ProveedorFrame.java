@@ -73,6 +73,7 @@ public class ProveedorFrame extends javax.swing.JFrame {
         txtWeb = new javax.swing.JTextField();
         jScrollPane4 = new javax.swing.JScrollPane();
         txtContacto = new javax.swing.JTextArea();
+        lblRecuperar3 = new javax.swing.JLabel();
 
         miEliminar.setText("jMenuItem1");
         jpmOptions.add(miEliminar);
@@ -228,6 +229,13 @@ public class ProveedorFrame extends javax.swing.JFrame {
 
         container.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 80, 360, 150));
 
+        lblRecuperar3.setBackground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setFont(new java.awt.Font("BankGothic Lt BT", 1, 12)); // NOI18N
+        lblRecuperar3.setForeground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
+        container.add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 680, 220, 40));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -354,6 +362,7 @@ public class ProveedorFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPopupMenu jpmOptions;
     private javax.swing.JTable jtbProveedores;
+    private javax.swing.JLabel lblRecuperar3;
     private javax.swing.JMenuItem miEliminar;
     private javax.swing.JRadioButton rbActivo;
     private javax.swing.JRadioButton rbInactivo;

@@ -56,6 +56,7 @@ public class UsersFrame extends javax.swing.JFrame {
         lblPassword = new javax.swing.JLabel();
         btnRevelar = new javax.swing.JToggleButton();
         btnRefresh = new javax.swing.JButton();
+        lblRecuperar3 = new javax.swing.JLabel();
 
         miEliminar.setText("jMenuItem1");
         jpmOptions.add(miEliminar);
@@ -152,6 +153,13 @@ public class UsersFrame extends javax.swing.JFrame {
         btnRefresh.setText("Refrescar tabla");
         jPanel1.add(btnRefresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(659, 680, 160, -1));
 
+        lblRecuperar3.setBackground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setFont(new java.awt.Font("BankGothic Lt BT", 1, 12)); // NOI18N
+        lblRecuperar3.setForeground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
+        jPanel1.add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 680, 220, 40));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,6 +246,7 @@ public class UsersFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu jpmOptions;
     private javax.swing.JTable jtbUsuarios;
     private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblRecuperar3;
     private javax.swing.JMenuItem miDesconectar;
     private javax.swing.JMenuItem miEliminar;
     private javax.swing.JTextField txtNombreCompleto;

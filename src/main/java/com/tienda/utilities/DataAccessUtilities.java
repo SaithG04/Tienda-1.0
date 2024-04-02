@@ -218,6 +218,7 @@ public class DataAccessUtilities {
             propiedades.load(entrada);
 
             String host = propiedades.getProperty("db.host");
+//            String host = "localhost";
             String port = propiedades.getProperty("db.port");
             String database = propiedades.getProperty("db.database");
             String user = propiedades.getProperty("db.user");
@@ -287,34 +288,40 @@ public class DataAccessUtilities {
      */
     private <T> void setInsertStatementValues(PreparedStatement statement, T entity) throws SQLException {
 
-        if (entity instanceof User user) {
-            statement.setInt(1, 0); //Porque es autoincrementable
-            statement.setString(2, user.getNombreCompleto());
-            statement.setString(3, user.getUsername());
-            statement.setBytes(4, user.getHashed_password());
-            statement.setBytes(5, user.getSalt());
-            statement.setString(6, user.getStatus());
-        } else if (entity instanceof Producto producto) {
-            statement.setInt(1, 0); //Porque es autoincrementable
-            statement.setString(2, producto.getNombre());
-            statement.setInt(3, producto.getProveedor());
-            statement.setDouble(4, producto.getCantidad());
-            statement.setDouble(5, producto.getPrecio());
-            statement.setString(6, producto.getMedida());
-        } else if (entity instanceof Proveedor proveedor) {
-            statement.setInt(1, 0);
-            statement.setString(2, proveedor.getRuc());
-            statement.setString(3, proveedor.getRazon_social());
-            statement.setString(4, proveedor.getDescripcion());
-            statement.setString(5, proveedor.getDireccion());
-            statement.setString(6, proveedor.getTelefono());
-            statement.setString(7, proveedor.getCorreo());
-            statement.setString(8, proveedor.getWeb());
-            statement.setString(9, proveedor.getContacto());
-            statement.setString(10, proveedor.getCategoria());
-            statement.setString(11, proveedor.getEstado());
-            statement.setDate(12, proveedor.getFecha_registro());
-            statement.setString(13, proveedor.getObservaciones());
+        switch (entity) {
+            case User user -> {
+                statement.setInt(1, 0); //Porque es autoincrementable
+                statement.setString(2, user.getNombreCompleto());
+                statement.setString(3, user.getUsername());
+                statement.setBytes(4, user.getHashed_password());
+                statement.setBytes(5, user.getSalt());
+                statement.setString(6, user.getStatus());
+            }
+            case Producto producto -> {
+                statement.setInt(1, 0); //Porque es autoincrementable
+                statement.setString(2, producto.getNombre());
+                statement.setInt(3, producto.getProveedor());
+                statement.setDouble(4, producto.getCantidad());
+                statement.setDouble(5, producto.getPrecio());
+                statement.setString(6, producto.getMedida());
+            }
+            case Proveedor proveedor -> {
+                statement.setInt(1, 0);
+                statement.setString(2, proveedor.getRuc());
+                statement.setString(3, proveedor.getRazon_social());
+                statement.setString(4, proveedor.getDescripcion());
+                statement.setString(5, proveedor.getDireccion());
+                statement.setString(6, proveedor.getTelefono());
+                statement.setString(7, proveedor.getCorreo());
+                statement.setString(8, proveedor.getWeb());
+                statement.setString(9, proveedor.getContacto());
+                statement.setString(10, proveedor.getCategoria());
+                statement.setString(11, proveedor.getEstado());
+                statement.setDate(12, proveedor.getFecha_registro());
+                statement.setString(13, proveedor.getObservaciones());
+            }
+            default -> {
+            }
         }
     }
 
