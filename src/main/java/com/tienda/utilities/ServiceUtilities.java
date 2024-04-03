@@ -32,7 +32,7 @@ public class ServiceUtilities {
     }
 
     // Objeto para mostrar alertas
-    public static final AlertsClass alerta = AlertsClass.getAlert();
+    public static final AlertClass alerta = AlertClass.getAlert();
 
     /**
      * Método para obtener un icono de un archivo de imagen.

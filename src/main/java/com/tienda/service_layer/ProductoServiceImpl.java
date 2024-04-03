@@ -1,6 +1,6 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOimplements.ProductoDAOImpl;
+import com.tienda.data_access_layer.DAOImplements.ProductoDAOImpl;
 import com.tienda.data_access_layer.ProductoDAO;
 import com.tienda.entity.Producto;
 import com.tienda.presentation_layer.ProductosFrame;

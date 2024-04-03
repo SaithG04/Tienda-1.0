@@ -1,6 +1,6 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
+import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.utilities.ServiceUtilities;
 import com.tienda.presentation_layer.MenuPrincipalFrame;
@@ -24,7 +24,7 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
 
     // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
-    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores;
+    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores, btnTransacciones;
 
     /**
      * Constructor privado para el patrón Singleton.
@@ -39,6 +39,7 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         btnUsuarios = instanceOfMenuPrincipalFrame.getBtnUsuarios();
         btnProductos = instanceOfMenuPrincipalFrame.getBtnProductos();
         btnProveedores = instanceOfMenuPrincipalFrame.getBtnProveedores();
+        btnTransacciones = instanceOfMenuPrincipalFrame.getBtnTransacciones();
     }
 
     /**
@@ -92,6 +93,7 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         btnUsuarios.addActionListener(this);
         btnProductos.addActionListener(this);
         btnProveedores.addActionListener(this);
+        btnTransacciones.addActionListener(this);
     }
 
     /**
@@ -120,6 +122,7 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         btnUsuarios.removeActionListener(this);
         btnProductos.removeActionListener(this);
         btnProveedores.removeActionListener(this);
+        btnTransacciones.removeActionListener(this);
     }
 
     /**
@@ -175,23 +178,25 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
             }
         } // Verificar si el evento proviene del botón "Usuarios"
         else if (e.getSource() == btnUsuarios) {
-            // Ocultar el formulario del menú principal
-            instanceOfMenuPrincipalFrame.dispose();
-
             // Mostrar el formulario de gestión de usuarios
             UserServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-        } else if (e.getSource() == btnProductos) {
             // Ocultar el formulario del menú principal
             instanceOfMenuPrincipalFrame.dispose();
-
+        } else if (e.getSource() == btnProductos) {
             // Mostrar el formulario de gestión de productos
             ProductoServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-        } else if (e.getSource() == btnProveedores) {
             // Ocultar el formulario del menú principal
             instanceOfMenuPrincipalFrame.dispose();
-
-            // Mostrar el formulario de gestión de productos
+        } else if (e.getSource() == btnProveedores) {
+            // Mostrar el formulario de gestión de proveedores
             ProveedorServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            // Ocultar el formulario del menú principal
+            instanceOfMenuPrincipalFrame.dispose();
+        } else if (e.getSource() == btnTransacciones) {
+            // Mostrar el formulario de transacciones
+            TransaccionServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            // Ocultar el formulario del menú principal
+            instanceOfMenuPrincipalFrame.dispose();
         }
     }
 }

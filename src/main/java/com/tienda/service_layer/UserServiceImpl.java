@@ -1,6 +1,6 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
+import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
 import com.tienda.utilities.ServiceUtilities;

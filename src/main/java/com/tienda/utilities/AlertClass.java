@@ -10,27 +10,27 @@ import javax.swing.*;
  *
  * @author isai_
  */
-public class AlertsClass {
+public class AlertClass {
 
     // Botones comunes para los diálogos
     private final String botones[] = {"Aceptar"};
     private final String botones2[] = {"Aceptar", "Cancelar"};
-    private static AlertsClass instance;
+    private static AlertClass instance;
 
     // Constructor privado para el patrón Singleton
-    private AlertsClass() {
+    private AlertClass() {
     }
 
     /**
-     * Método estático para obtener la instancia única de AlertsClass.
+     * Método estático para obtener la instancia única de AlertClass.
      *
-     * @return Instancia única de AlertsClass.
+     * @return Instancia única de AlertClass.
      */
-    public static AlertsClass getAlert() {
+    public static AlertClass getAlert() {
         if (instance == null) {
-            synchronized (AlertsClass.class) { // Sincronización para hilos
+            synchronized (AlertClass.class) { // Sincronización para hilos
                 if (instance == null) {
-                    instance = new AlertsClass();
+                    instance = new AlertClass();
                 }
             }
         }
