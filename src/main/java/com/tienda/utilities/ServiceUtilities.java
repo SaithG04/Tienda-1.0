@@ -221,7 +221,7 @@ public class ServiceUtilities {
         }
         return false; // Si no encuentra ninguna mayúscula, retorna falso
     }
-    
+
     public boolean contieneMinuscula(String texto) {
         for (int i = 0; i < texto.length(); i++) {
             if (Character.isLowerCase(texto.charAt(i))) {

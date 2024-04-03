@@ -1,7 +1,7 @@
 package com.tienda.presentation_layer;
 
 import com.tienda.utilities.ServiceUtilities;
-import java.awt.Image;
+import java.awt.*;
 import javax.swing.*;
 
 /**
@@ -73,7 +73,6 @@ public class LoginFrame extends javax.swing.JFrame {
         setTitle("Acceder");
         setAutoRequestFocus(false);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setIconImage(getIconImage());
         setUndecorated(true);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

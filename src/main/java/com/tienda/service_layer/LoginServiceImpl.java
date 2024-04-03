@@ -45,6 +45,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     private final JButton btnAceptar, btnSalir;
     private final JPasswordField txtPassword;
     private final JTextField txtUsuario;
+    private final JPanel container;
 
     /**
      * Contador de intentos de inicio de sesión.
@@ -63,6 +64,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
         btnSalir = instanceOfLoginFrame.getBtnSalir();
         txtPassword = instanceOfLoginFrame.getTxtContraseña();
         txtUsuario = instanceOfLoginFrame.getTxtUsuario();
+        container = instanceOfLoginFrame.getContainer();
     }
 
     /**
@@ -88,7 +90,14 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      */
     @Override
     public LoginFrame getInstanceOfFrame() {
-        instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
+//        instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
+        instanceOfLoginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = (int) screenSize.getWidth();
+        int screenHeight = (int) screenSize.getHeight();
+
+        // Establecer el tamaño y la posición del panel para que coincida con las dimensiones de la pantalla
+        container.setBounds(0, 0, screenWidth, screenHeight);
         txtUsuario.requestFocus(); // Foco en el campo de usuario
         cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
         cargarActionListeners(); // Cargar los ActionListeners para los botones
