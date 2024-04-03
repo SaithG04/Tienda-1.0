@@ -212,19 +212,19 @@ public class DataAccessUtilities {
      */
     public String[] getProperties() {
         Properties propiedades = new Properties();
-        FileInputStream entrada = null;
+        InputStream entrada = null;
         try {
-            entrada = new FileInputStream("src/main/resources/properties/config.properties");
+            entrada = getClass().getResourceAsStream("/properties/config.properties");
             propiedades.load(entrada);
 
-            String host = propiedades.getProperty("db.host");
-//            String host = "localhost";
+            String remoteHost = propiedades.getProperty("db.host");
+            String localHost = "localhost"; //Para conectarse a un servidor local
             String port = propiedades.getProperty("db.port");
             String database = propiedades.getProperty("db.database");
             String user = propiedades.getProperty("db.user");
             String password = propiedades.getProperty("db.password");
 
-            return new String[]{host, port, database, user, password};
+            return new String[]{remoteHost, port, database, user, password};
         } catch (IOException ex) {
         } finally {
             if (entrada != null) {
@@ -352,7 +352,7 @@ public class DataAccessUtilities {
                 statement.setString(5, producto.getMedida());
                 statement.setInt(6, producto.getId());
             }
-            case Proveedor proveedor -> {  
+            case Proveedor proveedor -> {
                 statement.setString(1, proveedor.getRuc());
                 statement.setString(2, proveedor.getRazon_social());
                 statement.setString(3, proveedor.getDescripcion());

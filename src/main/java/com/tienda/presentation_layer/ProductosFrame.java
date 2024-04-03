@@ -22,6 +22,7 @@ public class ProductosFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        lblRecuperar3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         txtCantidad = new javax.swing.JTextField();
@@ -45,6 +46,13 @@ public class ProductosFrame extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(153, 255, 204));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblRecuperar3.setBackground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setFont(new java.awt.Font("BankGothic Lt BT", 1, 12)); // NOI18N
+        lblRecuperar3.setForeground(new java.awt.Color(0, 0, 0));
+        lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
+        jPanel1.add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 490, 220, 40));
 
         tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -103,28 +111,28 @@ public class ProductosFrame extends javax.swing.JFrame {
         btninicio.setText("INICIO");
         btninicio.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btninicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 460, 140, 40));
+        jPanel1.add(btninicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 440, 140, 40));
 
         btnAdd.setBackground(new java.awt.Color(0, 102, 102));
         btnAdd.setForeground(new java.awt.Color(204, 255, 204));
         btnAdd.setText("AÑADIR");
         btnAdd.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 390, 140, 40));
+        jPanel1.add(btnAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 370, 140, 40));
 
         btnEdit.setBackground(new java.awt.Color(0, 102, 102));
         btnEdit.setForeground(new java.awt.Color(204, 255, 204));
         btnEdit.setText("EDITAR");
         btnEdit.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 390, 140, 40));
+        jPanel1.add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 370, 140, 40));
 
         tbnDelete.setBackground(new java.awt.Color(0, 102, 102));
         tbnDelete.setForeground(new java.awt.Color(204, 255, 204));
         tbnDelete.setText("ELIMINAR");
         tbnDelete.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tbnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 460, 140, 40));
+        jPanel1.add(tbnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 440, 140, 40));
 
         jLabel9.setFont(new java.awt.Font("Swis721 BT", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
@@ -235,6 +243,7 @@ public class ProductosFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblRecuperar3;
     private javax.swing.JTable tabla;
     private javax.swing.JButton tbnDelete;
     private javax.swing.JTextField txtCantidad;
