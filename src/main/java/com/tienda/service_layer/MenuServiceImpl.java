@@ -2,8 +2,7 @@ package com.tienda.service_layer;
 
 import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
-import com.tienda.utilities.ServiceUtilities;
-import com.tienda.presentation_layer.MenuPrincipalFrame;
+import com.tienda.presentation_layer.*;
 import java.awt.Component;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -15,31 +14,43 @@ import javax.swing.*;
  *
  * @author isai_
  */
-public class MenuServiceImpl extends ServiceUtilities implements ActionListener, FrameService<MenuPrincipalFrame> {
+public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities implements ActionListener, FrameService {
 
     private static volatile MenuServiceImpl instanceOfMenuServiceImpl;
 
     // Instancia del formulario del menú principal
-    private final MenuPrincipalFrame instanceOfMenuPrincipalFrame;
+    private final MenuPrincipalPanel instanceOfMenuPrincipalPanel;
 
     // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
-    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores, btnTransacciones;
+    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores, btnTransacciones, btnLight, btnDark;
 
     /**
      * Constructor privado para el patrón Singleton.
      */
     private MenuServiceImpl() {
         // Obtener la instancia del formulario del menú principal
-        instanceOfMenuPrincipalFrame = MenuPrincipalFrame.getInstance();
+        instanceOfMenuPrincipalPanel = MenuPrincipalPanel.getInstance();
 
         // Obtener los componentes del formulario
-        lblTitle = instanceOfMenuPrincipalFrame.getLblTitle();
-        btnCerrarSesion = instanceOfMenuPrincipalFrame.getBtnCerrarSesion();
-        btnUsuarios = instanceOfMenuPrincipalFrame.getBtnUsuarios();
-        btnProductos = instanceOfMenuPrincipalFrame.getBtnProductos();
-        btnProveedores = instanceOfMenuPrincipalFrame.getBtnProveedores();
-        btnTransacciones = instanceOfMenuPrincipalFrame.getBtnTransacciones();
+        lblTitle = instanceOfMenuPrincipalPanel.getLblTitle();
+        btnCerrarSesion = instanceOfMenuPrincipalPanel.getBtnCerrarSesion();
+        btnUsuarios = instanceOfMenuPrincipalPanel.getBtnUsuarios();
+        btnProductos = instanceOfMenuPrincipalPanel.getBtnProductos();
+        btnProveedores = instanceOfMenuPrincipalPanel.getBtnProveedores();
+        btnTransacciones = instanceOfMenuPrincipalPanel.getBtnTransacciones();
+        btnLight = instanceOfMenuPrincipalPanel.getBtnLight();
+        btnDark = instanceOfMenuPrincipalPanel.getBtnDark();
+    }
+
+    public void loadPanel() {
+        addPanelToFrame(instanceOfMenuPrincipalPanel);
+        cargarActionListeners();
+        instanceOfFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        instanceOfFrame.setTitle("Menu Principal");
+        Close(instanceOfFrame);
+        // Actualizar el título del formulario con el nombre de usuario
+        lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
     }
 
     /**
@@ -47,6 +58,7 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
      *
      * @return Instancia única de MenuServiceImpl.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public static MenuServiceImpl getInstance() {
         if (instanceOfMenuServiceImpl == null) {
             synchronized (MenuServiceImpl.class) {
@@ -56,28 +68,6 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
             }
         }
         return instanceOfMenuServiceImpl;
-    }
-
-    /**
-     * Retorna una instancia del formulario del menú principal.
-     *
-     * @return Instancia del formulario del menú principal.
-     */
-    @Override
-    public MenuPrincipalFrame getInstanceOfFrame() {
-        // Ubicar el formulario en el centro de la pantalla
-        instanceOfMenuPrincipalFrame.setLocationRelativeTo(null);
-
-        // Cargar los ActionListeners para los botones
-        cargarActionListeners();
-
-        // Método para cerrar el formulario del menú principal
-        Close(instanceOfMenuPrincipalFrame);
-
-        // Actualizar el título del formulario con el nombre de usuario
-        lblTitle.setText("Bienvenido Sr(a): " + LoginServiceImpl.userLogued.getNombreCompleto());
-
-        return instanceOfMenuPrincipalFrame;
     }
 
     /**
@@ -94,6 +84,8 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         btnProductos.addActionListener(this);
         btnProveedores.addActionListener(this);
         btnTransacciones.addActionListener(this);
+        btnLight.addActionListener(this);
+        btnDark.addActionListener(this);
     }
 
     /**
@@ -123,6 +115,8 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         btnProductos.removeActionListener(this);
         btnProveedores.removeActionListener(this);
         btnTransacciones.removeActionListener(this);
+        btnLight.removeActionListener(this);
+        btnDark.removeActionListener(this);
     }
 
     /**
@@ -155,20 +149,17 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         if (e.getSource() == btnCerrarSesion) {
             // Mostrar una confirmación antes de cerrar la sesión
             if (alerta.confirmacion("¿Cerrar sesión?") == 0) {
-                instanceOfMenuPrincipalFrame.setCursor(waitCursor);
+                instanceOfMenuPrincipalPanel.setCursor(waitCursor);
                 try {
                     LoginServiceImpl.userLogued.setStatus("logged out");
                     UserDAO userDao = new UserDAOImpl(LoginServiceImpl.userLogued);
                     userDao.actualizar();
                     // Ocultar el formulario del menú principal
-                    instanceOfMenuPrincipalFrame.dispose();
-                    instanceOfMenuPrincipalFrame.setCursor(defaultCursor);
-                    // Mostrar el formulario de inicio de sesión
-                    LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
 
-                    // Colocar el foco en el formulario de inicio de sesión
-                    LoginServiceImpl.getInstance().getInstanceOfFrame().requestFocus();
-                    LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
+                    instanceOfMenuPrincipalPanel.setCursor(defaultCursor);
+                    // Mostrar el formulario de inicio de sesión
+                    LoginServiceImpl.getInstance().loadPanel();
+                    removePanelFromFrame(instanceOfMenuPrincipalPanel);
                 } catch (ClassNotFoundException | SQLException ex) {
                     alerta.manejarErrorConexion(this.getClass(), ex);
                     if (ex instanceof SQLException) {
@@ -179,24 +170,29 @@ public class MenuServiceImpl extends ServiceUtilities implements ActionListener,
         } // Verificar si el evento proviene del botón "Usuarios"
         else if (e.getSource() == btnUsuarios) {
             // Mostrar el formulario de gestión de usuarios
-            UserServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-            // Ocultar el formulario del menú principal
-            instanceOfMenuPrincipalFrame.dispose();
+            UserServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfMenuPrincipalPanel);
         } else if (e.getSource() == btnProductos) {
             // Mostrar el formulario de gestión de productos
-            ProductoServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            ProductoServiceImpl.getInstance().loadPanel();
             // Ocultar el formulario del menú principal
-            instanceOfMenuPrincipalFrame.dispose();
+            removePanelFromFrame(instanceOfMenuPrincipalPanel);
         } else if (e.getSource() == btnProveedores) {
             // Mostrar el formulario de gestión de proveedores
-            ProveedorServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            ProveedorServiceImpl.getInstance().loadPanel();
             // Ocultar el formulario del menú principal
-            instanceOfMenuPrincipalFrame.dispose();
+            removePanelFromFrame(instanceOfMenuPrincipalPanel);
         } else if (e.getSource() == btnTransacciones) {
             // Mostrar el formulario de transacciones
-            TransaccionServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            TransaccionServiceImpl.getInstance().loadPanel();
             // Ocultar el formulario del menú principal
-            instanceOfMenuPrincipalFrame.dispose();
+            removePanelFromFrame(instanceOfMenuPrincipalPanel);
+        } else if (e.getSource() == btnLight) {
+            saveDefaultTheme("light");
+            configureTheme();
+        } else if (e.getSource() == btnDark) {
+            saveDefaultTheme("dark");
+            configureTheme();
         }
     }
 }

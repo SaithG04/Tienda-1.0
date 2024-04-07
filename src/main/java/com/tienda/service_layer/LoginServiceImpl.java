@@ -3,8 +3,7 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
-import com.tienda.presentation_layer.LoginFrame;
-import com.tienda.utilities.ServiceUtilities;
+import com.tienda.presentation_layer.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +20,7 @@ import java.sql.SQLException;
  *
  * @author isai_
  */
-public class LoginServiceImpl extends ServiceUtilities implements ActionListener, FrameService<LoginFrame> {
+public final class LoginServiceImpl extends com.tienda.utilities.ServiceUtilities implements ActionListener, FrameService {
 
     // Declaración de variables de instancia
     /**
@@ -35,9 +34,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     public static User userLogued;
 
     /**
-     * Instancia del formulario de inicio de sesión.
+     * Instancia
      */
-    private final LoginFrame instanceOfLoginFrame;
+    private final LoginPanel instanceOfLoginPanel;
 
     /**
      * Componentes del formulario de inicio de sesión.
@@ -45,7 +44,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     private final JButton btnAceptar, btnSalir;
     private final JPasswordField txtPassword;
     private final JTextField txtUsuario;
-    private final JPanel container;
 
     /**
      * Contador de intentos de inicio de sesión.
@@ -57,14 +55,22 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Singleton.
      */
     private LoginServiceImpl() {
-        // Obtención de la instancia del formulario de inicio de sesión (LoginFrame)
-        instanceOfLoginFrame = LoginFrame.getInstance();
+        instanceOfLoginPanel = LoginPanel.getInstance();
         // Obtención de los componentes del formulario
-        btnAceptar = instanceOfLoginFrame.getBtnAceptar();
-        btnSalir = instanceOfLoginFrame.getBtnSalir();
-        txtPassword = instanceOfLoginFrame.getTxtContraseña();
-        txtUsuario = instanceOfLoginFrame.getTxtUsuario();
-        container = instanceOfLoginFrame.getContainer();
+        btnAceptar = instanceOfLoginPanel.getBtnAceptar();
+        btnSalir = instanceOfLoginPanel.getBtnSalir();
+        txtPassword = instanceOfLoginPanel.getTxtContraseña();
+        txtUsuario = instanceOfLoginPanel.getTxtUsuario();
+        configureTheme();
+    }
+
+    public void loadPanel() {
+        addPanelToFrame(instanceOfLoginPanel);
+        instanceOfFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
+        txtUsuario.requestFocus(); // Foco en el campo de usuario
+        instanceOfFrame.setTitle("Acceder");
+        cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
+        cargarActionListeners(); // Cargar los ActionListeners para los botones
     }
 
     /**
@@ -72,6 +78,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      *
      * @return Instancia única de LoginServiceImpl.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public static LoginServiceImpl getInstance() {
         if (instanceOfLoginServiceImpl == null) {
             synchronized (LoginServiceImpl.class) { // Sincronización para hilos
@@ -81,27 +88,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             }
         }
         return instanceOfLoginServiceImpl;
-    }
-
-    /**
-     * Método para obtener la instancia del formulario de inicio de sesión.
-     *
-     * @return Instancia del formulario de inicio de sesión.
-     */
-    @Override
-    public LoginFrame getInstanceOfFrame() {
-        instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
-//        instanceOfLoginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        int screenWidth = (int) screenSize.getWidth();
-//        int screenHeight = (int) screenSize.getHeight();
-
-        // Establecer el tamaño y la posición del panel para que coincida con las dimensiones de la pantalla
-//        container.setBounds(0, 0, screenWidth, screenHeight);
-        txtUsuario.requestFocus(); // Foco en el campo de usuario
-        cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
-        cargarActionListeners(); // Cargar los ActionListeners para los botones
-        return instanceOfLoginFrame;
     }
 
     /**
@@ -125,7 +111,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
                 return; // Finalizar el método si hay campos vacíos
             }
 
-            // Crear un DTO con el usuario y contraseña proporcionados
             User userLog = new User();
             userLog.setUsername(usuario);
             UserDAO userDao = new UserDAOImpl(userLog);
@@ -172,8 +157,8 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
             userDao = new UserDAOImpl(userLogued);
             userDao.actualizar();
             // Cerrar la ventana de inicio de sesión y mostrar el menú principal
-            instanceOfLoginFrame.dispose();
-            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfLoginPanel);
             intentos = 0;
         } catch (SQLException | ClassNotFoundException ex) {
             errorSQL(this.getClass(), ex);
@@ -189,7 +174,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfLoginFrame, txtUsuario, txtPassword, btnAceptar, btnSalir}, cursor);
+        setCursoresGeneric(instanceOfLoginPanel.getComponents(), cursor);
     }
 
     /**
@@ -280,4 +265,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
         }
     }
 
+    public void limpiar(){
+        txtUsuario.setText("");
+        txtPassword.setText("");
+        txtUsuario.requestFocus();
+    }
 }

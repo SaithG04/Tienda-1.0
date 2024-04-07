@@ -3,36 +3,26 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.ProductoDAOImpl;
 import com.tienda.data_access_layer.ProductoDAO;
 import com.tienda.entity.Producto;
-import com.tienda.presentation_layer.ProductosFrame;
+import com.tienda.presentation_layer.Frame;
+import com.tienda.presentation_layer.ProductosPanel;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class ProductoServiceImpl extends ServiceUtilities implements ActionListener, FrameService<ProductosFrame> {
+public final class ProductoServiceImpl extends ServiceUtilities implements ActionListener, FrameService {
 
     private static volatile ProductoServiceImpl instanciaImpl;
 
-    private final ProductosFrame instanciaFrame;
+    private final ProductosPanel instanciaPanel;
+
     private final JButton btnUpdate, btnDelete, btnAdd, btnHome;
     private final JTable tbProducto;
     private final JTextField txtNombre, txtCantidad, txtUnidad, txtPrecio;
@@ -41,20 +31,34 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
 
     private ProductoServiceImpl() {
 
-        instanciaFrame = ProductosFrame.getProcFrame();
+        instanciaPanel = ProductosPanel.getProcPanel();
 
-        this.btnUpdate = instanciaFrame.getBtnEdit();
-        this.btnDelete = instanciaFrame.getTbnDelete();
-        this.btnAdd = instanciaFrame.getBtnAdd();
-        this.btnHome = instanciaFrame.getBtninicio();
-        this.tbProducto = instanciaFrame.getTabla();
-        this.txtCantidad = instanciaFrame.getTxtCantidad();
-        this.txtNombre = instanciaFrame.getTxtProducto();
-        this.txtUnidad = instanciaFrame.getTxtTipo();
-        this.txtPrecio = instanciaFrame.getTxtPrecio();
-        this.cbProveedor = instanciaFrame.getCbProveedor();
+        this.btnUpdate = instanciaPanel.getBtnEdit();
+        this.btnDelete = instanciaPanel.getTbnDelete();
+        this.btnAdd = instanciaPanel.getBtnAdd();
+        this.btnHome = instanciaPanel.getBtninicio();
+        this.tbProducto = instanciaPanel.getTabla();
+        this.txtCantidad = instanciaPanel.getTxtCantidad();
+        this.txtNombre = instanciaPanel.getTxtProducto();
+        this.txtUnidad = instanciaPanel.getTxtTipo();
+        this.txtPrecio = instanciaPanel.getTxtPrecio();
+        this.cbProveedor = instanciaPanel.getCbProveedor();
     }
 
+    public void loadPanel() {
+        Close(instanceOfFrame);
+        addPanelToFrame(instanciaPanel);
+        // Establecer el enfoque en el campo de nombre completo al abrir el formulario
+        instanciaPanel.requestFocus();
+        // Agregar ActionListener a los botones y cargar los usuarios en un hilo separado
+        cargarActionListeners();
+        tbProducto.setModel(new DefaultTableModel(0, 0));
+        new Thread(() -> {
+            tbProducto.setModel(cargarProducto());
+        }).start();
+    }
+
+    @SuppressWarnings("DoubleCheckedLocking")
     public static ProductoServiceImpl getInstance() {
         if (instanciaImpl == null) {
             synchronized (ProductoServiceImpl.class) { // Sincronización para hilos
@@ -67,25 +71,10 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
     }
 
     @Override
-    public ProductosFrame getInstanceOfFrame() {
-        instanciaFrame.setLocationRelativeTo(null);
-        Close(instanciaFrame);
-        // Establecer el enfoque en el campo de nombre completo al abrir el formulario
-        instanciaFrame.requestFocus();
-        // Agregar ActionListener a los botones y cargar los usuarios en un hilo separado
-        cargarActionListeners();
-        tbProducto.setModel(new DefaultTableModel(0, 0));
-        new Thread(() -> {
-            tbProducto.setModel(cargarProducto());
-        }).start();
-        return instanciaFrame;
-    }
-
-    @Override
     public void cargarActionListeners() {
         quitActionListeners();
-        quitKeyListener(instanciaFrame);
-        quitMouseListener(instanciaFrame);
+        quitKeyListener(instanciaPanel);
+        quitMouseListener(instanciaPanel);
         btnUpdate.addActionListener(this);
         btnDelete.addActionListener(this);
         btnAdd.addActionListener(this);
@@ -222,8 +211,8 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
             RegistrarProducto();
         } else if (e.getSource() == btnHome) {
             limpiarTxt();
-            instanciaFrame.dispose();
-            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanciaPanel);
         } else if (e.getSource() == btnUpdate) {
             actualizarProducto();
         } else if (e.getSource() == btnDelete) {
@@ -323,9 +312,9 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         try {
             proveedores = ProductoDAOImpl.getNameProveedor();
             String proveedor = cbProveedor.getSelectedItem().toString();
-            for (int a : proveedores.keySet()){
-                if(proveedores.get(a).equals(proveedor)){
-                   return a;
+            for (int a : proveedores.keySet()) {
+                if (proveedores.get(a).equals(proveedor)) {
+                    return a;
                 }
             }
         } catch (ClassNotFoundException | SQLException ex) {
@@ -333,7 +322,7 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
         }
         return -1;
     }
-    
+
     public boolean esSelecionMayor(JTable tabla) {
         if (tabla.getSelectedRowCount() > 1) {
             return true;
@@ -387,6 +376,6 @@ public class ProductoServiceImpl extends ServiceUtilities implements ActionListe
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanciaFrame, txtCantidad, txtNombre, txtPrecio, txtUnidad, cbProveedor, tbProducto, btnAdd, btnDelete, btnHome, btnUpdate}, cursor);
+        setCursoresGeneric(instanciaPanel.getComponents(), cursor);
     }
 }

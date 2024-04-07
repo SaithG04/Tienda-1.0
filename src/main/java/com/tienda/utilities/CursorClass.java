@@ -1,6 +1,7 @@
 package com.tienda.utilities;
 
 import java.awt.*;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -11,11 +12,12 @@ public class CursorClass {
     private static CursorClass instance;
 
     private final Toolkit toolkit = Toolkit.getDefaultToolkit();
-    private Image cursorImageNormalSelect = toolkit.getImage(getClass().getResource("/cursors/normal_select.cur"));
-    private Cursor customCursorNormalSelect = toolkit.createCustomCursor(cursorImageNormalSelect, new Point(0, 0), "CustomCursorNormalSelect");
+    private ImageIcon cursorImageNormalSelect = new ImageIcon(getClass().getResource("/cursors/normal_select.png"));
+    private Cursor customCursorNormalSelect = toolkit.createCustomCursor(cursorImageNormalSelect.getImage(), new Point(0, 0), "CustomCursorNormalSelect");
 
     private CursorClass() {}
 
+    @SuppressWarnings("DoubleCheckedLocking")
     public static CursorClass getInstance() {
         if (instance == null) {
             synchronized (CursorClass.class) {

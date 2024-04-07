@@ -4,7 +4,7 @@ import com.tienda.data_access_layer.DAOImplements.TransaccionDAOImpl;
 import com.tienda.data_access_layer.TransaccionDAO;
 import com.tienda.entity.Transaccion;
 import com.tienda.utilities.ServiceUtilities;
-import com.tienda.presentation_layer.TransaccionFrame;
+import com.tienda.presentation_layer.TransaccionPanel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -18,13 +18,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class TransaccionServiceImpl extends ServiceUtilities implements ActionListener, FrameService<TransaccionFrame> {
+public final class TransaccionServiceImpl extends ServiceUtilities implements ActionListener, FrameService {
 
     // Declaración de variables miembro
     private static volatile TransaccionServiceImpl instanceOfTransaccionServiceImpl;
 
     // Instancia del frame de usuarios
-    private final TransaccionFrame instanceOfTransaccionFrame;
+    private final TransaccionPanel instanceOfTransaccionPanel;
 
     // Componentes de la interfaz de usuario
     private final JButton btnRegresar, btnRefresh;
@@ -34,12 +34,33 @@ public class TransaccionServiceImpl extends ServiceUtilities implements ActionLi
 
     // Constructor privado para garantizar una única instancia de UserServiceImpl
     private TransaccionServiceImpl() {
-        instanceOfTransaccionFrame = TransaccionFrame.getInstance();
-        btnRegresar = instanceOfTransaccionFrame.getBtnRegresar();
-        jtbTransacciones = instanceOfTransaccionFrame.getJtbTransacciones();
-        jpmOptions = instanceOfTransaccionFrame.getJpmOptions();
-        jmiVerDetalle = instanceOfTransaccionFrame.getMiVerDetalle();
-        btnRefresh = instanceOfTransaccionFrame.getBtnRefresh();
+        instanceOfTransaccionPanel = TransaccionPanel.getInstance();
+        btnRegresar = instanceOfTransaccionPanel.getBtnRegresar();
+        jtbTransacciones = instanceOfTransaccionPanel.getJtbTransacciones();
+        jpmOptions = instanceOfTransaccionPanel.getJpmOptions();
+        jmiVerDetalle = instanceOfTransaccionPanel.getMiVerDetalle();
+        btnRefresh = instanceOfTransaccionPanel.getBtnRefresh();
+
+    }
+
+    public void loadPanel() {
+        addPanelToFrame(instanceOfTransaccionPanel);
+        Close(instanceOfFrame);
+        // Cargar listeners de acciones
+        cargarActionListeners();
+        // Cargar listeners de mouse
+        cargarMouseListeners();
+        // Cargar listeners de teclado
+        cargarKeyListeners();
+        // Limpiar tabla de usuarios
+        jtbTransacciones.setModel(new DefaultTableModel(0, 0));
+        // Foco en el campo de nombre completo
+        // Cargar usuarios en una nueva hebra para evitar bloqueos
+        new Thread(() -> {
+            jtbTransacciones.setModel(cargarTransacciones());
+        }).start();
+        //Hacer no editable la tabla Usuarios
+        configurarTablaNoEditable(jtbTransacciones);
     }
 
     /**
@@ -58,36 +79,6 @@ public class TransaccionServiceImpl extends ServiceUtilities implements ActionLi
             }
         }
         return instanceOfTransaccionServiceImpl;
-    }
-
-    /**
-     * Método para obtener una instancia del frame de usuarios. Este método
-     * configura el frame de usuarios y carga los listeners y datos necesarios.
-     *
-     * @return Una instancia del frame de usuarios.
-     */
-    @Override
-    public TransaccionFrame getInstanceOfFrame() {
-        // Configuración de la ubicación del frame en el centro de la pantalla
-        instanceOfTransaccionFrame.setLocationRelativeTo(null);
-        // Cerrar el frame al cerrar
-        Close(instanceOfTransaccionFrame);
-        // Cargar listeners de acciones
-        cargarActionListeners();
-        // Cargar listeners de mouse
-        cargarMouseListeners();
-        // Cargar listeners de teclado
-        cargarKeyListeners();
-        // Limpiar tabla de usuarios
-        jtbTransacciones.setModel(new DefaultTableModel(0, 0));
-        // Foco en el campo de nombre completo
-        // Cargar usuarios en una nueva hebra para evitar bloqueos
-        new Thread(() -> {
-            jtbTransacciones.setModel(cargarTransacciones());
-        }).start();
-        //Hacer no editable la tabla Usuarios
-        configurarTablaNoEditable(jtbTransacciones);
-        return instanceOfTransaccionFrame;
     }
 
     /**
@@ -162,8 +153,8 @@ public class TransaccionServiceImpl extends ServiceUtilities implements ActionLi
     public void actionPerformed(ActionEvent e) {
         // Determinar la fuente del evento y ejecutar la acción correspondiente
         if (e.getSource() == btnRegresar) {
-            instanceOfTransaccionFrame.dispose();
-            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfTransaccionPanel);
         } else if (e.getSource() == btnRefresh) {
             try {
                 setCursores(waitCursor);
@@ -177,8 +168,8 @@ public class TransaccionServiceImpl extends ServiceUtilities implements ActionLi
                 setCursores(waitCursor);
                 int idDetalle = getIdDetalle();
                 new Thread(() -> {
-                    DetallePedidoServiceImpl.getInstance(idDetalle).getInstanceOfFrame().setVisible(true);
-                    instanceOfTransaccionFrame.dispose();
+                    DetallePedidoServiceImpl.getInstance(idDetalle).loadPanel();
+                    removePanelFromFrame(instanceOfTransaccionPanel);
                 }).start();
             } catch (Exception ex) {
                 errorSQL(this.getClass(), ex);
@@ -223,6 +214,6 @@ public class TransaccionServiceImpl extends ServiceUtilities implements ActionLi
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfTransaccionFrame, btnRefresh}, cursor);
+        setCursoresGeneric(instanceOfTransaccionPanel.getComponents(), cursor);
     }
 }

@@ -4,7 +4,9 @@ import com.tienda.service_layer.*;
 import com.tienda.presentation_layer.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import java.security.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -16,10 +18,14 @@ import javax.swing.table.*;
 public class ServiceUtilities {
 
     public static final Image IMG;
+    public static final AlertClass alerta = AlertClass.getAlert();
+    public static final ServiceUtilities instanceOfServiceUtilities = new ServiceUtilities();
+    public static final com.tienda.presentation_layer.Frame instanceOfFrame = com.tienda.presentation_layer.Frame.getInstance();
     public final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     public final Cursor textCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
     public final Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     public final Cursor defaultCursor = Cursor.getDefaultCursor();
+//    public final Cursor defaultCursor = CursorClass.getInstance().getCustomCursorNormalSelect();
 
     static {
         Image tempImg = null;
@@ -30,9 +36,6 @@ public class ServiceUtilities {
         }
         IMG = tempImg;
     }
-
-    // Objeto para mostrar alertas
-    public static final AlertClass alerta = AlertClass.getAlert();
 
     /**
      * Método para obtener un icono de un archivo de imagen.
@@ -304,35 +307,18 @@ public class ServiceUtilities {
         return false; // Si no encuentra ningún carácter no permitido, retorna falso
     }
 
-    public void volverLogin(String tableName) {
-        if (!LoginFrame.getInstance().isVisible()) {
-            alerta.mostrarError(this.getClass(), "Usted ha sido desconectado.", null);
-            switch (tableName) {
-                case "users" -> {
-                    UsersFrame.getInstance().dispose();
-                    LoginFrame.getInstance().setVisible(true);
-                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
-                }
-                case "productos" -> {
-                    ProductosFrame.getProcFrame().dispose();
-                    LoginFrame.getInstance().setVisible(true);
-                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
-                }
-                case "proveedores" -> {
-                    ProveedorFrame.getInstance().dispose();
-                    LoginFrame.getInstance().setVisible(true);
-                    LoginFrame.getInstance().getTxtUsuario().requestFocus();
-                }
-                default ->
-                    throw new AssertionError();
-            }
+    public static void volverLogin() {
+        if (!containsPanel(LoginPanel.getInstance())) {
+            instanceOfFrame.getContentPane().removeAll();
+            addPanelToFrame(LoginPanel.getInstance());
         }
+        LoginServiceImpl.getInstance().limpiar();
     }
 
     public void errorSQL(Class clase, Exception ex) {
         if (ex.getMessage().contains("No suitable driver") || ex.getMessage().contains("Communications link failure")) {
-            alerta.mostrarError(clase, "Se ha perdido la conexión a Internet.", ex);
-            System.exit(0);
+            alerta.mostrarError(clase, containsPanel(LoginPanel.getInstance()) ? "No se ha podido conectar a Internet." : "Se ha perdido la conexión a internet", ex);
+            volverLogin();
         } else {
             alerta.manejarErrorConexion(clase, ex);
         }
@@ -348,6 +334,7 @@ public class ServiceUtilities {
                 component.setCursor(cursor);
             }
         }
+        instanceOfFrame.setCursor(cursor);
     }
 
     public <T> boolean bloquearMultipleModificacionGeneric(JTable tabla, T clase) {
@@ -421,5 +408,105 @@ public class ServiceUtilities {
         for (T item : items) {
             comboBox.addItem(item);
         }
+    }
+
+    public String getDefaultTheme() {
+        //True light, False dark
+        Properties propiedades = new Properties();
+        InputStream entrada = null;
+        try {
+            entrada = getClass().getResourceAsStream("/properties/system.properties");
+            propiedades.load(entrada);
+            return propiedades.getProperty("sys.theme");
+        } catch (IOException ex) {
+            alerta.mostrarError(this.getClass(), ex.getMessage(), ex);
+        } finally {
+            if (entrada != null) {
+                try {
+                    entrada.close();
+                } catch (IOException e) {
+                    alerta.mostrarError(this.getClass(), e.getMessage(), e);
+                }
+            }
+        }
+        return "light";
+    }
+
+    public void saveDefaultTheme(String theme) {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+
+        try {
+            // Obtiene la ruta del archivo en el directorio de recursos original
+            String filePath = getClass().getResource("/properties/system.properties").getPath();
+
+            // Crea un objeto Properties y carga las propiedades desde el archivo
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(filePath));
+
+            // Modifica las propiedades según sea necesario
+            properties.setProperty("sys.theme", theme);
+
+            // Escribe las propiedades modificadas de nuevo al archivo
+            outputStream = new FileOutputStream(filePath);
+
+            // Guarda las propiedades en el archivo
+            properties.store(outputStream, null);
+        } catch (IOException io) {
+            alerta.mostrarError(this.getClass(), io.getMessage(), io);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    alerta.mostrarError(this.getClass(), e.getMessage(), e);
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    alerta.mostrarError(this.getClass(), e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    public void configureTheme() {
+        String defaultTheme = getDefaultTheme();
+        Class<? extends LookAndFeel> styleClass = defaultTheme.equals("light") ? com.formdev.flatlaf.FlatLightLaf.class : com.formdev.flatlaf.FlatDarkLaf.class;
+        try {
+            // Establecer el nuevo estilo de FlatLaf
+            UIManager.setLookAndFeel(styleClass.getName());
+
+            // Actualizar el aspecto de todos los componentes Swing existentes
+            SwingUtilities.updateComponentTreeUI(instanceOfFrame);
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
+            alerta.mostrarError(instanceOfFrame.getClass(), ex.getMessage(), ex);
+        }
+    }
+
+    public static void addPanelToFrame(JPanel panel) {
+        instanceOfFrame.getContentPane().add(panel, BorderLayout.CENTER);
+        instanceOfFrame.pack();
+        instanceOfFrame.getContentPane().revalidate();
+        instanceOfFrame.getContentPane().repaint();
+        instanceOfFrame.setLocationRelativeTo(null);
+    }
+
+    public static void removePanelFromFrame(JPanel panel) {
+        instanceOfFrame.getContentPane().remove(panel);
+        instanceOfFrame.getContentPane().revalidate();
+        instanceOfFrame.getContentPane().repaint();
+    }
+
+    public static boolean containsPanel(JPanel panel) {
+        Component[] components = instanceOfFrame.getContentPane().getComponents();
+        for (Component component : components) {
+            if (component == panel) {
+                return true;
+            }
+        }
+        return false;
     }
 }

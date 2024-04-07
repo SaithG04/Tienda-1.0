@@ -3,8 +3,7 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
-import com.tienda.utilities.ServiceUtilities;
-import com.tienda.presentation_layer.UsersFrame;
+import com.tienda.presentation_layer.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -18,13 +17,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class UserServiceImpl extends ServiceUtilities implements ActionListener, FrameService<UsersFrame> {
+public final class UserServiceImpl extends com.tienda.utilities.ServiceUtilities implements ActionListener, FrameService {
 
     // Declaración de variables miembro
     private static volatile UserServiceImpl instanceOfUserServiceImpl;
 
     // Instancia del frame de usuarios
-    private final UsersFrame instanceOfUsersFrame;
+    private final UsersPanel instanceOfUsersPanel;
 
     // Componentes de la interfaz de usuario
     private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar, btnRefresh;
@@ -40,52 +39,28 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
 
     // Constructor privado para garantizar una única instancia de UserServiceImpl
     private UserServiceImpl() {
-        instanceOfUsersFrame = UsersFrame.getInstance();
-        btnRegistrar = instanceOfUsersFrame.getBtnRegistrar();
-        txtPassword = instanceOfUsersFrame.getTxtPassword();
-        txtUsuario = instanceOfUsersFrame.getTxtUser();
-        txtNombreCompleto = instanceOfUsersFrame.getTxtNombreCompleto();
-        btnRegresar = instanceOfUsersFrame.getBtnRegresar();
-        jtbUsuarios = instanceOfUsersFrame.getJtbUsuarios();
-        jpmOptions = instanceOfUsersFrame.getJpmOptions();
-        jmiEliminar = instanceOfUsersFrame.getMiEliminar();
-        btnModificar = instanceOfUsersFrame.getBtnModificar();
-        btnLimpiar = instanceOfUsersFrame.getBtnLimpiar();
-        lblPassword = instanceOfUsersFrame.getLblPassword();
-        btnRevelar = instanceOfUsersFrame.getBtnRevelar();
-        jmiDesconectar = instanceOfUsersFrame.getMiDesconectar();
-        btnRefresh = instanceOfUsersFrame.getBtnRefresh();
+        instanceOfUsersPanel = UsersPanel.getInstance();
+        btnRegistrar = instanceOfUsersPanel.getBtnRegistrar();
+        txtPassword = instanceOfUsersPanel.getTxtPassword();
+        txtUsuario = instanceOfUsersPanel.getTxtUser();
+        txtNombreCompleto = instanceOfUsersPanel.getTxtNombreCompleto();
+        btnRegresar = instanceOfUsersPanel.getBtnRegresar();
+        jtbUsuarios = instanceOfUsersPanel.getJtbUsuarios();
+        jpmOptions = instanceOfUsersPanel.getJpmOptions();
+        jmiEliminar = instanceOfUsersPanel.getMiEliminar();
+        btnModificar = instanceOfUsersPanel.getBtnModificar();
+        btnLimpiar = instanceOfUsersPanel.getBtnLimpiar();
+        lblPassword = instanceOfUsersPanel.getLblPassword();
+        btnRevelar = instanceOfUsersPanel.getBtnRevelar();
+        jmiDesconectar = instanceOfUsersPanel.getMiDesconectar();
+        btnRefresh = instanceOfUsersPanel.getBtnRefresh();
         iconoMostrar = icono("/images/mostrar_eye.jpg", 40, 40);
         iconoOcultar = icono("/images/ocultar_eye.jpg", 40, 40);
     }
 
-    /**
-     * Método para obtener una instancia única de UserServiceImpl (patrón
-     * Singleton).
-     *
-     * @return Una instancia única de UserServiceImpl.
-     */
-    public static UserServiceImpl getInstance() {
-        if (instanceOfUserServiceImpl == null) {
-            synchronized (UserServiceImpl.class) { // Sincronización para hilos
-                if (instanceOfUserServiceImpl == null) {
-                    instanceOfUserServiceImpl = new UserServiceImpl();
-                }
-            }
-        }
-        return instanceOfUserServiceImpl;
-    }
-
-    /**
-     * Método para obtener una instancia del frame de usuarios. Este método
-     * configura el frame de usuarios y carga los listeners y datos necesarios.
-     *
-     * @return Una instancia del frame de usuarios.
-     */
-    @Override
-    public UsersFrame getInstanceOfFrame() {
-        // Configuración de la ubicación del frame en el centro de la pantalla
-        instanceOfUsersFrame.setLocationRelativeTo(null);
+    public void loadPanel() {
+        
+        addPanelToFrame(instanceOfUsersPanel);
         // Icono para revelar/ocultar la contraseña
         btnRevelar.setIcon(iconoMostrar);
         // Deshabilitar el botón de revelar inicialmente
@@ -93,7 +68,7 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         // Deshabilitar el botón de modificar inicialmente
         btnModificar.setEnabled(false);
         // Cerrar el frame al cerrar
-        Close(instanceOfUsersFrame);
+        Close(instanceOfFrame);
         // Cargar listeners de acciones
         cargarActionListeners();
         // Cargar listeners de mouse
@@ -110,7 +85,24 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         }).start();
         //Hacer no editable la tabla Usuarios
         configurarTablaNoEditable(jtbUsuarios);
-        return instanceOfUsersFrame;
+    }
+
+    /**
+     * Método para obtener una instancia única de UserServiceImpl (patrón
+     * Singleton).
+     *
+     * @return Una instancia única de UserServiceImpl.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    public static UserServiceImpl getInstance() {
+        if (instanceOfUserServiceImpl == null) {
+            synchronized (UserServiceImpl.class) { // Sincronización para hilos
+                if (instanceOfUserServiceImpl == null) {
+                    instanceOfUserServiceImpl = new UserServiceImpl();
+                }
+            }
+        }
+        return instanceOfUserServiceImpl;
     }
 
     /**
@@ -270,8 +262,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
         } else if (e.getSource() == btnRegresar) {
             // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
             limpiarCamposGeneric(jtbUsuarios, instanceOfUserServiceImpl);
-            instanceOfUsersFrame.dispose();
-            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfUsersPanel);
         } else if (e.getSource() == jmiEliminar) {
             // Eliminar un usuario al seleccionar la opción de eliminar en el menú contextual
             eliminarUsuario();
@@ -427,8 +419,8 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
             if (actualizado) {
                 if (userForUpdate.getId() == LoginServiceImpl.userLogued.getId()) {
                     alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
-                    instanceOfUsersFrame.dispose();
-                    LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+                    LoginServiceImpl.getInstance().loadPanel();
+                    instanceOfUsersPanel.setVisible(true);
                 } else {
                     jtbUsuarios.setModel(cargarUsuarios());
                     alerta.aviso("Actualización exitosa.");
@@ -538,6 +530,6 @@ public class UserServiceImpl extends ServiceUtilities implements ActionListener,
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfUsersFrame, txtUsuario, txtNombreCompleto, txtPassword, btnRegistrar, btnModificar, btnRefresh}, cursor);
+        setCursoresGeneric(instanceOfUsersPanel.getComponents(), cursor);
     }
 }

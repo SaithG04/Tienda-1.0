@@ -3,12 +3,11 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.DetallePedidoDAOImpl;
 import com.tienda.data_access_layer.DetallePedidoDAO;
 import com.tienda.entity.DetallePedido;
-import com.tienda.presentation_layer.DetallePedidoFrame;
+import com.tienda.presentation_layer.DetallePedidoPanel;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,58 +17,30 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class DetallePedidoServiceImpl extends ServiceUtilities implements ActionListener, FrameService<DetallePedidoFrame> {
+public final class DetallePedidoServiceImpl extends ServiceUtilities implements ActionListener, FrameService {
 
     // Declaración de variables miembro
-    private static volatile DetallePedidoServiceImpl instanceOfTransaccionServiceImpl;
+    private static volatile DetallePedidoServiceImpl instanceOfDetallePedidoServiceImpl;
 
     // Instancia del frame de usuarios
-    private final DetallePedidoFrame instanceOfDetallePedidoFrame;
+    private final DetallePedidoPanel instanceOfDetallePedidoPanel;
 
     // Componentes de la interfaz de usuario
     private final JButton btnRegresar;
     private final JTable jtbDetallePedido;
-    private int idDetalle;
+    private final int idDetalle;
 
     // Constructor privado para garantizar una única instancia de UserServiceImpl
     private DetallePedidoServiceImpl(int idDetalle) {
-        instanceOfDetallePedidoFrame = DetallePedidoFrame.getInstance();
-        btnRegresar = instanceOfDetallePedidoFrame.getBtnRegresar();
-        jtbDetallePedido = instanceOfDetallePedidoFrame.getJtbDetallePedido();
+        instanceOfDetallePedidoPanel = DetallePedidoPanel.getInstance();
+        btnRegresar = instanceOfDetallePedidoPanel.getBtnRegresar();
+        jtbDetallePedido = instanceOfDetallePedidoPanel.getJtbDetallePedido();
         this.idDetalle = idDetalle;
     }
 
-    /**
-     * Método para obtener una instancia única de UserServiceImpl (patrón
-     * Singleton).
-     *
-     * @param idDetalle
-     * @return Una instancia única de UserServiceImpl.
-     */
-    @SuppressWarnings("DoubleCheckedLocking")
-    public static DetallePedidoServiceImpl getInstance(int idDetalle) {
-        if (instanceOfTransaccionServiceImpl == null) {
-            synchronized (DetallePedidoServiceImpl.class) { // Sincronización para hilos
-                if (instanceOfTransaccionServiceImpl == null) {
-                    instanceOfTransaccionServiceImpl = new DetallePedidoServiceImpl(idDetalle);
-                }
-            }
-        }
-        return instanceOfTransaccionServiceImpl;
-    }
-
-    /**
-     * Método para obtener una instancia del frame de usuarios. Este método
-     * configura el frame de usuarios y carga los listeners y datos necesarios.
-     *
-     * @return Una instancia del frame de usuarios.
-     */
-    @Override
-    public DetallePedidoFrame getInstanceOfFrame() {
-        // Configuración de la ubicación del frame en el centro de la pantalla
-        instanceOfDetallePedidoFrame.setLocationRelativeTo(null);
-        // Cerrar el frame al cerrar
-        Close(instanceOfDetallePedidoFrame);
+    public void loadPanel() {
+        addPanelToFrame(instanceOfDetallePedidoPanel);
+        Close(instanceOfFrame);
         // Cargar listeners de acciones
         cargarActionListeners();
         // Cargar listeners de mouse
@@ -85,7 +56,25 @@ public class DetallePedidoServiceImpl extends ServiceUtilities implements Action
         }).start();
         //Hacer no editable la tabla Usuarios
         configurarTablaNoEditable(jtbDetallePedido);
-        return instanceOfDetallePedidoFrame;
+    }
+
+    /**
+     * Método para obtener una instancia única de UserServiceImpl (patrón
+     * Singleton).
+     *
+     * @param idDetalle
+     * @return Una instancia única de UserServiceImpl.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    public static DetallePedidoServiceImpl getInstance(int idDetalle) {
+        if (instanceOfDetallePedidoServiceImpl == null) {
+            synchronized (DetallePedidoServiceImpl.class) { // Sincronización para hilos
+                if (instanceOfDetallePedidoServiceImpl == null) {
+                    instanceOfDetallePedidoServiceImpl = new DetallePedidoServiceImpl(idDetalle);
+                }
+            }
+        }
+        return instanceOfDetallePedidoServiceImpl;
     }
 
     /**
@@ -141,9 +130,9 @@ public class DetallePedidoServiceImpl extends ServiceUtilities implements Action
         // Determinar la fuente del evento y ejecutar la acción correspondiente
         if (e.getSource() == btnRegresar) {
             // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
-            limpiarCamposGeneric(jtbDetallePedido, instanceOfTransaccionServiceImpl);
-            instanceOfDetallePedidoFrame.dispose();
-            TransaccionServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            limpiarCamposGeneric(jtbDetallePedido, instanceOfDetallePedidoServiceImpl);
+            TransaccionServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfDetallePedidoPanel);
         }
     }
 
@@ -173,6 +162,6 @@ public class DetallePedidoServiceImpl extends ServiceUtilities implements Action
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfDetallePedidoFrame}, cursor);
+        setCursoresGeneric(instanceOfDetallePedidoPanel.getComponents(), cursor);
     }
 }

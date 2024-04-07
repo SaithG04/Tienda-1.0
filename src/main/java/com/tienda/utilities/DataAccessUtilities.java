@@ -2,7 +2,7 @@ package com.tienda.utilities;
 
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import com.tienda.entity.*;
-import com.tienda.presentation_layer.LoginFrame;
+import com.tienda.presentation_layer.LoginPanel;
 import com.tienda.service_layer.LoginServiceImpl;
 import java.io.*;
 import java.sql.*;
@@ -83,7 +83,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
 
@@ -112,7 +112,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
         }
         return lista;
     }
@@ -128,7 +128,7 @@ public class DataAccessUtilities {
      * @throws SQLException Si ocurre un error de SQL.
      */
     public <T> boolean actualizarGeneric(String tableName, T entity) throws ClassNotFoundException, SQLException {
-        if (amIConected() || LoginFrame.getInstance().isVisible()) {
+        if (amIConected() || LoginPanel.getInstance().isVisible()) {
             try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
                 String query = generateUpdateQuery(tableName, connection);
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -138,7 +138,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
     }
@@ -163,7 +163,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
 
@@ -223,7 +223,7 @@ public class DataAccessUtilities {
         Properties propiedades = new Properties();
         InputStream entrada = null;
         try {
-            entrada = getClass().getResourceAsStream("/properties/config.properties");
+            entrada = getClass().getResourceAsStream("/properties/connection.properties");
             propiedades.load(entrada);
 
             String remoteHost = propiedades.getProperty("db.host");
