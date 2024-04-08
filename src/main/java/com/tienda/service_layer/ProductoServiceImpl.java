@@ -3,7 +3,6 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.ProductoDAOImpl;
 import com.tienda.data_access_layer.ProductoDAO;
 import com.tienda.entity.Producto;
-import com.tienda.presentation_layer.Frame;
 import com.tienda.presentation_layer.ProductosPanel;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.Component;
