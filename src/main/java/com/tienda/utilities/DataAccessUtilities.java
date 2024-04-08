@@ -2,7 +2,7 @@ package com.tienda.utilities;
 
 import com.tienda.data_access_layer.MySqlConnectionFactory;
 import com.tienda.entity.*;
-import com.tienda.presentation_layer.LoginFrame;
+import com.tienda.presentation_layer.LoginPanel;
 import com.tienda.service_layer.LoginServiceImpl;
 import java.io.*;
 import java.sql.*;
@@ -19,7 +19,7 @@ public class DataAccessUtilities {
     /**
      * Objeto para manejar alertas.
      */
-    public static final AlertsClass alerta = AlertsClass.getAlert();
+    public static final AlertClass alerta = AlertClass.getAlert();
 
     /**
      * Obtiene un objeto por su ID de la tabla especificada.
@@ -48,11 +48,16 @@ public class DataAccessUtilities {
     }
 
     public <T> T getEntityByOtherParameterGeneric(String tableName, String parameterName, Object parameter) throws SQLException, ClassNotFoundException {
-        String query = "SELECT * FROM " + tableName + " WHERE " + parameterName + " COLLATE utf8_bin = ?";
-        if (amIConected()) {
-            return getByOtherParameter(query, parameter, tableName);
-        } else {
-            new ServiceUtilities().volverLogin(tableName);
+        String query = parameter instanceof String ? "SELECT * FROM " + tableName + " WHERE " + parameterName + " COLLATE utf8_bin = ?"
+                : "SELECT * FROM " + tableName + " WHERE " + parameterName + " = ?";
+        try (Connection con = MySqlConnectionFactory.getInstance().getConnection(); PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setObject(1, parameter);
+            try (ResultSet resultSet = pst.executeQuery()) {
+                if (resultSet.next()) {
+                    T rowData = (T) getRowGeneric(tableName, con).apply(resultSet);
+                    return rowData;
+                }
+            }
         }
         return null; // Devolver nulo si no se encuentra el usuario
     }
@@ -78,7 +83,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
 
@@ -107,7 +112,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
         }
         return lista;
     }
@@ -116,15 +121,14 @@ public class DataAccessUtilities {
      * Actualiza un objeto en la tabla especificada.
      *
      * @param tableName El nombre de la tabla de la base de datos.
-     * @param id El ID del objeto a actualizar.
      * @param entity El objeto con los datos actualizados.
      * @param <T> El tipo de objeto a actualizar.
      * @return
      * @throws ClassNotFoundException Si no se encuentra la clase especificada.
      * @throws SQLException Si ocurre un error de SQL.
      */
-    public <T> boolean actualizarGeneric(String tableName, int id, T entity) throws ClassNotFoundException, SQLException {
-        if (amIConected() || LoginFrame.getInstance().isVisible()) {
+    public <T> boolean actualizarGeneric(String tableName, T entity) throws ClassNotFoundException, SQLException {
+        if (amIConected() || LoginPanel.getInstance().isVisible()) {
             try (Connection connection = MySqlConnectionFactory.getInstance().getConnection()) {
                 String query = generateUpdateQuery(tableName, connection);
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -134,7 +138,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
     }
@@ -159,7 +163,7 @@ public class DataAccessUtilities {
                 }
             }
         } else {
-            new ServiceUtilities().volverLogin(tableName);
+            ServiceUtilities.volverLogin();
             return false;
         }
 
@@ -192,6 +196,11 @@ public class DataAccessUtilities {
                         new Proveedor((int) row[0], row[1].toString(), row[2].toString(), row[3].toString(), row[4].toString(),
                         row[5].toString(), row[6].toString(), row[7].toString(), row[8].toString(), row[9].toString(),
                         row[10].toString(), (java.sql.Date) row[11], row[12].toString());
+                    case "transacciones" ->
+                        new Transaccion((int) row[0], row[1].toString(), (int) row[2], (java.sql.Date) row[3], (double) row[4]);
+                    case "detalle_pedidos" ->
+                        new DetallePedido((int) row[0], row[1].toString(), (int) row[2], (int) row[3], (java.sql.Date) row[4], (java.sql.Date) row[5],
+                        (double) row[6], row[7].toString(), (double) row[8], row[9].toString());
                     default ->
                         null;
                 };
@@ -214,7 +223,7 @@ public class DataAccessUtilities {
         Properties propiedades = new Properties();
         InputStream entrada = null;
         try {
-            entrada = getClass().getResourceAsStream("/properties/config.properties");
+            entrada = getClass().getResourceAsStream("/properties/connection.properties");
             propiedades.load(entrada);
 
             String remoteHost = propiedades.getProperty("db.host");
@@ -242,13 +251,12 @@ public class DataAccessUtilities {
         return user.getStatus().equals("logged in");
     }
 
-    public <T> T getByOtherParameter(String query, Object parameter, String tableName) throws ClassNotFoundException, SQLException {
+    public Object getByOtherParameter(String query, Object parameter, String tableName) throws ClassNotFoundException, SQLException {
         try (Connection con = MySqlConnectionFactory.getInstance().getConnection(); PreparedStatement pst = con.prepareStatement(query)) {
             pst.setObject(1, parameter);
             try (ResultSet resultSet = pst.executeQuery()) {
                 if (resultSet.next()) {
-                    T rowData = (T) getRowGeneric(tableName, con).apply(resultSet);
-                    return rowData;
+                    return resultSet.getObject(1);
                 }
             }
         }
@@ -320,6 +328,16 @@ public class DataAccessUtilities {
                 statement.setDate(12, proveedor.getFecha_registro());
                 statement.setString(13, proveedor.getObservaciones());
             }
+            case Transaccion transaccion -> {
+                statement.setInt(1, 0);
+                statement.setString(2, transaccion.getTipo());
+                statement.setInt(3, transaccion.getId_detalle());
+                statement.setDate(4, transaccion.getFecha_registro());
+                statement.setDouble(5, transaccion.getMonto());
+            }
+            case DetallePedido detallepedido ->{
+                
+            }
             default -> {
             }
         }
@@ -366,6 +384,11 @@ public class DataAccessUtilities {
                 statement.setDate(11, proveedor.getFecha_registro());
                 statement.setString(12, proveedor.getObservaciones());
                 statement.setInt(13, proveedor.getId());
+            }
+            case Transaccion transaccion -> {
+
+            }
+            case DetallePedido detallepedido ->{             
             }
             default -> {
             }

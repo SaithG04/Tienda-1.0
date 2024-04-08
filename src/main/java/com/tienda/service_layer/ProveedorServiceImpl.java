@@ -3,7 +3,7 @@ package com.tienda.service_layer;
 import com.tienda.data_access_layer.DAOImplements.ProveedorDAOImpl;
 import com.tienda.data_access_layer.ProveedorDAO;
 import com.tienda.entity.Proveedor;
-import com.tienda.presentation_layer.ProveedorFrame;
+import com.tienda.presentation_layer.ProveedorPanel;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.*;
 import java.awt.event.*;
@@ -20,11 +20,11 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author isai_
  */
-public class ProveedorServiceImpl extends ServiceUtilities implements ActionListener, FrameService<ProveedorFrame> {
+public final class ProveedorServiceImpl extends ServiceUtilities implements ActionListener, FrameService {
 
     private static volatile ProveedorServiceImpl instanceOfProveedorServiceImpl;
 
-    private final ProveedorFrame instanceOfProveedorFrame;
+    private final ProveedorPanel instanceOfProveedorPanel;
 
     private final JButton btnRegistrar, btnRegresar, btnModificar, btnLimpiar, btnRefresh;
     private final ButtonGroup bgEstado;
@@ -38,62 +38,37 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
 
 //    private final Icon iconoMostrar;
     private ProveedorServiceImpl() {
-        instanceOfProveedorFrame = ProveedorFrame.getInstance();
+        instanceOfProveedorPanel = ProveedorPanel.getInstance();
+        btnRegistrar = instanceOfProveedorPanel.getBtnRegistrar();
+        btnRegresar = instanceOfProveedorPanel.getBtnRegresar();
+        btnModificar = instanceOfProveedorPanel.getBtnModificar();
+        btnLimpiar = instanceOfProveedorPanel.getBtnLimpiar();
+        btnRefresh = instanceOfProveedorPanel.getBtnRefresh();
+        bgEstado = instanceOfProveedorPanel.getBgEstado();
+        txtRuc = instanceOfProveedorPanel.getTxtRuc();
+        txtRazonSocial = instanceOfProveedorPanel.getTxtRazonSocial();
+        txtDireccion = instanceOfProveedorPanel.getTxtDireccion();
+        txtWeb = instanceOfProveedorPanel.getTxtWeb();
+        txtTelefono = instanceOfProveedorPanel.getTxtTelefono();
+        txtContacto = instanceOfProveedorPanel.getTxtContacto();
+        txtCorreo = instanceOfProveedorPanel.getTxtCorreo();
+        txtDescripcion = instanceOfProveedorPanel.getTxtDescripcion();
+        txtObservaciones = instanceOfProveedorPanel.getTxtObservaciones();
+        cbCategoria = instanceOfProveedorPanel.getCbCategoria();
+        rbActivo = instanceOfProveedorPanel.getRbActivo();
+        rbInactivo = instanceOfProveedorPanel.getRbInactivo();
+        jtbProveedores = instanceOfProveedorPanel.getJtbProveedores();
+        jpmOptions = instanceOfProveedorPanel.getJpmOptions();
+        jmiEliminar = instanceOfProveedorPanel.getMiEliminar();
 
-        btnRegistrar = instanceOfProveedorFrame.getBtnRegistrar();
-        btnRegresar = instanceOfProveedorFrame.getBtnRegresar();
-        btnModificar = instanceOfProveedorFrame.getBtnModificar();
-        btnLimpiar = instanceOfProveedorFrame.getBtnLimpiar();
-        btnRefresh = instanceOfProveedorFrame.getBtnRefresh();
-        bgEstado = instanceOfProveedorFrame.getBgEstado();
-        txtRuc = instanceOfProveedorFrame.getTxtRuc();
-        txtRazonSocial = instanceOfProveedorFrame.getTxtRazonSocial();
-        txtDireccion = instanceOfProveedorFrame.getTxtDireccion();
-        txtWeb = instanceOfProveedorFrame.getTxtWeb();
-        txtTelefono = instanceOfProveedorFrame.getTxtTelefono();
-        txtContacto = instanceOfProveedorFrame.getTxtContacto();
-        txtCorreo = instanceOfProveedorFrame.getTxtCorreo();
-        txtDescripcion = instanceOfProveedorFrame.getTxtDescripcion();
-        txtObservaciones = instanceOfProveedorFrame.getTxtObservaciones();
-        cbCategoria = instanceOfProveedorFrame.getCbCategoria();
-        rbActivo = instanceOfProveedorFrame.getRbActivo();
-        rbInactivo = instanceOfProveedorFrame.getRbInactivo();
-        jtbProveedores = instanceOfProveedorFrame.getJtbProveedores();
-        jpmOptions = instanceOfProveedorFrame.getJpmOptions();
-        jmiEliminar = instanceOfProveedorFrame.getMiEliminar();
-//        iconoMostrar = icono("/images/mostrar_eye.jpg", 40, 40);
     }
 
-    /**
-     * Método para obtener una instancia única de UserServiceImpl (patrón
-     * Singleton).
-     *
-     * @return Una instancia única de UserServiceImpl.
-     */
-    public static ProveedorServiceImpl getInstance() {
-        if (instanceOfProveedorServiceImpl == null) {
-            synchronized (ProveedorServiceImpl.class) { // Sincronización para hilos
-                if (instanceOfProveedorServiceImpl == null) {
-                    instanceOfProveedorServiceImpl = new ProveedorServiceImpl();
-                }
-            }
-        }
-        return instanceOfProveedorServiceImpl;
-    }
-
-    /**
-     * Método para obtener una instancia del frame de usuarios. Este método
-     * configura el frame de usuarios y carga los listeners y datos necesarios.
-     *
-     * @return Una instancia del frame de usuarios.
-     */
-    @Override
-    public ProveedorFrame getInstanceOfFrame() {
-        instanceOfProveedorFrame.setLocationRelativeTo(null);
+    public void loadPanel() {
+        addPanelToFrame(instanceOfProveedorPanel);
         // Deshabilitar el botón de modificar inicialmente
         btnModificar.setEnabled(false);
-        // Cerrar el frame al cerrar
-        Close(instanceOfProveedorFrame);
+        // Método para el frame al cerrar
+        Close(instanceOfFrame);
         // Cargar listeners de acciones
         cargarActionListeners();
         // Cargar listeners de mouse
@@ -110,7 +85,24 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         //Hacer no editable la tabla Proveedores
         configurarTablaNoEditable(jtbProveedores);
         listarCategorias();
-        return instanceOfProveedorFrame;
+    }
+
+    /**
+     * Método para obtener una instancia única de UserServiceImpl (patrón
+     * Singleton).
+     *
+     * @return Una instancia única de UserServiceImpl.
+     */
+    @SuppressWarnings("DoubleCheckedLocking")
+    public static ProveedorServiceImpl getInstance() {
+        if (instanceOfProveedorServiceImpl == null) {
+            synchronized (ProveedorServiceImpl.class) { // Sincronización para hilos
+                if (instanceOfProveedorServiceImpl == null) {
+                    instanceOfProveedorServiceImpl = new ProveedorServiceImpl();
+                }
+            }
+        }
+        return instanceOfProveedorServiceImpl;
     }
 
     /**
@@ -261,8 +253,8 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
         } else if (e.getSource() == btnRegresar) {
             // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
             limpiarCamposGeneric(jtbProveedores, instanceOfProveedorServiceImpl);
-            instanceOfProveedorFrame.dispose();
-            MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfProveedorPanel);
         } else if (e.getSource() == jmiEliminar) {
             // Eliminar un usuario al seleccionar la opción de eliminar en el menú contextual
             eliminarProveedor();
@@ -526,7 +518,7 @@ public class ProveedorServiceImpl extends ServiceUtilities implements ActionList
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfProveedorFrame, btnRegistrar, btnModificar, btnRefresh}, cursor);
+        setCursoresGeneric(instanceOfProveedorPanel.getComponents(), cursor);
     }
 
     private void listarCategorias() {

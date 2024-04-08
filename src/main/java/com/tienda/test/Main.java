@@ -1,4 +1,7 @@
+package com.tienda.test;
+
 import com.tienda.service_layer.LoginServiceImpl;
+import com.tienda.utilities.ServiceUtilities;
 
 /**
  * Clase principal que contiene el método main.
@@ -14,7 +17,8 @@ public class Main {
      * @param args Argumentos de la línea de comandos.
      */
     public static void main(String[] args) {
-        LoginServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-        LoginServiceImpl.getInstance().getInstanceOfFrame().getTxtUsuario().requestFocus();
+        ServiceUtilities.instanceOfServiceUtilities.configureTheme();
+        LoginServiceImpl.getInstance().loadPanel();
+        ServiceUtilities.instanceOfFrame.setVisible(true);
     }
 }

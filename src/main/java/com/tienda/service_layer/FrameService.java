@@ -1,23 +1,14 @@
 package com.tienda.service_layer;
 
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * La interfaz FrameService proporciona métodos para cerrar y cargar un marco
  * (frame).
  *
- * @param <T> El tipo de objeto que representa el marco.
  * @author isai_
  */
-public interface FrameService<T> {
-
-    /**
-     * Método para obtener una instancia del marco.
-     *
-     * @return Una instancia del marco.
-     */
-    T getInstanceOfFrame();
-
+public interface FrameService {
     /**
      * Método para cargar action listeners en el marco.
      */

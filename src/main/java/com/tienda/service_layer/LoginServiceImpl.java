@@ -1,10 +1,9 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOimplements.UserDAOImpl;
+import com.tienda.data_access_layer.DAOImplements.UserDAOImpl;
 import com.tienda.data_access_layer.UserDAO;
 import com.tienda.entity.User;
-import com.tienda.presentation_layer.LoginFrame;
-import com.tienda.utilities.ServiceUtilities;
+import com.tienda.presentation_layer.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +20,7 @@ import java.sql.SQLException;
  *
  * @author isai_
  */
-public class LoginServiceImpl extends ServiceUtilities implements ActionListener, FrameService<LoginFrame> {
+public final class LoginServiceImpl extends com.tienda.utilities.ServiceUtilities implements ActionListener, FrameService {
 
     // Declaración de variables de instancia
     /**
@@ -35,9 +34,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     public static User userLogued;
 
     /**
-     * Instancia del formulario de inicio de sesión.
+     * Instancia
      */
-    private final LoginFrame instanceOfLoginFrame;
+    private final LoginPanel instanceOfLoginPanel;
 
     /**
      * Componentes del formulario de inicio de sesión.
@@ -45,7 +44,6 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     private final JButton btnAceptar, btnSalir;
     private final JPasswordField txtPassword;
     private final JTextField txtUsuario;
-    private final JPanel container;
 
     /**
      * Contador de intentos de inicio de sesión.
@@ -57,14 +55,22 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      * Singleton.
      */
     private LoginServiceImpl() {
-        // Obtención de la instancia del formulario de inicio de sesión (LoginFrame)
-        instanceOfLoginFrame = LoginFrame.getInstance();
+        instanceOfLoginPanel = LoginPanel.getInstance();
         // Obtención de los componentes del formulario
-        btnAceptar = instanceOfLoginFrame.getBtnAceptar();
-        btnSalir = instanceOfLoginFrame.getBtnSalir();
-        txtPassword = instanceOfLoginFrame.getTxtContraseña();
-        txtUsuario = instanceOfLoginFrame.getTxtUsuario();
-        container = instanceOfLoginFrame.getContainer();
+        btnAceptar = instanceOfLoginPanel.getBtnAceptar();
+        btnSalir = instanceOfLoginPanel.getBtnSalir();
+        txtPassword = instanceOfLoginPanel.getTxtContraseña();
+        txtUsuario = instanceOfLoginPanel.getTxtUsuario();
+        configureTheme();
+    }
+
+    public void loadPanel() {
+        addPanelToFrame(instanceOfLoginPanel);
+        instanceOfFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
+        txtUsuario.requestFocus(); // Foco en el campo de usuario
+        instanceOfFrame.setTitle("Acceder");
+        cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
+        cargarActionListeners(); // Cargar los ActionListeners para los botones
     }
 
     /**
@@ -72,6 +78,7 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
      *
      * @return Instancia única de LoginServiceImpl.
      */
+    @SuppressWarnings("DoubleCheckedLocking")
     public static LoginServiceImpl getInstance() {
         if (instanceOfLoginServiceImpl == null) {
             synchronized (LoginServiceImpl.class) { // Sincronización para hilos
@@ -84,111 +91,90 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
     }
 
     /**
-     * Método para obtener la instancia del formulario de inicio de sesión.
-     *
-     * @return Instancia del formulario de inicio de sesión.
-     */
-    @Override
-    public LoginFrame getInstanceOfFrame() {
-        instanceOfLoginFrame.setLocationRelativeTo(null); // Centrar el formulario en pantalla
-//        instanceOfLoginFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        int screenWidth = (int) screenSize.getWidth();
-//        int screenHeight = (int) screenSize.getHeight();
-
-        // Establecer el tamaño y la posición del panel para que coincida con las dimensiones de la pantalla
-//        container.setBounds(0, 0, screenWidth, screenHeight);
-        txtUsuario.requestFocus(); // Foco en el campo de usuario
-        cargarKeyListeners(); // Cargar los KeyListeners para los campos de texto
-        cargarActionListeners(); // Cargar los ActionListeners para los botones
-        return instanceOfLoginFrame;
-    }
-
-    /**
      * Método para iniciar sesión.
      *
      * @param evt Evento recibido
      */
     public void IniciarSesion(AWTEvent evt) {
-        if (intentos == 3) {
-            // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos
-            alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
-            System.exit(0);
-        } else {
-            try {
 
-                setCursores(waitCursor);
-                // Obtener usuario y contraseña del formulario de inicio de sesión
-                String usuario = txtUsuario.getText();
-                String password = String.valueOf(txtPassword.getPassword());
+        try {
 
-                // Verificar si los campos están vacíos
-                if (usuario.isEmpty() || password.isEmpty()) {
-                    // Mostrar mensaje de alerta si hay campos vacíos
-                    alerta.faltanDatos();
-                    return; // Finalizar el método si hay campos vacíos
-                }
+            setCursores(waitCursor);
+            // Obtener usuario y contraseña del formulario de inicio de sesión
+            String usuario = txtUsuario.getText();
+            String password = String.valueOf(txtPassword.getPassword());
 
-                // Crear un DTO con el usuario y contraseña proporcionados
-                User userLog = new User();
-                userLog.setUsername(usuario);
-                UserDAO userDao = new UserDAOImpl(userLog);
-                User userReceived = userDao.getUserByUsername();
+            // Verificar si los campos están vacíos
+            if (usuario.isEmpty() || password.isEmpty()) {
+                // Mostrar mensaje de alerta si hay campos vacíos
+                alerta.faltanDatos();
+                return; // Finalizar el método si hay campos vacíos
+            }
 
-                // Verificar si se encontró el usuario en la base de datos
-                if (userReceived == null) {
-                    // Mostrar mensaje de error si el usuario no existe
-                    alerta.mostrarError(this.getClass(), "El usuario no existe.", null);
-                    txtPassword.setText("");
-                    txtUsuario.requestFocus();
-                    return; // Finalizar el método si el usuario no existe
-                }
+            User userLog = new User();
+            userLog.setUsername(usuario);
+            UserDAO userDao = new UserDAOImpl(userLog);
+            User userReceived = userDao.getUserByUsername();
 
-                if (userReceived.getStatus().equals("logged in")) {
-                    alerta.mostrarError(this.getClass(), "El usuario ya se encuentra conectado.", null);
-                    txtUsuario.setText("");
-                    txtPassword.setText("");
-                    txtUsuario.requestFocus();
-                    return;
-                }
+            // Verificar si se encontró el usuario en la base de datos
+            if (userReceived == null) {
+                // Mostrar mensaje de error si el usuario no existe
+                alerta.mostrarError(this.getClass(), "El usuario no existe.", null);
+                txtPassword.setText("");
+                txtUsuario.requestFocus();
+                return; // Finalizar el método si el usuario no existe
+            }
 
-                // Calcular el hash de la contraseña ingresada por el usuario
-                byte[] inputHashedPassword = hashPassword(password, userReceived.getSalt());
-
-                // Verificar si la contraseña ingresada coincide con la almacenada en la base de datos
-                if (!MessageDigest.isEqual(userReceived.getHashed_password(), inputHashedPassword)) {
-                    // Mostrar mensaje de error si la contraseña es incorrecta
-                    alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
-                    txtPassword.setText("");
-                    txtUsuario.requestFocus();
-                    ++intentos;
-                    return; // Finalizar el método si la contraseña es incorrecta
-                }
-
-                // Limpiar campos de usuario y contraseña después de una autenticación exitosa
+            if (userReceived.getStatus().equals("logged in")) {
+                alerta.mostrarError(this.getClass(), "El usuario ya se encuentra conectado.", null);
                 txtUsuario.setText("");
                 txtPassword.setText("");
+                txtUsuario.requestFocus();
+                return;
+            }
 
-                // Almacenar información del usuario autenticado
-                userLogued = userReceived;
+            // Calcular el hash de la contraseña ingresada por el usuario
+            byte[] inputHashedPassword = hashPassword(password, userReceived.getSalt());
 
-                userLogued.setStatus("logged in");
-                userDao = new UserDAOImpl(userLogued);
-                userDao.actualizar();
-                // Cerrar la ventana de inicio de sesión y mostrar el menú principal
-                instanceOfLoginFrame.dispose();
-                MenuServiceImpl.getInstance().getInstanceOfFrame().setVisible(true);
-                intentos = 0;
-            } catch (SQLException | ClassNotFoundException ex) {
-                errorSQL(this.getClass(), ex);
-            } finally {
-                setCursores(defaultCursor);
+            // Verificar si la contraseña ingresada coincide con la almacenada en la base de datos
+            if (!MessageDigest.isEqual(userReceived.getHashed_password(), inputHashedPassword)) {
+                // Mostrar mensaje de error si la contraseña es incorrecta
+                alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
+                txtPassword.setText("");
+                txtUsuario.requestFocus();
+                ++intentos;
+                return; // Finalizar el método si la contraseña es incorrecta
+            }
+
+            // Limpiar campos de usuario y contraseña después de una autenticación exitosa
+            txtUsuario.setText("");
+            txtPassword.setText("");
+
+            // Almacenar información del usuario autenticado
+            userLogued = userReceived;
+
+            userLogued.setStatus("logged in");
+            userDao = new UserDAOImpl(userLogued);
+            userDao.actualizar();
+            // Cerrar la ventana de inicio de sesión y mostrar el menú principal
+            MenuServiceImpl.getInstance().loadPanel();
+            removePanelFromFrame(instanceOfLoginPanel);
+            intentos = 0;
+        } catch (SQLException | ClassNotFoundException ex) {
+            errorSQL(this.getClass(), ex);
+        } finally {
+            setCursores(defaultCursor);
+            if (intentos == 3) {
+                // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos
+                alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
+                System.exit(0);
             }
         }
+
     }
 
     private void setCursores(Cursor cursor) {
-        setCursoresGeneric(new Component[]{instanceOfLoginFrame, txtUsuario, txtPassword, btnAceptar, btnSalir}, cursor);
+        setCursoresGeneric(instanceOfLoginPanel.getComponents(), cursor);
     }
 
     /**
@@ -279,4 +265,9 @@ public class LoginServiceImpl extends ServiceUtilities implements ActionListener
         }
     }
 
+    public void limpiar(){
+        txtUsuario.setText("");
+        txtPassword.setText("");
+        txtUsuario.requestFocus();
+    }
 }
