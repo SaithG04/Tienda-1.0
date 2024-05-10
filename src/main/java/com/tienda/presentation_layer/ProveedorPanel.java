@@ -79,6 +79,8 @@ public class ProveedorPanel extends javax.swing.JPanel {
         jpmOptions.add(miEliminar);
 
         setBackground(new java.awt.Color(153, 255, 204));
+        setMinimumSize(new java.awt.Dimension(1260, 720));
+        setPreferredSize(new java.awt.Dimension(1260, 720));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnRegistrar.setBackground(new java.awt.Color(0, 0, 0));
@@ -177,10 +179,12 @@ public class ProveedorPanel extends javax.swing.JPanel {
 
         add(cbCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 240, 230, 50));
 
+        bgEstado.add(rbInactivo);
         rbInactivo.setForeground(new java.awt.Color(0, 0, 0));
         rbInactivo.setText("Inactivo");
         add(rbInactivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 270, 120, -1));
 
+        bgEstado.add(rbActivo);
         rbActivo.setForeground(new java.awt.Color(0, 0, 0));
         rbActivo.setText("Activo");
         add(rbActivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 240, 120, -1));

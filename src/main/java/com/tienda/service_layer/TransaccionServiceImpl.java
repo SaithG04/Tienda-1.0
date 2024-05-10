@@ -1,6 +1,6 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOImplements.TransaccionDAOImpl;
+import com.tienda.data_access_layer.DAOimplements.TransaccionDAOImpl;
 import com.tienda.data_access_layer.TransaccionDAO;
 import com.tienda.entity.Transaccion;
 import com.tienda.utilities.ServiceUtilities;
@@ -166,8 +166,8 @@ public final class TransaccionServiceImpl extends ServiceUtilities implements Ac
         } else if (e.getSource() == jmiVerDetalle) {
             try {
                 setCursores(waitCursor);
-                int idDetalle = getIdDetalle();
                 new Thread(() -> {
+                    int idDetalle = getIdDetalle();
                     DetallePedidoServiceImpl.getInstance(idDetalle).loadPanel();
                     removePanelFromFrame(instanceOfTransaccionPanel);
                 }).start();
@@ -187,6 +187,7 @@ public final class TransaccionServiceImpl extends ServiceUtilities implements Ac
     private DefaultTableModel cargarTransacciones() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Tipo", "Fecha de registro", "Monto"}, 0);
         try {
+            setCursores(waitCursor);
             // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
             TransaccionDAO transaccionDAO = new TransaccionDAOImpl(new Transaccion());
             // Obtener la lista de usuarios
@@ -197,6 +198,8 @@ public final class TransaccionServiceImpl extends ServiceUtilities implements Ac
             });
         } catch (ClassNotFoundException | SQLException e) {
             errorSQL(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
         return model;
     }

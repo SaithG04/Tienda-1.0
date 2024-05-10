@@ -358,10 +358,14 @@ public class ServiceUtilities {
                 userServiceImpl.limpiarCamposSinTabla();
             case ProveedorServiceImpl proveedorServiceImpl ->
                 proveedorServiceImpl.limpiarCamposSinTabla();
+            case DetallePedidoServiceImpl detallePedidoServiceImpl ->
+                detallePedidoServiceImpl.limpiarCampos();
             default -> {
             }
         }
-        tabla.clearSelection();
+        if (tabla != null) {
+            tabla.clearSelection();
+        }
     }
 
     public boolean algunCampoVacioGeneric(String... arrayString) {
@@ -473,7 +477,8 @@ public class ServiceUtilities {
     }
 
     public void configureTheme() {
-        String defaultTheme = getDefaultTheme();
+//        String defaultTheme = getDefaultTheme();
+        String defaultTheme = "light";
         Class<? extends LookAndFeel> styleClass = defaultTheme.equals("light") ? com.formdev.flatlaf.FlatLightLaf.class : com.formdev.flatlaf.FlatDarkLaf.class;
         try {
             // Establecer el nuevo estilo de FlatLaf

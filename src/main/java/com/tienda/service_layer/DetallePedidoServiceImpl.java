@@ -1,15 +1,15 @@
 package com.tienda.service_layer;
 
-import com.tienda.data_access_layer.DAOImplements.DetallePedidoDAOImpl;
+import com.tienda.data_access_layer.DAOimplements.DetallePedidoDAOImpl;
 import com.tienda.data_access_layer.DetallePedidoDAO;
 import com.tienda.entity.DetallePedido;
 import com.tienda.presentation_layer.DetallePedidoPanel;
 import com.tienda.utilities.ServiceUtilities;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Date;
 import java.sql.SQLException;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * Esta clase implementa la interfaz UserService y gestiona las operaciones de
@@ -27,14 +27,23 @@ public final class DetallePedidoServiceImpl extends ServiceUtilities implements 
 
     // Componentes de la interfaz de usuario
     private final JButton btnRegresar;
-    private final JTable jtbDetallePedido;
+    private final JLabel lblId, lblEstado, lblProveedor, lblProducto, lblFechaPedido, lblFechaEntrega, lblCantidad, lblUnidad, lblMontoTotal, lblObservaciones;
     private final int idDetalle;
 
     // Constructor privado para garantizar una única instancia de UserServiceImpl
     private DetallePedidoServiceImpl(int idDetalle) {
         instanceOfDetallePedidoPanel = DetallePedidoPanel.getInstance();
         btnRegresar = instanceOfDetallePedidoPanel.getBtnRegresar();
-        jtbDetallePedido = instanceOfDetallePedidoPanel.getJtbDetallePedido();
+        lblId = instanceOfDetallePedidoPanel.getLbId();
+        lblEstado = instanceOfDetallePedidoPanel.getLbEstado();
+        lblProveedor = instanceOfDetallePedidoPanel.getLbProveedor();
+        lblProducto = instanceOfDetallePedidoPanel.getLblProducto();
+        lblFechaPedido = instanceOfDetallePedidoPanel.getLbFechaPedido();
+        lblFechaEntrega = instanceOfDetallePedidoPanel.getLbFechaEntrega();
+        lblCantidad = instanceOfDetallePedidoPanel.getLbCantidad();
+        lblUnidad = instanceOfDetallePedidoPanel.getLbUnidad();
+        lblMontoTotal = instanceOfDetallePedidoPanel.getLbMontoTotal();
+        lblObservaciones = instanceOfDetallePedidoPanel.getLbObservaciones();
         this.idDetalle = idDetalle;
     }
 
@@ -47,15 +56,10 @@ public final class DetallePedidoServiceImpl extends ServiceUtilities implements 
         cargarMouseListeners();
         // Cargar listeners de teclado
         cargarKeyListeners();
-        // Limpiar tabla de usuarios
-        jtbDetallePedido.setModel(new DefaultTableModel(0, 0));
-        // Foco en el campo de nombre completo
         // Cargar usuarios en una nueva hebra para evitar bloqueos
         new Thread(() -> {
-            jtbDetallePedido.setModel(cargarDetallePedido());
+            cargarDetallePedido();
         }).start();
-        //Hacer no editable la tabla Usuarios
-        configurarTablaNoEditable(jtbDetallePedido);
     }
 
     /**
@@ -75,6 +79,10 @@ public final class DetallePedidoServiceImpl extends ServiceUtilities implements 
             }
         }
         return instanceOfDetallePedidoServiceImpl;
+    }
+
+    public DetallePedidoPanel getInstanceOfDetallePedidoPanel() {
+        return instanceOfDetallePedidoPanel;
     }
 
     /**
@@ -129,8 +137,8 @@ public final class DetallePedidoServiceImpl extends ServiceUtilities implements 
     public void actionPerformed(ActionEvent e) {
         // Determinar la fuente del evento y ejecutar la acción correspondiente
         if (e.getSource() == btnRegresar) {
-            // Limpiar campos y volver al menú principal al hacer clic en el botón de regresar
-            limpiarCamposGeneric(jtbDetallePedido, instanceOfDetallePedidoServiceImpl);
+            // Limpiar campos y volver al hacer clic en el botón de regresar
+            limpiarCamposGeneric(null, instanceOfDetallePedidoServiceImpl);
             TransaccionServiceImpl.getInstance().loadPanel();
             removePanelFromFrame(instanceOfDetallePedidoPanel);
         }
@@ -141,24 +149,56 @@ public final class DetallePedidoServiceImpl extends ServiceUtilities implements 
      *
      * @return Un modelo de tabla con los usuarios cargados.
      */
-    private DefaultTableModel cargarDetallePedido() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Estado", "Proveedor", "Producto", "Fecha Pedido", "Fecha entrega",
-            "Cantidad", "Unidad", "Monto Total", "Observaciones"}, 0);
+    private void cargarDetallePedido() {
         try {
-            // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
+            setCursores(waitCursor);
             DetallePedido detallePedido = new DetallePedido();
             detallePedido.setId(idDetalle);
             DetallePedidoDAO detallePedidoDAO = new DetallePedidoDAOImpl(detallePedido);
             detallePedido = detallePedidoDAO.getById();
             detallePedidoDAO.setEntity(detallePedido);
+            System.out.println(detallePedido);
+
+            int id = detallePedido.getId();
+            String estado = detallePedido.getEstado();
             String proveedor = detallePedidoDAO.getProveedor();
             String producto = detallePedidoDAO.getProducto();
-            model.addRow(new Object[]{detallePedido.getId(), detallePedido.getEstado(), proveedor, producto, detallePedido.getFecha_pedido(),
-                detallePedido.getFecha_entrega(), detallePedido.getCantidad(), detallePedido.getUnidad(), detallePedido.getMonto_total(), detallePedido.getObservaciones()});
+            Date fecha_pedido = detallePedido.getFecha_pedido();
+            Date fecha_entrega = detallePedido.getFecha_entrega();
+            double cantidad = detallePedido.getCantidad();
+            String unidadMedida = detallePedidoDAO.getUnidadMedida();
+            double monto_total = detallePedido.getMonto_total();
+            String observaciones = detallePedido.getObservaciones();
+
+            lblId.setText(String.valueOf(id));
+            lblEstado.setText(estado);
+            lblProveedor.setText(proveedor);
+            lblProducto.setText(producto);
+            lblFechaPedido.setText(String.valueOf(fecha_pedido));
+            lblFechaEntrega.setText(String.valueOf(fecha_entrega));
+            lblCantidad.setText(String.valueOf(cantidad));
+            lblUnidad.setText(unidadMedida);
+            lblMontoTotal.setText(String.valueOf(monto_total));
+            lblObservaciones.setText(observaciones);
+
         } catch (ClassNotFoundException | SQLException e) {
             errorSQL(this.getClass(), e);
+        } finally {
+            setCursores(defaultCursor);
         }
-        return model;
+    }
+
+    public void limpiarCampos() {
+        lblId.setText("");
+        lblEstado.setText("");
+        lblProveedor.setText("");
+        lblProducto.setText("");
+        lblFechaPedido.setText(String.valueOf(""));
+        lblFechaEntrega.setText(String.valueOf(""));
+        lblCantidad.setText(String.valueOf(""));
+        lblUnidad.setText("");
+        lblMontoTotal.setText(String.valueOf(""));
+        lblObservaciones.setText("");
     }
 
     private void setCursores(Cursor cursor) {

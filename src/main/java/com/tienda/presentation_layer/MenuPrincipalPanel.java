@@ -54,14 +54,6 @@ public class MenuPrincipalPanel extends javax.swing.JPanel {
         return lblTitle;
     }
 
-    public JButton getBtnDark() {
-        return btnDark;
-    }
-
-    public JButton getBtnLight() {
-        return btnLight;
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -83,8 +75,6 @@ public class MenuPrincipalPanel extends javax.swing.JPanel {
         btnUsuarios = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         lblRecuperar3 = new javax.swing.JLabel();
-        btnLight = new javax.swing.JButton();
-        btnDark = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(153, 255, 204));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -165,19 +155,11 @@ public class MenuPrincipalPanel extends javax.swing.JPanel {
         lblRecuperar3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblRecuperar3.setText("Tienda-version-1.1 -SNAPSHOT");
         add(lblRecuperar3, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 500, 220, 40));
-
-        btnLight.setText("LIGHT");
-        add(btnLight, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 310, -1, -1));
-
-        btnDark.setText("DARK");
-        add(btnDark, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 350, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
-    private javax.swing.JButton btnDark;
-    private javax.swing.JButton btnLight;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnProveedores;
     private javax.swing.JButton btnTransacciones;

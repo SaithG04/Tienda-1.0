@@ -317,6 +317,7 @@ public final class UserServiceImpl extends com.tienda.utilities.ServiceUtilities
     private DefaultTableModel cargarUsuarios() {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "Nombre Completo", "Usuario", "Estado"}, 0);
         try {
+            setCursores(waitCursor);
             // Crear un objeto UserDAOImpl para realizar operaciones de base de datos
             UserDAO userDAO = new UserDAOImpl(new User());
             // Obtener la lista de usuarios
@@ -327,6 +328,8 @@ public final class UserServiceImpl extends com.tienda.utilities.ServiceUtilities
             });
         } catch (ClassNotFoundException | SQLException e) {
             errorSQL(this.getClass(), e);
+        } finally{
+            setCursores(defaultCursor);
         }
         return model;
     }
@@ -420,6 +423,7 @@ public final class UserServiceImpl extends com.tienda.utilities.ServiceUtilities
                 if (userForUpdate.getId() == LoginServiceImpl.userLogued.getId()) {
                     alerta.aviso("Actualización exitosa. Inicie sesión nuevamente");
                     LoginServiceImpl.getInstance().loadPanel();
+                    removePanelFromFrame(instanceOfUsersPanel);
                     instanceOfUsersPanel.setVisible(true);
                 } else {
                     jtbUsuarios.setModel(cargarUsuarios());

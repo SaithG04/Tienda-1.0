@@ -295,6 +295,7 @@ public final class ProveedorServiceImpl extends ServiceUtilities implements Acti
         DefaultTableModel model = new DefaultTableModel(new String[]{"ID", "RUC", "Razón social", "Descripción", "Dirección", "Telefono",
             "Correo", "Web", "Contacto", "Categoría", "Estado", "Fecha registro", "Observaciones"}, 0);
         try {
+            setCursores(waitCursor);
             ProveedorDAO proveedorDAO = new ProveedorDAOImpl(new Proveedor());
             List<Proveedor> lista = proveedorDAO.listar();
             lista.forEach(proveedores -> {
@@ -304,6 +305,8 @@ public final class ProveedorServiceImpl extends ServiceUtilities implements Acti
             });
         } catch (ClassNotFoundException | SQLException e) {
             errorSQL(this.getClass(), e);
+        } finally{
+            setCursores(defaultCursor);
         }
         return model;
     }
