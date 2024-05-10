@@ -138,12 +138,18 @@ public final class LoginServiceImpl extends com.tienda.utilities.ServiceUtilitie
 
             // Verificar si la contraseña ingresada coincide con la almacenada en la base de datos
             if (!MessageDigest.isEqual(userReceived.getHashed_password(), inputHashedPassword)) {
-                // Mostrar mensaje de error si la contraseña es incorrecta
-                alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
-                txtPassword.setText("");
-                txtUsuario.requestFocus();
-                ++intentos;
-                return; // Finalizar el método si la contraseña es incorrecta
+                if (intentos == 3) {
+                    // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos
+                    alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
+                    System.exit(0);
+                } else {
+                    // Mostrar mensaje de error si la contraseña es incorrecta
+                    alerta.mostrarError(LoginServiceImpl.class, "Contraseña incorrecta. Verifique nuevamente.", null);
+                    txtPassword.setText("");
+                    txtUsuario.requestFocus();
+                    ++intentos;
+                    return; // Finalizar el método si la contraseña es incorrecta
+                }
             }
 
             // Limpiar campos de usuario y contraseña después de una autenticación exitosa
@@ -164,13 +170,7 @@ public final class LoginServiceImpl extends com.tienda.utilities.ServiceUtilitie
             errorSQL(this.getClass(), ex);
         } finally {
             setCursores(defaultCursor);
-            if (intentos == 3) {
-                // Mostrar mensaje de error y cerrar la aplicación si se supera el límite de intentos
-                alerta.mostrarError(LoginServiceImpl.class, "Límite de intentos excedido.", null);
-                System.exit(0);
-            }
         }
-
     }
 
     private void setCursores(Cursor cursor) {
@@ -265,7 +265,7 @@ public final class LoginServiceImpl extends com.tienda.utilities.ServiceUtilitie
         }
     }
 
-    public void limpiar(){
+    public void limpiar() {
         txtUsuario.setText("");
         txtPassword.setText("");
         txtUsuario.requestFocus();

@@ -23,7 +23,7 @@ public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities
 
     // Componentes de la interfaz de usuario
     private final JLabel lblTitle;
-    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores, btnTransacciones, btnLight, btnDark;
+    private final JButton btnCerrarSesion, btnUsuarios, btnProductos, btnProveedores, btnTransacciones;
 
     /**
      * Constructor privado para el patrón Singleton.
@@ -39,8 +39,6 @@ public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities
         btnProductos = instanceOfMenuPrincipalPanel.getBtnProductos();
         btnProveedores = instanceOfMenuPrincipalPanel.getBtnProveedores();
         btnTransacciones = instanceOfMenuPrincipalPanel.getBtnTransacciones();
-        btnLight = instanceOfMenuPrincipalPanel.getBtnLight();
-        btnDark = instanceOfMenuPrincipalPanel.getBtnDark();
     }
 
     public void loadPanel() {
@@ -84,8 +82,6 @@ public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities
         btnProductos.addActionListener(this);
         btnProveedores.addActionListener(this);
         btnTransacciones.addActionListener(this);
-        btnLight.addActionListener(this);
-        btnDark.addActionListener(this);
     }
 
     /**
@@ -115,8 +111,6 @@ public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities
         btnProductos.removeActionListener(this);
         btnProveedores.removeActionListener(this);
         btnTransacciones.removeActionListener(this);
-        btnLight.removeActionListener(this);
-        btnDark.removeActionListener(this);
     }
 
     /**
@@ -187,12 +181,13 @@ public final class MenuServiceImpl extends com.tienda.utilities.ServiceUtilities
             TransaccionServiceImpl.getInstance().loadPanel();
             // Ocultar el formulario del menú principal
             removePanelFromFrame(instanceOfMenuPrincipalPanel);
-        } else if (e.getSource() == btnLight) {
-            saveDefaultTheme("light");
-            configureTheme();
-        } else if (e.getSource() == btnDark) {
-            saveDefaultTheme("dark");
-            configureTheme();
-        }
+        } 
+//        else if (e.getSource() == btnLight) {
+//            saveDefaultTheme("light");
+//            configureTheme();
+//        } else if (e.getSource() == btnDark) {
+//            saveDefaultTheme("dark");
+//            configureTheme();
+//        }
     }
 }

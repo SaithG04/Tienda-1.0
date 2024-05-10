@@ -114,6 +114,11 @@ public class DetallePedido {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
+
+    @Override
+    public String toString() {
+        return "DetallePedido{" + "id=" + id + ", estado=" + estado + ", id_proveedor=" + id_proveedor + ", id_producto=" + id_producto + ", fecha_pedido=" + fecha_pedido + ", fecha_entrega=" + fecha_entrega + ", cantidad=" + cantidad + ", unidad=" + unidad + ", monto_total=" + monto_total + ", observaciones=" + observaciones + '}';
+    }
     
     
 }

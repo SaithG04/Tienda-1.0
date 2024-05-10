@@ -1,6 +1,7 @@
 package com.tienda.data_access_layer;
 
 import com.tienda.entity.*;
+import java.sql.SQLException;
 
 /**
  * Interfaz que define operaciones específicas para manipular datos de usuarios
@@ -10,7 +11,9 @@ import com.tienda.entity.*;
  */
 public interface DetallePedidoDAO extends CRUD<DetallePedido> {
 
-    String getProveedor();
+    String getProveedor() throws ClassNotFoundException, SQLException;
 
-    String getProducto();
+    String getProducto() throws ClassNotFoundException, SQLException;
+
+    String getUnidadMedida() throws ClassNotFoundException, SQLException;
 }

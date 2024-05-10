@@ -1,8 +1,6 @@
 com\tienda\data_access_layer\MySqlConnectionFactory.class
 com\tienda\service_layer\FrameService.class
 com\tienda\data_access_layer\UserDAO.class
-com\tienda\data_access_layer\DAOimplements\producto.class
 com\tienda\entity\User.class
 com\tienda\data_access_layer\DAOimplements\UserDAOImpl.class
-com\tienda\data_access_layer\DAOimplements\proveedor.class
 com\tienda\data_access_layer\ConnectionFactory.class
